@@ -1,0 +1,97 @@
+@layer tw_base, radix_ui, tw_components_utils;
+@import "@radix-ui/themes/styles.css" layer(radix_ui);
+
+@layer tw_base {
+  @tailwind base;
+}
+
+@layer tw_components_utils {
+  @tailwind components;
+  @tailwind utilities;
+}
+
+@layer radix_ui {
+  .radix-themes {
+    --background: var(--color-background);
+    --foreground: var(--gray-12);
+
+    --overlay: var(--color-overlay);
+    --surface: var(--color-surface);
+
+    --panel-solid: var(--color-panel-solid);
+    --panel-translucent: var(--color-panel-translucent);
+
+    --primary: var(--accent-9);
+    --primary-foreground: var(--accent-1);
+    --primary-hover: var(--accent-10);
+    --primary-active: var(--accent-11);
+
+    --gray: var(--gray-3);
+    --gray-foreground: var(--gray-10);
+    --gray-hover: var(--gray-4);
+    --gray-active: var(--gray-5);
+
+    --destructive: var(--red-9);
+    --destructive-foreground: var(--red-1);
+    --destructive-hover: var(--red-10);
+    --destructive-active: var(--red-11);
+
+    --success: var(--green-9);
+    --success-foreground: var(--green-1);
+    --success-hover: var(--green-10);
+    --success-active: var(--green-11);
+
+    --border: var(--gray-5);
+    --input: var(--gray-6);
+    --ring: var(--gray-6);
+
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .radix-themes :not([data-accent-color=""]) {
+    --primary: var(--accent-9);
+    --primary-foreground: var(--accent-1);
+    --primary-hover: var(--accent-10);
+    --primary-active: var(--accent-11);
+  }
+}
+
+@layer tw_base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer radix_ui {
+  .rt-BaseButton:where(.rt-variant-outline) {
+    box-shadow: inset 0 0 0 1px var(--accent-a5);
+  }
+
+  .rt-TextFieldRoot:has(.rt-TextFieldInput[aria-invalid="true"]) {
+    box-shadow: inset 0 0 0 var(--text-field-border-width) var(--accent-a7);
+  }
+
+  .rt-Text:where([data-accent-color="gray"]) {
+    color: var(--gray-foreground);
+  }
+
+  .rt-Heading:where([data-accent-color="gray"]) {
+    color: var(--gray-foreground);
+  }
+
+  .rt-TableCell {
+    vertical-align: middle;
+  }
+
+  .rt-TableRow {
+    --table-row-box-shadow: inset 0 -2px var(--gray-a4);
+  }
+}

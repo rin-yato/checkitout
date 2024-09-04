@@ -1,0 +1,11 @@
+pre-commit:
+  commands:
+    lint-staged:
+      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
+      run: "export TURBO_UI=0 && pnpm check:fix && git update-index --again"
+
+pre-push:
+  commands:
+    ci-check:
+      run: "export TURBO_UI=0 && pnpm run ci:local"
+

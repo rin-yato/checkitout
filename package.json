@@ -1,0 +1,36 @@
+{
+  "name": "pay",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build --env-mode=loose",
+    "dev": "turbo run dev",
+    "start": "turbo run start",
+    "check": "turbo run check",
+    "check:fix": "turbo run check:fix",
+    "db:reset": "bun ./packages/db/src/utils/reset.ts",
+    "db:pull": "drizzle-kit introspect",
+    "db:push": "drizzle-kit push",
+    "db:generate": "bun drizzle-kit generate",
+    "db:drop": "drizzle-kit drop",
+    "db:up": "drizzle-kit up",
+    "db:check": "drizzle-kit check",
+    "db:migrate": "bun run ./packages/db/src/migration/index.ts",
+    "test": "turbo run test",
+    "type": "turbo run type",
+    "ci": "turbo run ci --cache-dir=.turbo",
+    "ci:local": "turbo run ci:local --cache-dir=.turbo",
+    "sherif": "bunx sherif",
+    "sherif:fix": "bunx sherif --fix"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3",
+    "drizzle-kit": "^0.22.7",
+    "lefthook": "^1.6.10",
+    "turbo": "^2.1.1",
+    "typescript": "^5.4.5"
+  },
+  "packageManager": "pnpm@8.15.6",
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "api",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts"
+  },
+  "dependencies": {
+    "@bull-board/api": "^5.21.4",
+    "@bull-board/hono": "^5.21.4",
+    "@hono/zod-openapi": "^0.16.0",
+    "@scalar/hono-api-reference": "^0.5.144",
+    "bullmq": "^5.12.13",
+    "hono": "^4.5.11",
+    "ky": "^1.7.2",
+    "ts-khqr": "^2.1.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

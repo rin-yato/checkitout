@@ -1,0 +1,25 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+
+    "dev": { "cache": false, "persistent": true },
+    "start": { "cache": false, "persistent": true },
+
+    "check": { "cache": true },
+    "check:ci": { "cache": true },
+    "check:fix": { "cache": true },
+
+    "test": { "cache": true },
+
+    "type": { "cache": true },
+
+    "ci": { "cache": true },
+    "ci:local": { "cache": true, "dependsOn": ["check:ci", "type", "test"] }
+  }
+}
