@@ -31,10 +31,10 @@
     --gray-hover: var(--gray-4);
     --gray-active: var(--gray-5);
 
-    --destructive: var(--red-9);
-    --destructive-foreground: var(--red-1);
-    --destructive-hover: var(--red-10);
-    --destructive-active: var(--red-11);
+    --danger: var(--red-9);
+    --danger-foreground: var(--red-1);
+    --danger-hover: var(--red-10);
+    --danger-active: var(--red-11);
 
     --success: var(--green-9);
     --success-foreground: var(--green-1);

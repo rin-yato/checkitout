@@ -11,18 +11,18 @@
 // Import Routes
 
 import { Route as rootRoute } from './route/__root'
-import { Route as CheckoutImport } from './route/checkout'
 import { Route as IndexImport } from './route/index'
+import { Route as CheckoutIndexImport } from './route/checkout/index'
 
 // Create/Update Routes
 
-const CheckoutRoute = CheckoutImport.update({
-  path: '/checkout',
+const IndexRoute = IndexImport.update({
+  path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexRoute = IndexImport.update({
-  path: '/',
+const CheckoutIndexRoute = CheckoutIndexImport.update({
+  path: '/checkout/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -37,11 +37,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/checkout': {
-      id: '/checkout'
+    '/checkout/': {
+      id: '/checkout/'
       path: '/checkout'
       fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutImport
+      preLoaderRoute: typeof CheckoutIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -51,17 +51,17 @@ declare module '@tanstack/react-router' {
 
 interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutIndexRoute
 }
 
 interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutIndexRoute
 }
 
 interface FileRoutesById {
   '/': typeof IndexRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout/': typeof CheckoutIndexRoute
 }
 
 interface FileRouteTypes {
@@ -69,18 +69,18 @@ interface FileRouteTypes {
   fullPaths: '/' | '/checkout'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/checkout'
-  id: '/' | '/checkout'
+  id: '/' | '/checkout/'
   fileRoutesById: FileRoutesById
 }
 
 interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CheckoutRoute: typeof CheckoutRoute
+  CheckoutIndexRoute: typeof CheckoutIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CheckoutRoute: CheckoutRoute,
+  CheckoutIndexRoute: CheckoutIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -96,14 +96,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/checkout"
+        "/checkout/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/checkout": {
-      "filePath": "checkout.tsx"
+    "/checkout/": {
+      "filePath": "checkout/index.tsx"
     }
   }
 }

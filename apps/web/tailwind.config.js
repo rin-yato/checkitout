@@ -38,12 +38,12 @@ export default {
         active: "var(--gray-active)",
       },
 
-      destructive: {
-        DEFAULT: "var(--destructive)",
-        foreground: "var(--destructive-foreground)",
+      danger: {
+        DEFAULT: "var(--danger)",
+        foreground: "var(--danger-foreground)",
 
-        hover: "var(--destructive-hover)",
-        active: "var(--destructive-active)",
+        hover: "var(--danger-hover)",
+        active: "var(--danger-active)",
       },
 
       success: {
