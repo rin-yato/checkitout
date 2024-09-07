@@ -1,9 +1,9 @@
-import { radixColors } from "./app/lib/tailwind";
+import { radixColors } from "./src/lib/tailwind";
 
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
-  content: ["./app/**/*.tsx"],
+  content: ["./src/**/*.tsx", "index.html"],
   theme: {
     colors: {
       transparent: "transparent",

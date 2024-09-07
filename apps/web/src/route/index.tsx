@@ -1,8 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
 import ky from "ky";
+
+import { useEffect, useState } from "react";
+
+import { createFileRoute } from "@tanstack/react-router";
 import { ArrowDownLeft } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -69,12 +71,12 @@ function Home() {
   }, [transaction]);
 
   return (
-    <main className="h-dvh flex flex-col items-center pt-28">
-      <section className="flex flex-col items-center max-w-[224px] w-full">
+    <main className="flex h-dvh flex-col items-center pt-28">
+      <section className="flex w-full max-w-[224px] flex-col items-center">
         <input
           onKeyDown={handleKeyDown}
           type="number"
-          className="border rounded px-3 py-2"
+          className="rounded border px-3 py-2"
           value={amount}
           onChange={(e) => {
             setAmount(Number(e.target.value));
@@ -87,13 +89,13 @@ function Home() {
 
         <hr className="my-10" />
 
-        <ul className="px-3 rounded bg-gray-50 w-full [&>:nth-child(even)]:border-y *:py-3">
+        <ul className="w-full rounded bg-gray-50 px-3 *:py-3 [&>:nth-child(even)]:border-y">
           {receipts.map((receipt, i) => (
             <li
-              className="flex gap-x-3 items-center animate-in zoom-in-50"
+              className="zoom-in-50 flex animate-in items-center gap-x-3"
               key={receipt.data.hash}
             >
-              <ArrowDownLeft size={20} className="bg-green-500 text-white rounded-full p-0.5" />
+              <ArrowDownLeft size={20} className="rounded-full bg-green-500 p-0.5 text-white" />
               Received {receipt.data.amount} {receipt.data.currency}
             </li>
           ))}

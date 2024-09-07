@@ -28,12 +28,11 @@
     "baseUrl": "./",
     "paths": {
       "@/*": [
-        "app/*"
+        "src/*"
       ]
     }
   },
   "include": [
-    "app",
-    "app.config.ts"
+    "src"
   ]
 }
