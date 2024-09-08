@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build --env-mode=loose",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --env-mode=loose",
     "start": "turbo run start",
     "check": "turbo run check",
     "check:fix": "turbo run check:fix",
