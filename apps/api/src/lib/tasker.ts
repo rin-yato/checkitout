@@ -6,20 +6,23 @@ import { Queue, type Worker } from "bullmq";
 import { serveStatic } from "hono/bun";
 
 export function registerTasker(app: OpenAPIHono, taskers: Tasker[]) {
-  for (const tasker of taskers) {
-    tasker.start();
-  }
+  // start all taskers
+  taskers.forEach((tasker) => tasker.start());
 
   const serverAdapter = new HonoAdapter(serveStatic);
 
   createBullBoard({
-    queues: taskers.map((tasker) => new BullMQAdapter(new Queue(tasker.worker.name))),
+    queues: taskers.map(createBullAdapter),
     serverAdapter,
   });
 
   serverAdapter.setBasePath("/queue");
 
   app.route("/queue", serverAdapter.registerPlugin());
+}
+
+function createBullAdapter(tasker: Tasker) {
+  return new BullMQAdapter(new Queue(tasker.worker.name));
 }
 
 export const DEFAULT_CONNECTION = {

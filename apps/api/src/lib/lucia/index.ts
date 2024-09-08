@@ -1,18 +1,12 @@
-import { env } from "@lib/env";
+import { env } from "@/lib/env";
 
-import { LibSQLAdapter } from "@lucia-auth/adapter-sqlite";
-import { createDBClient } from "@repo/db";
+import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
+import type { User } from "@repo/db/schema";
+import { TB_session, TB_user } from "@repo/db/table";
 import { Lucia } from "lucia";
+import { db } from "../db";
 
-const squealite = createDBClient({
-  url: env.DB_URL,
-  authToken: env.DB_TOKEN,
-});
-
-export const adapter = new LibSQLAdapter(squealite, {
-  user: "user",
-  session: "session",
-});
+export const adapter = new DrizzleSQLiteAdapter(db, TB_session, TB_user);
 
 export const SESSION_COOKIE_NAME = "auth" as const;
 
@@ -20,24 +14,23 @@ export const lucia = new Lucia(adapter, {
   sessionCookie: {
     name: SESSION_COOKIE_NAME,
     attributes: {
+      path: "/",
       secure: env.NODE_ENV === "production",
       sameSite: "lax",
-      path: "/",
-      domain: env.NEXT_PUBLIC_BASE_DOMAIN,
+      domain: env.BASE_URL,
     },
   } as const,
 
   getUserAttributes: (attributes) => {
     return {
       id: attributes.id,
-      githubId: attributes.github_id,
-      googleId: attributes.google_id,
+      googleId: attributes.googleId,
       username: attributes.username,
-      displayName: attributes.display_name,
+      displayName: attributes.displayName,
       profile: attributes.profile,
       email: attributes.email,
-      createdAt: attributes.created_at,
-      updatedAt: attributes.updated_at,
+      createdAt: attributes.createdAt,
+      updatedAt: attributes.createdAt,
     };
   },
 });
@@ -45,18 +38,6 @@ export const lucia = new Lucia(adapter, {
 declare module "lucia" {
   interface Register {
     Lucia: typeof lucia;
-    DatabaseUserAttributes: DatabaseUserAttributes;
+    DatabaseUserAttributes: User;
   }
-}
-
-interface DatabaseUserAttributes {
-  id: string;
-  username: string;
-  display_name: string;
-  profile: string | null;
-  email: string;
-  github_id: string | null;
-  google_id: string | null;
-  created_at: Date;
-  updated_at: Date;
 }

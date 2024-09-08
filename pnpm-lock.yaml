@@ -35,6 +35,15 @@ importers:
       '@hono/zod-openapi':
         specifier: ^0.16.0
         version: 0.16.0(hono@4.5.11)(zod@3.23.8)
+      '@justmiracle/result':
+        specifier: ^1.2.0
+        version: 1.2.0
+      '@lucia-auth/adapter-drizzle':
+        specifier: ^1.1.0
+        version: 1.1.0(drizzle-orm@0.33.0)(lucia@3.2.0)
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@scalar/hono-api-reference':
         specifier: ^0.5.144
         version: 0.5.144(hono@4.5.11)
@@ -44,6 +53,9 @@ importers:
       bullmq:
         specifier: ^5.12.13
         version: 5.12.13
+      drizzle-orm:
+        specifier: ^0.33.0
+        version: 0.33.0(@libsql/client@0.6.2)
       hono:
         specifier: ^4.5.11
         version: 4.5.11
@@ -53,6 +65,9 @@ importers:
       lucia:
         specifier: ^3.2.0
         version: 3.2.0
+      nanoid:
+        specifier: ^5.0.7
+        version: 5.0.7
       ts-khqr:
         specifier: ^2.1.3
         version: 2.1.3
@@ -184,12 +199,18 @@ importers:
       '@libsql/client':
         specifier: ^0.6.2
         version: 0.6.2
+      '@lucia-auth/adapter-drizzle':
+        specifier: ^1.1.0
+        version: 1.1.0(drizzle-orm@0.33.0)(lucia@3.2.0)
       drizzle-orm:
         specifier: ^0.33.0
         version: 0.33.0(@libsql/client@0.6.2)
       drizzle-zod:
         specifier: ^0.5.1
         version: 0.5.1(drizzle-orm@0.33.0)(zod@3.23.8)
+      nanoid:
+        specifier: ^5.0.7
+        version: 5.0.7
       typescript:
         specifier: ^5.0.0
         version: 5.5.4
@@ -1494,6 +1515,10 @@ packages:
       '@jridgewell/sourcemap-codec': 1.5.0
     dev: true
 
+  /@justmiracle/result@1.2.0:
+    resolution: {integrity: sha512-MyyfTSloRNvdB1EnzSDiOeyPtdXeK+gp1d2zxqcjq/XHoagsIzo7ImEJCKIUkOTlmuEInPfYZrcAU7sdeCWqkg==}
+    dev: false
+
   /@libsql/client@0.6.2:
     resolution: {integrity: sha512-xRNfRLv/dOCbV4qd+M0baQwGmvuZpMd2wG2UAPs8XmcdaPvu5ErkcaeITkxlm3hDEJVabQM1cFhMBxsugWW9fQ==}
     dependencies:
@@ -1594,6 +1619,16 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@lucia-auth/adapter-drizzle@1.1.0(drizzle-orm@0.33.0)(lucia@3.2.0):
+    resolution: {integrity: sha512-iCTnZWvfI5lLZOdUHZYiXA1jaspIFEeo2extLxQ3DjP3uOVys7IPwBi7zezLIRu9dhro4H4Kji+7gSYyjcef2A==}
+    peerDependencies:
+      drizzle-orm: '>= 0.29 <1'
+      lucia: 3.x
+    dependencies:
+      drizzle-orm: 0.33.0(@libsql/client@0.6.2)
+      lucia: 3.2.0
+    dev: false
 
   /@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3:
     resolution: {integrity: sha512-QZHtlVgbAdy2zAqNA9Gu1UpIuI8Xvsd1v8ic6B2pZmeFnFcMWiPLfWXh7TVw4eGEZ/C9TH281KwhVoeQUKbyjw==}
@@ -4832,6 +4867,12 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
     dev: true
+
+  /nanoid@5.0.7:
+    resolution: {integrity: sha512-oLxFY2gd2IqnjcYyOXD8XGCftpGtZP2AbHbOkthDkvRywH5ayNtPVy9YlOPcHckXzbLTCHpkb7FB+yuxKV13pQ==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+    dev: false
 
   /nanostores@0.11.3:
     resolution: {integrity: sha512-TUes3xKIX33re4QzdxwZ6tdbodjmn3tWXCEc1uokiEmo14sI1EaGYNs2k3bU2pyyGNmBqFGAVl6jAGWd06AVIg==}

@@ -1,7 +1,6 @@
 import { createRoute, response } from "@/lib/route";
 import { transactionServcie } from "@/service/transaction.service";
 import { z } from "@hono/zod-openapi";
-import { transactionQueue } from "../queue";
 
 export const createTransaction = createRoute(
   {

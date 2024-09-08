@@ -10,5 +10,19 @@ export const envSchema = z.object({
     ])
     .default("development"),
 
-  PORT: z.number().default(3000),
+  PORT: z.number().default(3050),
+
+  WEB_URL: z.string().default("http://localhost:3000"),
+  API_URL: z.string().default("http://localhost:3050"),
+  BASE_URL: z.string().default("localhost"),
+
+  DB_URL: z.string(),
+  DB_TOKEN: z.string(),
+
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
 });
+
+export type Env = z.infer<typeof envSchema>;
+
+export const env = envSchema.parse(process.env);

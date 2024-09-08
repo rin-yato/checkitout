@@ -1,7 +1,10 @@
 import { column, table } from "../utils";
+import { genId } from "../utils/id";
+
+export type TB_user = typeof TB_user;
 
 export const TB_user = table("user", {
-  id: column.text("id").notNull().primaryKey(),
+  id: column.id.$defaultFn(genId("user")),
 
   displayName: column.text("display_name").notNull(),
   username: column.text("username").notNull().unique(),

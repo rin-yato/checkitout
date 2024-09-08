@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "organizeImports": {
-    "enabled": true
+    "enabled": false
   },
   "files": {
     "ignore": ["**/node_modules/**", "**/dist/**", "**/.DS_Store/**"],
@@ -38,6 +38,9 @@
       },
       "style": {
         "useNodejsImportProtocol": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
       }
     }
   }

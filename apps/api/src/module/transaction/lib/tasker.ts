@@ -1,10 +1,7 @@
+import { DEFAULT_CONNECTION, type Tasker } from "@/lib/tasker";
 import { transactionServcie } from "@/service/transaction.service";
 import { type Job, UnrecoverableError, Worker } from "bullmq";
-import ky from "ky";
-import { DEFAULT_CONNECTION, type Tasker } from "../../lib/tasker";
-import { BAKONG_API_URL } from "./config";
 import { TRANSACTION_QUEUE_NAME } from "./queue";
-import type { TransactionSuccess } from "./type";
 
 export class TransactionTasker implements Tasker {
   worker;

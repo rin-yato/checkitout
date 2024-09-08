@@ -1,5 +1,6 @@
 import { OpenAPIHono, z } from "@hono/zod-openapi";
 import { createRoute, response } from "../../lib/route";
+import { db } from "@/lib/db";
 
 const GetUsers = createRoute(
   {
@@ -13,7 +14,8 @@ const GetUsers = createRoute(
     },
   },
   async (c) => {
-    return c.json({ users: ["henlo"] });
+    const users = await db.query.TB_user.findMany();
+    return c.json(users);
   },
 );
 

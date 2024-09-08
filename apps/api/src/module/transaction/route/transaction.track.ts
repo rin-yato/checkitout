@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { streamSSE } from "hono/streaming";
 import { z } from "zod";
-import { transactionQueue } from "../queue";
+import { transactionQueue } from "../lib/queue";
 
 export const trackTransaction = new OpenAPIHono().openapi(
   createRoute({

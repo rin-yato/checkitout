@@ -1,5 +1,5 @@
-import { BAKONG_API_URL } from "@/route/transaction/config";
-import type { TransactionResponse } from "@/route/transaction/type";
+import { BAKONG_API_URL } from "@/module/transaction/lib/config";
+import type { TransactionResponse } from "@/module/transaction/lib/type";
 import ky from "ky";
 import { CURRENCY, KHQR, TAG } from "ts-khqr";
 

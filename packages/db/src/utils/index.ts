@@ -16,7 +16,10 @@ export const column = {
   id: text("id").notNull().primaryKey(),
   deletedAt: integer("deleted_at", { mode: "timestamp_ms" }),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull().$defaultFn(currentTime),
-  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull().$defaultFn(currentTime),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(currentTime)
+    .$onUpdateFn(currentTime),
 };
 
 export const table = sqliteTable;
