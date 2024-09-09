@@ -5,9 +5,9 @@ import type { Context } from "hono";
 
 export type Variables = TimingVariables & Auth;
 
-export interface Env {
+export interface AppEnv {
   Variables: Variables;
 }
 
-export type App = OpenAPIHono<Env>;
-export type AppContext = Context<Env>;
+export type App = OpenAPIHono<AppEnv>;
+export type AppContext = Context<AppEnv>;

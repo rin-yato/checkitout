@@ -31,7 +31,7 @@ const products = [
   },
 ];
 
-export function Invoice() {
+export function Invoice({ data }: any) {
   return (
     <Theme hasBackground={false}>
       <Flex
@@ -43,8 +43,9 @@ export function Invoice() {
           <Flex align="center" justify="between">
             <Box asChild className="h-10">
               <img
-                alt="Album cover"
-                src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Xiaomi_logo_%282021-%29.svg"
+                alt="Merchant logo"
+                // src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Xiaomi_logo_%282021-%29.svg"
+                src={data.user.profile}
                 className="rounded object-contain"
               />
             </Box>
@@ -56,7 +57,7 @@ export function Invoice() {
 
           <Flex direction="column" gap="2">
             <Text size="4" weight="medium">
-              Mi Home BKK
+              {data.user.displayName}
             </Text>
             <Text color="gray" wrap="balance">
               217A Street 63, Preah Trasak Paem, Beong Keng Kang, Phnom Penh
@@ -72,36 +73,36 @@ export function Invoice() {
           >
             <DataList.Item>
               <DataList.Label>For</DataList.Label>
-              <DataList.Value>RinYato</DataList.Value>
+              <DataList.Value>{data.clientName}</DataList.Value>
             </DataList.Item>
 
             <Separator orientation="vertical" size="2" />
 
             <DataList.Item>
               <DataList.Label>Tel.</DataList.Label>
-              <DataList.Value>071 500 0004</DataList.Value>
+              <DataList.Value>{data.clientPhone}</DataList.Value>
             </DataList.Item>
 
             <Separator orientation="vertical" size="2" />
 
             <DataList.Item className="pr-2">
               <DataList.Label>Location</DataList.Label>
-              <DataList.Value>Teuk Thla</DataList.Value>
+              <DataList.Value>{data.clientAddress ?? "--"}</DataList.Value>
             </DataList.Item>
           </DataList.Root>
         </Flex>
 
         <InvoiceSeparator />
 
-        <Flex direction="column" gap="5" mt="2">
+        <Flex direction="column" gap="5" pt="3" pb="4">
           <Text color="gray">Items</Text>
 
-          {products.map((product) => (
+          {data.items.map((product: any) => (
             <Flex gap="3" align="start" key={product.name}>
               <Box asChild className="size-12 ring-2 ring-gray">
                 <img
                   alt="Album cover"
-                  src={product.cover}
+                  src={products[0]?.cover}
                   className="rounded border object-cover"
                 />
               </Box>
@@ -109,12 +110,12 @@ export function Invoice() {
               <Box flexGrow="1" width="0">
                 <Text className="line-clamp-1 break-all">{product.name}</Text>
                 <Text color="gray" size="2">
-                  Qty: 1
+                  Qty: {product.quantity}
                 </Text>
               </Box>
 
               <Text weight="medium" className="mb-auto ml-5 text-right">
-                {formatCurrency(product.total)}
+                {formatCurrency(product.price * product.quantity)}
               </Text>
             </Flex>
           ))}
@@ -127,20 +128,30 @@ export function Invoice() {
             <DataList.Item>
               <DataList.Label>Subtotal</DataList.Label>
               <DataList.Value className="justify-end">
-                {formatCurrency(products.reduce((acc, product) => acc + product.total, 0))}
+                {formatCurrency(
+                  data.items.reduce(
+                    (acc: number, product: any) => acc + product.price * product.quantity,
+                    0,
+                  ),
+                )}
               </DataList.Value>
             </DataList.Item>
 
             <DataList.Item>
               <DataList.Label>Discount</DataList.Label>
-              <DataList.Value className="justify-end">{formatCurrency(0)}</DataList.Value>
+              <DataList.Value className="justify-end">
+                {formatCurrency(data.discount)}
+              </DataList.Value>
             </DataList.Item>
 
             <DataList.Item>
               <DataList.Label>VAT (10%)</DataList.Label>
               <DataList.Value className="justify-end">
                 {formatCurrency(
-                  products.reduce((acc, product) => acc + product.total, 0) * 0.1,
+                  data.items.reduce(
+                    (acc: number, product: any) => acc + product.price * product.quantity,
+                    0,
+                  ) * data.tax,
                 )}
               </DataList.Value>
             </DataList.Item>
@@ -155,7 +166,7 @@ export function Invoice() {
               </DataList.Label>
               <DataList.Value className="justify-end">
                 <Text size="5" weight="medium" className="rounded-4 text-right">
-                  {formatCurrency(products.reduce((acc, product) => acc + product.total, 0))}
+                  {formatCurrency(data.total)}
                 </Text>
               </DataList.Value>
             </DataList.Item>

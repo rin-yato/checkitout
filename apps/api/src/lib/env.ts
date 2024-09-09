@@ -16,6 +16,8 @@ export const envSchema = z.object({
   API_URL: z.string().default("http://localhost:3050"),
   BASE_URL: z.string().default("localhost"),
 
+  BAKONG_TOKEN: z.string(),
+
   DB_URL: z.string(),
   DB_TOKEN: z.string(),
 

@@ -1,6 +1,8 @@
+import { relations } from "drizzle-orm";
 import { column, table } from "../utils";
 import { genId } from "../utils/id";
 import { TRANSACTION_STATUS } from "../utils/type";
+import { TB_checkout } from "./checkout.table";
 
 export type TB_Transaction = typeof TB_transaction;
 
@@ -23,3 +25,10 @@ export const TB_transaction = table("transaction", {
   updatedAt: column.updatedAt,
   deletedAt: column.deletedAt,
 });
+
+export const transactionRelations = relations(TB_transaction, ({ one }) => ({
+  checkout: one(TB_checkout, {
+    fields: [TB_transaction.checkoutId],
+    references: [TB_checkout.id],
+  }),
+}));

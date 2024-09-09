@@ -4,6 +4,6 @@ const CUSTOM_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghigklmnopqrrstuvwxyz
 
 export const nanoid = customAlphabet(CUSTOM_CHARACTERS, 16);
 
-export function genId(prefix?: string, size = 14) {
-  return [prefix, nanoid(size)].filter(Boolean).join("_");
+export function genId(prefix?: string) {
+  return [prefix, nanoid(14)].filter(Boolean).join("_");
 }

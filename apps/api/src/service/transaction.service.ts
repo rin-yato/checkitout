@@ -1,27 +1,54 @@
-import { BAKONG_API_URL } from "@/module/transaction/lib/config";
-import type { TransactionResponse } from "@/module/transaction/lib/type";
 import ky from "ky";
 import { CURRENCY, KHQR, TAG } from "ts-khqr";
+import type { Currency } from "@/constant/khqr";
 
-const ACCOUNT_ID = "vichiny_vouch@aclb";
+import type { TransactionResponse } from "@/module/transaction/lib/type";
+import { BAKONG_API_URL } from "@/module/transaction/lib/config";
+import { env } from "@/lib/env";
+import { db, takeFirstOrThrow } from "@/lib/db";
+import { TB_transaction } from "@repo/db/table";
+import { err, ok } from "@justmiracle/result";
+
+interface CreateTransactionOpts {
+  amount: number;
+  accountID: string;
+  currency: Currency;
+  merchantName: string;
+  checkoutId: string;
+}
 
 class TransactionService {
-  private token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjJjMWIzMWQ4NWFlNDdkIn0sImlhdCI6MTcyNTQ3Mzc4NSwiZXhwIjoxNzMzMjQ5Nzg1fQ.Tedo-oYI7h9L3KjSIfDN3ovO_5EIRbMpPekvDg-oxt4";
+  private token = env.BAKONG_TOKEN;
   private api = ky.extend({
     prefixUrl: BAKONG_API_URL,
   });
 
-  createTransaction(amount: number) {
+  createTransaction(opts: CreateTransactionOpts) {
     const khqr = KHQR.generate({
       tag: TAG.INDIVIDUAL,
-      merchantName: "Vichiny Vouch",
-      accountID: ACCOUNT_ID,
-      currency: CURRENCY.KHR,
-      amount,
+      merchantName: opts.merchantName,
+      accountID: opts.accountID,
+      currency: CURRENCY[opts.currency],
+      amount: opts.amount,
     });
 
-    return khqr;
+    if (khqr.data === null) {
+      throw new Error(khqr.status.message ?? "Unable to generate KHQR code");
+    }
+
+    return db
+      .insert(TB_transaction)
+      .values({
+        amount: opts.amount,
+        currency: opts.currency,
+        md5: khqr.data.md5,
+        qrCode: khqr.data.qr,
+        checkoutId: opts.checkoutId,
+      })
+      .returning()
+      .then(takeFirstOrThrow)
+      .then(ok)
+      .catch(err);
   }
 
   async getTransactionByMd5(md5: string) {

@@ -1,5 +1,7 @@
+import { relations } from "drizzle-orm";
 import { column, table } from "../utils";
 import { genId } from "../utils/id";
+import { TB_checkout } from "./checkout.table";
 
 export type TB_user = typeof TB_user;
 
@@ -19,3 +21,7 @@ export const TB_user = table("user", {
   updatedAt: column.updatedAt,
   deletedAt: column.deletedAt,
 });
+
+export const userRelations = relations(TB_user, ({ many }) => ({
+  checkouts: many(TB_checkout),
+}));

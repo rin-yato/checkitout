@@ -1,6 +1,11 @@
+import { relations } from "drizzle-orm";
 import { column, table } from "../utils";
 import { genId } from "../utils/id";
 import { CHECKOUT_STATUS, CURRENCY } from "../utils/type";
+import { TiDBServerlessSession } from "drizzle-orm/tidb-serverless";
+import { TB_transaction } from "./transaction.table";
+import { TB_checkoutItem } from "./checkout-item.table";
+import { TB_user } from "./user.table";
 
 export type TB_Checkout = typeof TB_checkout;
 
@@ -31,3 +36,12 @@ export const TB_checkout = table("checkout", {
   updatedAt: column.updatedAt,
   deletedAt: column.deletedAt,
 });
+
+export const checkoutRelations = relations(TB_checkout, ({ many, one }) => ({
+  transactions: many(TB_transaction),
+  items: many(TB_checkoutItem),
+  user: one(TB_user, {
+    fields: [TB_checkout.userId],
+    references: [TB_user.id],
+  }),
+}));

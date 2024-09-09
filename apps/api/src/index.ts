@@ -10,9 +10,9 @@ import { registerCors } from "./setup/cors";
 import { registerOpenAPI } from "./setup/openapi";
 import { registerTiming } from "./setup/timing";
 import { registerAuthMiddleware } from "./setup/auth";
-import type { Context } from "./setup/context";
+import type { AppEnv } from "./setup/context";
 
-const app = new OpenAPIHono<Context>();
+const app = new OpenAPIHono<AppEnv>();
 
 // Register CORS
 registerCors(app);

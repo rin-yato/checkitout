@@ -12,7 +12,7 @@
 
 import { Route as rootRoute } from './route/__root'
 import { Route as IndexImport } from './route/index'
-import { Route as CheckoutIndexImport } from './route/checkout/index'
+import { Route as CheckoutCheckoutIdImport } from './route/checkout/$checkoutId'
 
 // Create/Update Routes
 
@@ -21,8 +21,8 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const CheckoutIndexRoute = CheckoutIndexImport.update({
-  path: '/checkout/',
+const CheckoutCheckoutIdRoute = CheckoutCheckoutIdImport.update({
+  path: '/checkout/$checkoutId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -37,11 +37,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/checkout/': {
-      id: '/checkout/'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutIndexImport
+    '/checkout/$checkoutId': {
+      id: '/checkout/$checkoutId'
+      path: '/checkout/$checkoutId'
+      fullPath: '/checkout/$checkoutId'
+      preLoaderRoute: typeof CheckoutCheckoutIdImport
       parentRoute: typeof rootRoute
     }
   }
@@ -51,36 +51,36 @@ declare module '@tanstack/react-router' {
 
 interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/checkout': typeof CheckoutIndexRoute
+  '/checkout/$checkoutId': typeof CheckoutCheckoutIdRoute
 }
 
 interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/checkout': typeof CheckoutIndexRoute
+  '/checkout/$checkoutId': typeof CheckoutCheckoutIdRoute
 }
 
 interface FileRoutesById {
   '/': typeof IndexRoute
-  '/checkout/': typeof CheckoutIndexRoute
+  '/checkout/$checkoutId': typeof CheckoutCheckoutIdRoute
 }
 
 interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/checkout'
+  fullPaths: '/' | '/checkout/$checkoutId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/checkout'
-  id: '/' | '/checkout/'
+  to: '/' | '/checkout/$checkoutId'
+  id: '/' | '/checkout/$checkoutId'
   fileRoutesById: FileRoutesById
 }
 
 interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CheckoutIndexRoute: typeof CheckoutIndexRoute
+  CheckoutCheckoutIdRoute: typeof CheckoutCheckoutIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CheckoutIndexRoute: CheckoutIndexRoute,
+  CheckoutCheckoutIdRoute: CheckoutCheckoutIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -96,14 +96,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/checkout/"
+        "/checkout/$checkoutId"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/checkout/": {
-      "filePath": "checkout/index.tsx"
+    "/checkout/$checkoutId": {
+      "filePath": "checkout/$checkoutId.tsx"
     }
   }
 }
