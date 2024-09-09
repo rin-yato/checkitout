@@ -1,10 +1,11 @@
 import { column, table } from "../utils";
-import type { TransactionStatus } from "../utils/type";
+import { genId } from "../utils/id";
+import { TRANSACTION_STATUS } from "../utils/type";
 
 export type TB_Transaction = typeof TB_transaction;
 
 export const TB_transaction = table("transaction", {
-  id: column.id,
+  id: column.id.$defaultFn(genId("trx")),
 
   checkoutId: column.text("checkout_id").notNull(),
 
@@ -14,7 +15,7 @@ export const TB_transaction = table("transaction", {
   amount: column.int("amount").notNull(),
   currency: column.text("currency").notNull(),
 
-  status: column.text("status").$type<TransactionStatus>().notNull(),
+  status: column.text("status", { enum: TRANSACTION_STATUS }).notNull().default("PENDING"),
 
   // ref: ref to the transaction data from bakong
 

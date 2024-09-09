@@ -1,6 +1,6 @@
-import type { OpenAPIHono } from "@hono/zod-openapi";
+import type { App } from "./context";
 import { cors } from "hono/cors";
 
-export function registerCors(app: OpenAPIHono) {
+export function registerCors(app: App) {
   app.use("*", cors({ origin: "*" }));
 }

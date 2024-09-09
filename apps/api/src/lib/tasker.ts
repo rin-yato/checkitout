@@ -1,11 +1,11 @@
+import type { App } from "@/setup/context";
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { HonoAdapter } from "@bull-board/hono";
-import type { OpenAPIHono } from "@hono/zod-openapi";
 import { Queue, type Worker } from "bullmq";
 import { serveStatic } from "hono/bun";
 
-export function registerTasker(app: OpenAPIHono, taskers: Tasker[]) {
+export function registerTasker(app: App, taskers: Tasker[]) {
   // start all taskers
   taskers.forEach((tasker) => tasker.start());
 

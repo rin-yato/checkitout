@@ -1,5 +1,3 @@
-import { drizzle } from "drizzle-orm/libsql";
-import * as schema from "../table";
 import { createDBClient } from "./init";
 
 const squealite = createDBClient({
@@ -7,13 +5,18 @@ const squealite = createDBClient({
   authToken: process.env.DB_TOKEN ?? "",
 });
 
-const drizzleClient = drizzle(squealite, { schema });
-
 async function main() {
-  for (const table in drizzleClient._.tableNamesMap) {
-    squealite.execute(`DROP TABLE IF EXISTS ${table}`);
-    console.log(`❌ Dropped table ${table}`);
+  const tableNames = await squealite
+    .execute("select tbl_name from sqlite_master where type='table';")
+    .then((res) => res.rows.map((r) => r[0]));
+
+  await squealite.execute("PRAGMA foreign_keys = OFF;");
+  for (const name of tableNames) {
+    await squealite.execute(`DROP TABLE IF EXISTS \`${name}\`;`);
+    console.log(`❌ Dropped table ${name}`);
   }
+  await squealite.execute("PRAGMA foreign_keys = ON;");
+  console.log("❌ Dropped all tables");
 }
 
 main();

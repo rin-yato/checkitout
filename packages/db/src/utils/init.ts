@@ -18,5 +18,5 @@ export interface CreateDBConfig {
 
 export function createDB(config: CreateDBConfig) {
   const client = createDBClient(config);
-  return drizzle(client, { logger: true, schema });
+  return drizzle(client, { schema });
 }
