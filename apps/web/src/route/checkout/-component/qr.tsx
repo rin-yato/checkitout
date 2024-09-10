@@ -40,7 +40,10 @@ export function QRPay(props: QRPayProps) {
       </Flex>
 
       <Text size="8" weight="medium" className="pt-3 pb-4">
-        {formatCurrency(props.amount, props.currency)} {props.currency}
+        {formatCurrency(props.amount, props.currency)}{" "}
+        <Text color="gray" size="4" className="mb-1">
+          {props.currency}
+        </Text>
       </Text>
 
       <InvoiceSeparator color="gray-2" />

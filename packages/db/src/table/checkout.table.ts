@@ -2,7 +2,6 @@ import { relations } from "drizzle-orm";
 import { column, table } from "../utils";
 import { genId } from "../utils/id";
 import { CHECKOUT_STATUS, CURRENCY } from "../utils/type";
-import { TiDBServerlessSession } from "drizzle-orm/tidb-serverless";
 import { TB_transaction } from "./transaction.table";
 import { TB_checkoutItem } from "./checkout-item.table";
 import { TB_user } from "./user.table";
@@ -12,8 +11,12 @@ export type TB_Checkout = typeof TB_checkout;
 export const TB_checkout = table("checkout", {
   id: column.id.$defaultFn(genId("ch")),
 
+  userId: column
+    .text("user_id")
+    .notNull()
+    .references(() => TB_user.id),
+
   refId: column.text("ref_id").notNull(),
-  userId: column.text("user_id").notNull(),
 
   // items: [...]
   currency: column.text("currency", { enum: CURRENCY }).notNull(),

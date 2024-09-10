@@ -3,13 +3,17 @@ import { column, table } from "../utils";
 import { genId } from "../utils/id";
 import { TRANSACTION_STATUS } from "../utils/type";
 import { TB_checkout } from "./checkout.table";
+import { TB_transactionRef } from "./transaction-ref.table";
 
 export type TB_Transaction = typeof TB_transaction;
 
 export const TB_transaction = table("transaction", {
   id: column.id.$defaultFn(genId("trx")),
 
-  checkoutId: column.text("checkout_id").notNull(),
+  checkoutId: column
+    .text("checkout_id")
+    .notNull()
+    .references(() => TB_checkout.id),
 
   md5: column.text("md5").notNull().unique(),
   qrCode: column.text("qr_code").notNull().unique(),
@@ -30,5 +34,9 @@ export const transactionRelations = relations(TB_transaction, ({ one }) => ({
   checkout: one(TB_checkout, {
     fields: [TB_transaction.checkoutId],
     references: [TB_checkout.id],
+  }),
+  transactionRef: one(TB_transactionRef, {
+    fields: [TB_transaction.id],
+    references: [TB_transactionRef.transactionId],
   }),
 }));

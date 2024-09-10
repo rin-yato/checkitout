@@ -9,6 +9,7 @@ export const createCheckout = new OpenAPIHono<AppEnv>().openapi(
   createRoute({
     method: "post",
     path: "/checkout",
+    tags: ["Checkout"],
     description: "Create a checkout",
     request: {
       body: {
@@ -35,7 +36,7 @@ export const createCheckout = new OpenAPIHono<AppEnv>().openapi(
     const body = c.req.valid("json");
 
     startTime(c, "db");
-    const checkout = await checkoutService.create(user.id, body);
+    const checkout = await checkoutService.create(user, body);
     endTime(c, "db");
 
     if (checkout.error) {

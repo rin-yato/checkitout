@@ -1,23 +1,32 @@
-import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
-import { streamSSE } from "hono/streaming";
 import { z } from "zod";
-import { transactionQueue } from "../lib/queue";
+import { streamSSE } from "hono/streaming";
+import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
+
+import { transactionQueue } from "@/task/transaction";
 
 export const trackTransaction = new OpenAPIHono().openapi(
   createRoute({
-    path: "/transaction/track/{md5}",
     method: "get",
+    path: "/transaction/track/{md5}",
+    tags: ["Transaction"],
     request: { params: z.object({ md5: z.string() }) },
     responses: {
-      200: { description: "Track a transaction" },
+      200: {
+        description:
+          "SSE for tracking transaction status, it will send back a status every 3 seconds.",
+        content: {
+          "text/plain": {
+            schema: z.string().openapi({
+              example: "PENDING | COMPLETED | FAILED",
+              enum: ["PENDING", "COMPLETED", "FAILED"],
+            }),
+          },
+        } as unknown as undefined,
+      },
     },
   }),
   async (c) => {
     const md5 = c.req.param("md5");
-
-    if (md5 === undefined) {
-      return c.json({ error: "MD5 is required" }, 400);
-    }
 
     return streamSSE(
       c,

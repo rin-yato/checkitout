@@ -1,11 +1,14 @@
-import { z } from "@hono/zod-openapi";
-import { db, takeFirstOrThrow } from "@/lib/db";
-import { err, ok } from "@justmiracle/result";
-import { checkoutInsert, checkoutItemInsert, type CheckoutInsert } from "@repo/db/schema";
-import { TB_checkout, TB_checkoutItem } from "@repo/db/table";
 import { eq } from "drizzle-orm";
+import type { User } from "lucia";
+import { z } from "@hono/zod-openapi";
+import { err, ok } from "@justmiracle/result";
+
+import { db, takeFirstOrThrow } from "@/lib/db";
+import { transactionQueue } from "@/task/transaction";
 import { transactionServcie } from "./transaction.service";
-import { transactionQueue } from "@/module/transaction/lib/queue";
+
+import { TB_checkout, TB_checkoutItem } from "@repo/db/table";
+import { checkoutInsert, checkoutItemInsert, type CheckoutInsert } from "@repo/db/schema";
 
 export const checkoutRequestSchema = checkoutInsert.omit({ refId: true, userId: true }).extend({
   items: z.array(checkoutItemInsert.omit({ checkoutId: true }).openapi("CheckoutItem Insert"), {
@@ -16,12 +19,14 @@ export const checkoutRequestSchema = checkoutInsert.omit({ refId: true, userId: 
 export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
 
 export class CheckoutService {
-  create(userId: string, { items, ...checkoutReq }: CheckoutRequest) {
+  create(user: User, { items, ...checkoutReq }: CheckoutRequest) {
+    if (!user.bakongId) throw new Error("User has no bakongId");
+
     return db
       .transaction(async (trx) => {
         const checkoutData = checkoutInsert.safeParse({
           ...checkoutReq,
-          userId,
+          userId: user.id,
           refId: "123",
         } satisfies CheckoutInsert);
 
@@ -56,38 +61,46 @@ export class CheckoutService {
       .catch(err);
   }
 
-  findById(id: string) {
+  portal(id: string) {
     return db
-      .transaction(async (trx) => {
-        const checkout = await trx.query.TB_checkout.findFirst({
-          where: eq(TB_checkout.id, id),
-          with: { transactions: true, items: true, user: true },
-        });
-
-        if (!checkout) throw new Error("Checkout not found");
-
-        if (checkout.status === "SUCCESS") {
-          return { ...checkout, activeTransaction: null };
-        }
-
-        let activeTransaction = checkout.transactions.find((t) => t.status === "PENDING");
-
-        if (!activeTransaction) {
-          const transaction = await transactionServcie.createTransaction({
-            checkoutId: checkout.id,
-            currency: checkout.currency,
-            amount: checkout.total,
-            merchantName: "Miracle Store",
-            accountID: "vichiny_vouch@aclb",
+      .transaction(
+        async (trx) => {
+          const checkout = await trx.query.TB_checkout.findFirst({
+            where: eq(TB_checkout.id, id),
+            with: { transactions: true, items: true, user: true },
           });
-          if (transaction.error) throw transaction.error;
-          activeTransaction = transaction.value;
-        }
 
-        await transactionQueue.add(activeTransaction.md5);
+          if (!checkout) throw new Error("Checkout not found");
 
-        return { ...checkout, activeTransaction };
-      })
+          const successTransaction = checkout.transactions.find((t) => t.status === "SUCCESS");
+
+          if (successTransaction) {
+            return { ...checkout, status: "SUCCESS", activeTransaction: null };
+          }
+
+          let activeTransaction = checkout.transactions.find((t) => t.status === "PENDING");
+
+          if (!activeTransaction) {
+            const transaction = await transactionServcie.createTransaction(
+              {
+                checkoutId: checkout.id,
+                currency: checkout.currency,
+                amount: checkout.total,
+                merchantName: checkout.user.displayName,
+                accountID: checkout.user.bakongId,
+              },
+              trx,
+            );
+            if (transaction.error) throw transaction.error;
+            activeTransaction = transaction.value;
+          }
+
+          await transactionQueue.add(activeTransaction.id, activeTransaction.md5);
+
+          return { ...checkout, activeTransaction };
+        },
+        { behavior: "deferred" },
+      )
       .then(ok)
       .catch(err);
   }

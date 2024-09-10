@@ -16,13 +16,19 @@ function CheckoutPage() {
   const { data, isPending, error } = useQuery({
     queryKey: ["checkout", checkoutId],
     queryFn: () => {
-      return ky.get(`http://localhost:3050/checkout/portal/${checkoutId}`).json<any>();
+      return ky
+        .get(`http://localhost:3050/checkout/portal/${checkoutId}`, { retry: 0 })
+        .json<any>();
     },
-    retry: 0,
+    retry: false,
+    refetchInterval: (query) =>
+      query.state.status === "error" || query.state?.data?.data?.status === "SUCCESS"
+        ? false
+        : 3000,
   });
 
   if (isPending) {
-    return <div>Loading...</div>;
+    return <div className="h-dvh w-full bg-gray-2" />;
   }
 
   if (error) {
@@ -32,16 +38,19 @@ function CheckoutPage() {
   return (
     <main className="h-dvh">
       <Grid columns="2" className="size-full bg-gray-2 pt-10">
-        <Flex className="size-full justify-end px-12 py-10">
+        <Flex className="fade-in-0 size-full animate-in justify-end px-12 py-10">
           <Invoice data={data.data} />
         </Flex>
-        <Flex direction="column" className="size-full justify-start px-12 py-10">
+        <Flex
+          direction="column"
+          className="fade-in-0 size-full animate-in justify-start px-12 py-10"
+        >
           <QRPay
-            paid={data.status === "SUCCESS"}
+            paid={data.data.status === "SUCCESS"}
             currency={data.data.currency}
             amount={data.data.total}
             merchantName={"Mi Home BKK"}
-            qrCode={data.data.activeTransaction.qrCode}
+            qrCode={data.data?.activeTransaction?.qrCode}
           />
 
           {/* Step by step guide for scanning QR code and paying with Bakong KHQR */}

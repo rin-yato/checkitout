@@ -6,6 +6,7 @@ export const checkoutPortal = new OpenAPIHono<AppEnv>().openapi(
   createRoute({
     method: "get",
     path: "/checkout/portal/{checkoutId}",
+    tags: ["Checkout"],
     request: {
       params: z.object({ checkoutId: z.string() }),
     },
@@ -16,7 +17,7 @@ export const checkoutPortal = new OpenAPIHono<AppEnv>().openapi(
   async (c) => {
     const checkoutId = c.req.param("checkoutId");
 
-    const checkout = await checkoutService.findById(checkoutId);
+    const checkout = await checkoutService.portal(checkoutId);
 
     if (checkout.error) {
       throw checkout.error;

@@ -1,16 +1,16 @@
 // Validate ENV
 import { env } from "@/lib/env";
 
-import { TransactionTasker } from "@/module/transaction/lib/tasker";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { Modules } from "./module";
 
-import { registerTasker } from "./lib/tasker";
-import { registerCors } from "./setup/cors";
-import { registerOpenAPI } from "./setup/openapi";
-import { registerTiming } from "./setup/timing";
-import { registerAuthMiddleware } from "./setup/auth";
-import type { AppEnv } from "./setup/context";
+import { Modules } from "@/module";
+import { registerTasker } from "@/lib/tasker";
+import { registerCors } from "@/setup/cors";
+import { registerOpenAPI } from "@/setup/openapi";
+import { registerTiming } from "@/setup/timing";
+import { registerAuthMiddleware } from "@/setup/auth";
+import type { AppEnv } from "@/setup/context";
+import { TransactionTasker } from "@/task/transaction";
 
 const app = new OpenAPIHono<AppEnv>();
 

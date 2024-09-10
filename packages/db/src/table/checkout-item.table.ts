@@ -8,10 +8,14 @@ export type TB_CheckoutItem = typeof TB_checkoutItem;
 export const TB_checkoutItem = table("checkout_item", {
   id: column.id.$defaultFn(genId("chi")),
 
-  checkoutId: column.text("checkout_id").notNull(),
+  checkoutId: column
+    .text("checkout_id")
+    .notNull()
+    .references(() => TB_checkout.id),
 
   productId: column.text("product_id").notNull(),
   name: column.text("name").notNull(),
+  img: column.text("img").notNull(),
   price: column.real("price").notNull(),
   quantity: column.int("quantity").notNull(),
 

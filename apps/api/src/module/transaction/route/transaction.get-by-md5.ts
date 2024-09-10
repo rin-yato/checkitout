@@ -1,15 +1,19 @@
 import { response } from "@/lib/route";
 import { transactionServcie } from "@/service/transaction.service";
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
+import { transactionWithRef } from "@repo/db/schema";
 
 export const getTransactionByMd5 = new OpenAPIHono().openapi(
   createRoute({
     method: "get",
-    path: "/transaction/get-by-md5/{md5}",
+    path: "/transaction/md5/{md5}",
+    tags: ["Transaction"],
     request: { params: z.object({ md5: z.string() }) },
     responses: {
       200: response({
-        schema: z.object({ data: z.any() }),
+        schema: z.object({
+          data: transactionWithRef.openapi("Transaction with Ref"),
+        }),
         description: "Transaction details",
       }),
     },

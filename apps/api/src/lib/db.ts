@@ -6,6 +6,10 @@ export const db = createDB({
   authToken: env.DB_TOKEN,
 });
 
+export type DB = typeof db;
+export type Trx = Parameters<Parameters<DB["transaction"]>[0]>[0];
+export type DBTrx = DB | Trx;
+
 export function takeFirst<T>(data: T[]): T | undefined {
   return data.at(0);
 }

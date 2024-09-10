@@ -71,6 +71,9 @@ importers:
       ts-khqr:
         specifier: ^2.1.3
         version: 2.1.3
+      ts-pattern:
+        specifier: ^5.3.1
+        version: 5.3.1
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -5452,6 +5455,10 @@ packages:
     dependencies:
       buffer: 6.0.3
       md5: 2.3.0
+    dev: false
+
+  /ts-pattern@5.3.1:
+    resolution: {integrity: sha512-1RUMKa8jYQdNfmnK4jyzBK3/PS/tnjcZ1CW0v1vWDeYe5RBklc/nquw03MEoB66hVBm4BnlCfmOqDVxHyT1DpA==}
     dev: false
 
   /tsconfck@3.1.3(typescript@5.5.4):

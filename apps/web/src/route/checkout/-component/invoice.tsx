@@ -60,10 +60,10 @@ export function Invoice({ data }: any) {
               {data.user.displayName}
             </Text>
             <Text color="gray" wrap="balance">
-              217A Street 63, Preah Trasak Paem, Beong Keng Kang, Phnom Penh
+              {data.user.address}
             </Text>
             <Text color="gray" wrap="pretty">
-              Tel. 096 229 6000
+              Tel. {data.user.phone}
             </Text>
           </Flex>
 
@@ -115,7 +115,7 @@ export function Invoice({ data }: any) {
               </Box>
 
               <Text weight="medium" className="mb-auto ml-5 text-right">
-                {formatCurrency(product.price * product.quantity)}
+                {formatCurrency(product.price * product.quantity, data.currency)}
               </Text>
             </Flex>
           ))}
@@ -133,6 +133,7 @@ export function Invoice({ data }: any) {
                     (acc: number, product: any) => acc + product.price * product.quantity,
                     0,
                   ),
+                  data.currency,
                 )}
               </DataList.Value>
             </DataList.Item>
@@ -140,7 +141,7 @@ export function Invoice({ data }: any) {
             <DataList.Item>
               <DataList.Label>Discount</DataList.Label>
               <DataList.Value className="justify-end">
-                {formatCurrency(data.discount)}
+                {formatCurrency(data.discount, data.currency)}
               </DataList.Value>
             </DataList.Item>
 
@@ -152,6 +153,7 @@ export function Invoice({ data }: any) {
                     (acc: number, product: any) => acc + product.price * product.quantity,
                     0,
                   ) * data.tax,
+                  data.currency,
                 )}
               </DataList.Value>
             </DataList.Item>
@@ -166,7 +168,7 @@ export function Invoice({ data }: any) {
               </DataList.Label>
               <DataList.Value className="justify-end">
                 <Text size="5" weight="medium" className="rounded-4 text-right">
-                  {formatCurrency(data.total)}
+                  {formatCurrency(data.total, data.currency)}
                 </Text>
               </DataList.Value>
             </DataList.Item>
