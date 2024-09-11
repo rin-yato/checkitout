@@ -16,5 +16,5 @@ export function takeFirst<T>(data: T[]): T | undefined {
 
 export function takeFirstOrThrow<T>(data: T[]): T {
   if (data[0]) return data[0];
-  throw new Error("No data found");
+  throw new Error("Take first or throw failed: No data found");
 }

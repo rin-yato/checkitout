@@ -25,7 +25,7 @@ export const createCheckout = new OpenAPIHono<AppEnv>().openapi(
         description: "Checkout created",
         content: {
           "application/json": {
-            schema: z.object({ data: checkoutSchema }),
+            schema: z.object({ data: z.any() }),
           },
         },
       },

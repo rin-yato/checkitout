@@ -7,8 +7,10 @@ import { db, takeFirstOrThrow } from "@/lib/db";
 import { transactionQueue } from "@/task/transaction";
 import { transactionServcie } from "./transaction.service";
 
-import { TB_checkout, TB_checkoutItem } from "@repo/db/table";
+import { CHECKOUT_ID_PREFIX, TB_checkout, TB_checkoutItem } from "@repo/db/table";
 import { checkoutInsert, checkoutItemInsert, type CheckoutInsert } from "@repo/db/schema";
+import { genId } from "@/lib/id";
+import { withRetry } from "@/lib/retry";
 
 export const checkoutRequestSchema = checkoutInsert.omit({ refId: true, userId: true }).extend({
   items: z.array(checkoutItemInsert.omit({ checkoutId: true }).openapi("CheckoutItem Insert"), {
@@ -19,90 +21,88 @@ export const checkoutRequestSchema = checkoutInsert.omit({ refId: true, userId: 
 export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
 
 export class CheckoutService {
-  create(user: User, { items, ...checkoutReq }: CheckoutRequest) {
+  async create(user: User, { items, ...checkoutReq }: CheckoutRequest) {
     if (!user.bakongId) throw new Error("User has no bakongId");
 
-    return db
-      .transaction(async (trx) => {
-        const checkoutData = checkoutInsert.safeParse({
-          ...checkoutReq,
-          userId: user.id,
-          refId: "123",
-        } satisfies CheckoutInsert);
+    const checkoutId = genId(CHECKOUT_ID_PREFIX);
 
-        if (!checkoutData.success) throw new Error("Invalid checkout data");
+    const checkoutData = checkoutInsert.safeParse({
+      ...checkoutReq,
+      userId: user.id,
+      refId: "123", // TODO: Implement refId
+      id: checkoutId,
+    } satisfies CheckoutInsert);
+    if (!checkoutData.success) throw new Error("Invalid checkout data");
 
-        const checkout = await trx
-          .insert(TB_checkout)
-          .values(checkoutData.data)
-          .returning()
-          .then(takeFirstOrThrow)
-          .then(ok)
-          .catch(err);
+    const itemInserts = z
+      .array(checkoutItemInsert)
+      .safeParse(items.map((item) => ({ ...item, checkoutId })));
+    if (!itemInserts.success) throw new Error("Invalid items data");
 
-        if (checkout.error) throw checkout.error;
+    const createtransactionQuery = transactionServcie.createTransactionQuery({
+      checkoutId: checkoutId,
+      currency: checkoutData.data.currency,
+      amount: checkoutData.data.total,
+      merchantName: user.displayName,
+      accountID: user.bakongId,
+    });
+    const createCheckoutQuery = db.insert(TB_checkout).values(checkoutData.data).returning();
+    const createItemsQuery = db.insert(TB_checkoutItem).values(itemInserts.data).returning();
 
-        const checkoutId = checkout.value.id;
-
-        const itemData = items.map((item) => ({ ...item, checkoutId }));
-
-        const itemsResult = await trx
-          .insert(TB_checkoutItem)
-          .values(itemData)
-          .returning()
-          .then(ok)
-          .catch(err);
-
-        if (itemsResult.error) throw itemsResult.error;
-
-        return { items: itemsResult.value, ...checkout.value };
-      })
+    const batch = await db
+      .batch([createCheckoutQuery, createItemsQuery, createtransactionQuery])
       .then(ok)
       .catch(err);
+
+    if (batch.error) return batch;
+
+    const createdItems = batch.value[1];
+    const checkout = takeFirstOrThrow(batch.value[0]);
+    const transaction = takeFirstOrThrow(batch.value[2]);
+
+    return ok({ checkout, items: createdItems, transaction });
   }
 
-  portal(id: string) {
-    return db
-      .transaction(
-        async (trx) => {
-          const checkout = await trx.query.TB_checkout.findFirst({
-            where: eq(TB_checkout.id, id),
-            with: { transactions: true, items: true, user: true },
-          });
+  async portal(id: string) {
+    const checkout = await db.query.TB_checkout.findFirst({
+      where: eq(TB_checkout.id, id),
+      with: { transactions: true, items: true, user: true },
+    });
 
-          if (!checkout) throw new Error("Checkout not found");
+    if (!checkout) return err("CHECKOUT_NOT_FOUND");
 
-          const successTransaction = checkout.transactions.find((t) => t.status === "SUCCESS");
+    if (checkout.status === "SUCCESS") {
+      return ok({ ...checkout, activeTransaction: null });
+    }
 
-          if (successTransaction) {
-            return { ...checkout, status: "SUCCESS", activeTransaction: null };
-          }
+    let activeTransaction = checkout.transactions.find((t) => t.status === "PENDING");
 
-          let activeTransaction = checkout.transactions.find((t) => t.status === "PENDING");
+    if (!activeTransaction) {
+      const transaction = await transactionServcie
+        .createTransactionQuery({
+          checkoutId: checkout.id,
+          currency: checkout.currency,
+          amount: checkout.total,
+          merchantName: checkout.user.displayName,
+          accountID: checkout.user.bakongId,
+        })
+        .then(takeFirstOrThrow)
+        .then(ok)
+        .catch(err);
 
-          if (!activeTransaction) {
-            const transaction = await transactionServcie.createTransaction(
-              {
-                checkoutId: checkout.id,
-                currency: checkout.currency,
-                amount: checkout.total,
-                merchantName: checkout.user.displayName,
-                accountID: checkout.user.bakongId,
-              },
-              trx,
-            );
-            if (transaction.error) throw transaction.error;
-            activeTransaction = transaction.value;
-          }
+      if (transaction.error) throw transaction.error;
+      activeTransaction = transaction.value;
+    }
 
-          await transactionQueue.add(activeTransaction.id, activeTransaction.md5);
+    // Add transaction to queue without waiting
+    withRetry(
+      () => transactionQueue.add(activeTransaction.id, activeTransaction.md5),
+      3, // retries 3 times
+    ).catch((err) => {
+      console.error("Unable to add transaction to queue:", err);
+    });
 
-          return { ...checkout, activeTransaction };
-        },
-        { behavior: "deferred" },
-      )
-      .then(ok)
-      .catch(err);
+    return ok({ ...checkout, activeTransaction });
   }
 }
 

@@ -5,6 +5,7 @@ import { Invoice } from "./-component/invoice";
 import { QRPay } from "./-component/qr";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/checkout/$checkoutId")({
   component: CheckoutPage,
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/checkout/$checkoutId")({
 
 function CheckoutPage() {
   const { checkoutId } = Route.useParams();
+  const [success, setSuccess] = useState(false);
 
   const { data, isPending, error } = useQuery({
     queryKey: ["checkout", checkoutId],
@@ -26,6 +28,22 @@ function CheckoutPage() {
         ? false
         : 3000,
   });
+
+  useEffect(() => {
+    if (!data?.data?.activeTransaction) return;
+
+    const event = new EventSource(
+      `http://localhost:3050/transaction/track/${data.data?.activeTransaction.md5}`,
+    );
+
+    event.onmessage = (e) => {
+      const status = e.data;
+      if (status === "COMPLETED") {
+        setSuccess(true);
+        event.close();
+      }
+    };
+  }, [data]);
 
   if (isPending) {
     return <div className="h-dvh w-full bg-gray-2" />;
@@ -46,7 +64,7 @@ function CheckoutPage() {
           className="fade-in-0 size-full animate-in justify-start px-12 py-10"
         >
           <QRPay
-            paid={data.data.status === "SUCCESS"}
+            paid={success || data.data.status === "SUCCESS"}
             currency={data.data.currency}
             amount={data.data.total}
             merchantName={"Mi Home BKK"}

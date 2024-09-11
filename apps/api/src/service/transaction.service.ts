@@ -1,5 +1,5 @@
-import { db, takeFirstOrThrow, type DBTrx } from "@/lib/db";
-import { TB_transaction, TB_transactionRef } from "@repo/db/table";
+import { db, takeFirstOrThrow } from "@/lib/db";
+import { TB_checkout, TB_transaction, TB_transactionRef } from "@repo/db/table";
 import type { Currency } from "@/constant/bakong";
 
 import { err, ok } from "@justmiracle/result";
@@ -17,7 +17,7 @@ interface CreateTransactionOpts {
 }
 
 class TransactionService {
-  async createTransaction(opts: CreateTransactionOpts, _db: DBTrx = db) {
+  createTransactionQuery(opts: CreateTransactionOpts) {
     const khqr = bakongService.createKHQR({
       amount: opts.amount,
       currency: opts.currency,
@@ -25,9 +25,9 @@ class TransactionService {
       merchantName: opts.merchantName,
     });
 
-    if (khqr.error) return khqr;
+    if (khqr.error) throw khqr.error;
 
-    return await _db
+    return db
       .insert(TB_transaction)
       .values({
         amount: opts.amount,
@@ -36,10 +36,7 @@ class TransactionService {
         qrCode: khqr.value.qr,
         checkoutId: opts.checkoutId,
       })
-      .returning()
-      .then(takeFirstOrThrow)
-      .then(ok)
-      .catch(err);
+      .returning();
   }
 
   getTransactionByMd5(md5: string) {
@@ -63,20 +60,26 @@ class TransactionService {
     if (!trx.value) return err("TRANSACTION_NOT_FOUND");
 
     if (bakongTrx.value.responseCode === 0 && trx.value.status !== "SUCCESS") {
-      return this.transactionSuccess(bakongTrx.value);
+      return this.transactionSuccess(md5, bakongTrx.value);
     }
 
     return ok(trx.value);
   }
 
-  transactionSuccess({ data }: TransactionSuccess) {
+  transactionSuccess(md5: string, { data }: TransactionSuccess) {
     return db
       .transaction(async (trx) => {
-        const updatedTrx = await db
+        const updatedTrx = await trx
           .update(TB_transaction)
           .set({ status: "SUCCESS" })
+          .where(eq(TB_transaction.md5, md5))
           .returning()
           .then(takeFirstOrThrow);
+
+        await trx
+          .update(TB_checkout)
+          .set({ status: "SUCCESS" })
+          .where(eq(TB_checkout.id, updatedTrx.checkoutId));
 
         const trxRef = await trx
           .insert(TB_transactionRef)

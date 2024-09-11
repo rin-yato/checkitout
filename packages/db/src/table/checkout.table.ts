@@ -7,9 +7,10 @@ import { TB_checkoutItem } from "./checkout-item.table";
 import { TB_user } from "./user.table";
 
 export type TB_Checkout = typeof TB_checkout;
+export const CHECKOUT_ID_PREFIX = "ch";
 
 export const TB_checkout = table("checkout", {
-  id: column.id.$defaultFn(genId("ch")),
+  id: column.id.$defaultFn(genId(CHECKOUT_ID_PREFIX)),
 
   userId: column
     .text("user_id")

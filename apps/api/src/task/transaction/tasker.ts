@@ -59,7 +59,10 @@ export class TransactionTasker implements Tasker {
       throw new Error(transactionStatus.value.responseMessage);
     }
 
-    const result = await transactionServcie.transactionSuccess(transactionStatus.value);
+    const result = await transactionServcie.transactionSuccess(
+      job.data.md5,
+      transactionStatus.value,
+    );
 
     if (result.error) {
       // this should try to reprocess the transaction

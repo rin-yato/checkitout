@@ -2,7 +2,7 @@ import ky from "ky";
 import { CURRENCY, KHQR, TAG } from "ts-khqr";
 
 import { env } from "@/lib/env";
-import type { Currency } from "@/constant/khqr";
+import type { Currency } from "@/constant/bakong";
 import type { TransactionResponse } from "@/type/bakong";
 import { err, ok } from "@justmiracle/result";
 
