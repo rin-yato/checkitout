@@ -4,10 +4,10 @@ import { Queue } from "bullmq";
 export const TRANSACTION_QUEUE_NAME = "{transaction}";
 
 const DELAY = 5000;
-const MAXIMUM_ATTEMPTS = 60;
-const REMOVE_ON_FAIL = { count: 6500 };
-const REMOVE_ON_SUCCESS = { count: 4000 };
-const BACKOFF = { type: "fixed", delay: 3000 };
+const MAXIMUM_ATTEMPTS = 120;
+const REMOVE_ON_FAIL = { count: 8500 };
+const REMOVE_ON_SUCCESS = { count: 5500 };
+const BACKOFF = { type: "fixed", delay: 3200 };
 
 export class TransactionQueue {
   queue;
@@ -19,41 +19,18 @@ export class TransactionQueue {
   }
 
   async add(transactionId: string, md5: string) {
-    const job = await this.queue.getJob(md5);
-
-    if (!job) {
-      await this.queue.add(
-        TRANSACTION_QUEUE_NAME,
-        { md5, transactionId },
-        {
-          jobId: md5,
-          delay: DELAY,
-          backoff: BACKOFF,
-          attempts: MAXIMUM_ATTEMPTS,
-          removeOnFail: REMOVE_ON_FAIL,
-          removeOnComplete: REMOVE_ON_SUCCESS,
-        },
-      );
-      return;
-    }
-
-    const isFailed = await job?.isFailed();
-
-    if (isFailed) {
-      await this.queue.remove(md5);
-      await this.queue.add(
-        TRANSACTION_QUEUE_NAME,
-        { md5, transactionId },
-        {
-          jobId: md5,
-          delay: DELAY,
-          backoff: BACKOFF,
-          attempts: MAXIMUM_ATTEMPTS,
-          removeOnFail: REMOVE_ON_FAIL,
-          removeOnComplete: REMOVE_ON_SUCCESS,
-        },
-      );
-    }
+    return await this.queue.add(
+      TRANSACTION_QUEUE_NAME,
+      { md5, transactionId },
+      {
+        jobId: transactionId,
+        delay: DELAY,
+        backoff: BACKOFF,
+        attempts: MAXIMUM_ATTEMPTS,
+        removeOnFail: REMOVE_ON_FAIL,
+        removeOnComplete: REMOVE_ON_SUCCESS,
+      },
+    );
   }
 }
 

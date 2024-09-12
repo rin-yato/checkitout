@@ -104,6 +104,28 @@ class TransactionService {
       .then(ok)
       .catch(err);
   }
+
+  async timeout(transactionId: string) {
+    return db
+      .update(TB_transaction)
+      .set({ status: "TIMEOUT" })
+      .where(eq(TB_transaction.id, transactionId))
+      .returning()
+      .then(takeFirstOrThrow)
+      .then(ok)
+      .catch(err);
+  }
+
+  async fail(transactionId: string) {
+    return db
+      .update(TB_transaction)
+      .set({ status: "FAILED" })
+      .where(eq(TB_transaction.id, transactionId))
+      .returning()
+      .then(takeFirstOrThrow)
+      .then(ok)
+      .catch(err);
+  }
 }
 
 export const transactionServcie = new TransactionService();

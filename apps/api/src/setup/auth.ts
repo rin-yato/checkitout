@@ -1,6 +1,6 @@
 import { lucia, SESSION_COOKIE_NAME } from "@/lib/lucia";
 import { getCookie } from "hono/cookie";
-import { endTime, setMetric, startTime } from "hono/timing";
+import { endTime, startTime } from "hono/timing";
 import type { Session, User } from "lucia";
 import type { App } from "./context";
 

@@ -15,7 +15,7 @@ export class TransactionTasker implements Tasker {
     });
 
     this.worker.on("ready", () => {
-      console.log("Transaction worker is ready");
+      console.log("Transaction worker is ready ✅");
     });
 
     this.worker.on("closing", () => {
@@ -31,10 +31,18 @@ export class TransactionTasker implements Tasker {
     await this.worker.close();
   }
 
-  async process(job: Job<{ md5: string }>) {
+  async process(job: Job<{ md5: string; transactionId: string }>) {
     // if the job age exceeds 5mn, it will be considered failed
     const TIMEOUT = 1000 * 60 * 5;
     if (job.timestamp + TIMEOUT < Date.now()) {
+      const timeout = await transactionServcie.timeout(job.data.transactionId);
+
+      if (timeout.error) {
+        // this should try to set the transaction status to timeout again until max attempts
+        job.log(`Failed to set transaction status to timeout: ${timeout.error.message}`);
+        throw timeout.error;
+      }
+
       job.log("Transaction Expired");
       throw new UnrecoverableError("Transaction Expired");
     }
@@ -50,6 +58,14 @@ export class TransactionTasker implements Tasker {
     if (transactionStatus.value.responseCode === 1) {
       // error code 1 means transaction failed
       if (transactionStatus.value.errorCode === 3) {
+        const failed = await transactionServcie.fail(job.data.transactionId);
+
+        if (failed.error) {
+          // this should try to reprocess the transaction
+          job.log(`Failed to set transaction status to failed: ${failed.error.message}`);
+          throw failed.error;
+        }
+
         job.log(`Transaction failed: ${transactionStatus.value.responseMessage}`);
         throw new UnrecoverableError(transactionStatus.value.responseMessage);
       }

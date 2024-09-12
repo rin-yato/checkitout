@@ -90,7 +90,7 @@ export class CheckoutService {
         .then(ok)
         .catch(err);
 
-      if (transaction.error) throw transaction.error;
+      if (transaction.error) return transaction;
       activeTransaction = transaction.value;
     }
 
