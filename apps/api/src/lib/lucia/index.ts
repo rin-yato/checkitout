@@ -1,12 +1,12 @@
 import { env } from "@/lib/env";
 
-import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
+import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
 import type { User } from "@repo/db/schema";
 import { TB_session, TB_user } from "@repo/db/table";
 import { Lucia } from "lucia";
 import { db } from "../db";
 
-export const adapter = new DrizzleSQLiteAdapter(db, TB_session, TB_user);
+export const adapter = new DrizzlePostgreSQLAdapter(db, TB_session, TB_user);
 
 export const SESSION_COOKIE_NAME = "auth" as const;
 

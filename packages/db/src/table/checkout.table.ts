@@ -30,7 +30,7 @@ export const TB_checkout = table("checkout", {
   clientPhone: column.text("client_phone").notNull(),
   clientAddress: column.text("client_address"),
 
-  additionalInfo: column.text("additional_info", { mode: "json" }),
+  additionalInfo: column.json("additional_info"),
 
   status: column.text("status", { enum: CHECKOUT_STATUS }).default("IDLE"),
 

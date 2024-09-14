@@ -17,7 +17,7 @@ export const TB_checkoutItem = table("checkout_item", {
   name: column.text("name").notNull(),
   img: column.text("img").notNull(),
   price: column.real("price").notNull(),
-  quantity: column.int("quantity").notNull(),
+  quantity: column.real("quantity").notNull(),
 
   createdAt: column.createdAt,
   updatedAt: column.updatedAt,

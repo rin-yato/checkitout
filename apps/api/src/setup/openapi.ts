@@ -33,7 +33,7 @@ There is no need to fill in the \`Client ID\` or check any \`scopes\`.
     flows: {
       implicit: {
         authorizationUrl: `${env.API_URL}/auth/google`,
-        scopes: { "read:user": "Read user profile" },
+        scopes: {},
       },
     },
   });

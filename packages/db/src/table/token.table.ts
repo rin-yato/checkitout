@@ -7,7 +7,7 @@ export const TB_token = table("token", {
     .text("userId")
     .references(() => TB_user.id)
     .notNull(),
-  ttl: column.integer("ttl"),
+  ttl: column.timestamp("ttl", { withTimezone: true, mode: "date" }),
   createdAt: column.createdAt,
   deletedAt: column.deletedAt,
 });

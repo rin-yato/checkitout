@@ -1,10 +1,8 @@
-import { createDB } from "@repo/db";
+import { createDB, createDBClient } from "@repo/db";
 import { env } from "./env";
 
-export const db = createDB({
-  url: env.DB_URL,
-  authToken: env.DB_TOKEN,
-});
+const client = createDBClient({ url: env.DB_URL });
+export const db = createDB(client);
 
 export type DB = typeof db;
 export type Trx = Parameters<Parameters<DB["transaction"]>[0]>[0];

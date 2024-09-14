@@ -11,5 +11,5 @@ export const TB_session = table("session", {
     .notNull()
     .references(() => TB_user.id),
 
-  expiresAt: column.integer("expires_at").notNull(),
+  expiresAt: column.timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
 });

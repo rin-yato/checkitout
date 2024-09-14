@@ -1,22 +1,18 @@
-import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "../table";
+import postgres from "postgres";
 
 export type CreateDBClientConfig = {
   url: string;
-  authToken: string;
+  max?: number;
 };
 
 export function createDBClient(config: CreateDBClientConfig) {
-  return createClient(config);
+  return postgres(config.url, { max: config.max });
 }
 
-export interface CreateDBConfig {
-  url: string;
-  authToken: string;
-}
+export type DBClient = ReturnType<typeof createDBClient>;
 
-export function createDB(config: CreateDBConfig) {
-  const client = createDBClient(config);
+export function createDB(client: DBClient) {
   return drizzle(client, { schema });
 }

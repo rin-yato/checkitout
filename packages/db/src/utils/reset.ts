@@ -1,21 +1,22 @@
-import { createDBClient } from "./init";
+import { sql } from "drizzle-orm";
+import { createDB, createDBClient } from "./init";
 
-const squealite = createDBClient({
-  url: process.env.DB_URL ?? "",
-  authToken: process.env.DB_TOKEN ?? "",
-});
+const dbClient = createDBClient({ url: process.env.DB_URL ?? "", max: 1 });
+const db = createDB(dbClient);
 
 async function main() {
-  const tableNames = await squealite
-    .execute("select tbl_name from sqlite_master where type='table';")
-    .then((res) => res.rows.map((r) => r[0]));
+  const query = sql`
+    DO $$ DECLARE
+      r RECORD;
+    BEGIN
+      FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = current_schema()) LOOP
+        EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
+      END LOOP;
+    END $$;
+  `;
 
-  await squealite.execute("PRAGMA foreign_keys = OFF;");
-  for (const name of tableNames) {
-    await squealite.execute(`DROP TABLE IF EXISTS \`${name}\`;`);
-    console.log(`❌ Dropped table ${name}`);
-  }
-  await squealite.execute("PRAGMA foreign_keys = ON;");
+  await db.execute(query);
+
   console.log("❌ Dropped all tables");
 }
 

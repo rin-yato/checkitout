@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import { column, table } from "../utils";
 import { genId } from "../utils/id";
-import { TRANSACTION_STATUS } from "../utils/type";
+import { CURRENCY, TRANSACTION_STATUS } from "../utils/type";
 import { TB_checkout } from "./checkout.table";
 import { TB_transactionRef } from "./transaction-ref.table";
 
@@ -18,8 +18,8 @@ export const TB_transaction = table("transaction", {
   md5: column.text("md5").notNull().unique(),
   qrCode: column.text("qr_code").notNull().unique(),
 
-  amount: column.int("amount").notNull(),
-  currency: column.text("currency").notNull(),
+  amount: column.real("amount").notNull(),
+  currency: column.text("currency", { enum: CURRENCY }).notNull(),
 
   status: column.text("status", { enum: TRANSACTION_STATUS }).notNull().default("PENDING"),
 

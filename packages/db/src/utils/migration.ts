@@ -1,15 +1,12 @@
 import path from "path";
-import { drizzle } from "drizzle-orm/libsql";
-import { migrate as migrateFn } from "drizzle-orm/libsql/migrator";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { migrate as migrateFn } from "drizzle-orm/postgres-js/migrator";
 import * as schema from "../table";
 import { createDBClient } from "../utils/init";
 
-const squealite = createDBClient({
-  url: process.env.DB_URL ?? "",
-  authToken: process.env.DB_TOKEN ?? "",
-});
+const dbClient = createDBClient({ url: process.env.DB_URL ?? "", max: 1 });
 
-const migrationDB = drizzle(squealite, { schema });
+const migrationDB = drizzle(dbClient, { schema });
 
 const migrationsFolder = path.resolve(__dirname, "../migration/migrations");
 

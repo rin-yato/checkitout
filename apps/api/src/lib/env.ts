@@ -19,7 +19,6 @@ export const envSchema = z.object({
   BAKONG_TOKEN: z.string(),
 
   DB_URL: z.string(),
-  DB_TOKEN: z.string(),
 
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),

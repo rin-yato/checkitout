@@ -1,26 +1,37 @@
-import { blob, int, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
-
-function currentTime() {
-  return new Date();
-}
+import { sql } from "drizzle-orm";
+import {
+  doublePrecision,
+  integer,
+  json,
+  pgEnum,
+  pgTable,
+  real,
+  text,
+  timestamp,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 /**
  * A helper for defining columns.
  */
 export const column = {
-  int: int,
+  int: integer,
   text: text,
+  varchar: varchar,
   real: real,
-  blob: blob,
-  integer: integer,
-  timestamp: (columnName: string) => integer(columnName, { mode: "timestamp_ms" }),
+  double: doublePrecision,
+  json: json,
+  timestamp: timestamp,
+  enum: pgEnum,
   id: text("id").notNull().primaryKey(),
-  deletedAt: integer("deleted_at", { mode: "timestamp_ms" }),
-  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull().$defaultFn(currentTime),
-  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+  deletedAt: timestamp("deleted_at", { mode: "date", withTimezone: true }),
+  createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
     .notNull()
-    .$defaultFn(currentTime)
-    .$onUpdateFn(currentTime),
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => sql`now()`),
 };
 
-export const table = sqliteTable;
+export const table = pgTable;

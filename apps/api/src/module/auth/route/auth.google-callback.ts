@@ -4,7 +4,6 @@ import { authService } from "@/service/auth.service";
 import { userService } from "@/service/user.service";
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 import { err, ok } from "@justmiracle/result";
-import { getCookie } from "hono/cookie";
 import ky from "ky";
 
 interface GoogleUser {
