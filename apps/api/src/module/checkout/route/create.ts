@@ -1,9 +1,8 @@
 import { validateAuth } from "@/lib/auth";
-import { checkoutRequestSchema, checkoutService } from "@/service/checkout.service";
 import type { AppEnv } from "@/setup/context";
-import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { checkoutSchema } from "@repo/db/schema";
 import { endTime, startTime } from "hono/timing";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { checkoutRequestSchema, checkoutService } from "@/service/checkout.service";
 
 export const createCheckout = new OpenAPIHono<AppEnv>().openapi(
   createRoute({

@@ -32,7 +32,8 @@ export class CheckoutService {
       refId: "123", // TODO: Implement refId
       id: checkoutId,
     } satisfies CheckoutInsert);
-    if (!checkoutData.success) throw new Error("Invalid checkout data");
+
+    if (!checkoutData.success) throw checkoutData.error;
 
     const itemInserts = z
       .array(checkoutItemInsert)

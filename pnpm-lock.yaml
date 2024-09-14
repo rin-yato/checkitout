@@ -59,6 +59,9 @@ importers:
       hono:
         specifier: ^4.5.11
         version: 4.5.11
+      ioredis:
+        specifier: ^5.4.1
+        version: 5.4.1
       ky:
         specifier: ^1.7.2
         version: 1.7.2
@@ -87,6 +90,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.9.0(react-hook-form@7.53.0)
+      '@justmiracle/checkout':
+        specifier: workspace:*
+        version: link:../../packages/sdk
       '@nanostores/react':
         specifier: ^0.7.3
         version: 0.7.3(nanostores@0.11.3)(react@18.3.1)
@@ -224,6 +230,16 @@ importers:
       drizzle-kit:
         specifier: ^0.22.8
         version: 0.22.8
+
+  packages/sdk:
+    dependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.5.4
+    devDependencies:
+      '@types/bun':
+        specifier: latest
+        version: 1.1.9
 
 packages:
 
@@ -3617,6 +3633,12 @@ packages:
       bun-types: 1.1.26
     dev: true
 
+  /@types/bun@1.1.9:
+    resolution: {integrity: sha512-SXJRejXpmAc3qxyN/YS4/JGWEzLf4dDBa5fLtRDipQXHqNccuMU4EUYCooXNTsylG0DmwFQsGgEDHxZF+3DqRw==}
+    dependencies:
+      bun-types: 1.1.27
+    dev: true
+
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
     dev: true
@@ -3831,6 +3853,13 @@ packages:
       '@types/ws': 8.5.12
     dev: true
 
+  /bun-types@1.1.27:
+    resolution: {integrity: sha512-rHXAiIDefeMS/fleNM1rRDYqolJGNRdch3+AuCRwcZWaqTa1vjGBNsahH/HVV7Y82frllYhJomCVSEiHzLzkgg==}
+    dependencies:
+      '@types/node': 20.12.14
+      '@types/ws': 8.5.12
+    dev: true
+
   /camelcase-css@2.0.1:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
     engines: {node: '>= 6'}
@@ -3976,6 +4005,7 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
+    dev: true
 
   /debug@4.3.7:
     resolution: {integrity: sha512-Er2nc/H7RrMXZBFCEim6TCmMk02Z8vLC2Rbi1KEBggpo0fS6l0S1nnapwmIi3yW/+GOJap1Krg4w0Hg80oCqgQ==}
@@ -3987,7 +4017,6 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.3
-    dev: true
 
   /denque@2.1.0:
     resolution: {integrity: sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==}
@@ -4476,7 +4505,7 @@ packages:
     dependencies:
       '@ioredis/commands': 1.2.0
       cluster-key-slot: 1.1.2
-      debug: 4.3.6
+      debug: 4.3.7
       denque: 2.1.0
       lodash.defaults: 4.2.0
       lodash.isarguments: 3.1.0
@@ -4827,10 +4856,10 @@ packages:
 
   /ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
+    dev: true
 
   /ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
-    dev: true
 
   /msgpackr-extract@3.0.3:
     resolution: {integrity: sha512-P0efT1C9jIdVRefqjzOQ9Xml57zpOXnIuS+csaB4MdZbTdmGDLo8XhzBG1N7aO11gKDDkJvBLULeFTo46wwreA==}

@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/checkout/$checkoutId")({
+export const Route = createFileRoute("/portal/$checkoutId")({
   component: CheckoutPage,
 });
 

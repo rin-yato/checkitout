@@ -23,6 +23,8 @@ export const envSchema = z.object({
 
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
+
+  JWT_SECRET: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;

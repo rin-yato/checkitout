@@ -1,10 +1,10 @@
 // run a promise with retries
-export async function withRetry<T extends () => Promise<any>>(
+export async function withRetry<T extends () => any>(
   promise: T,
   retries = 3,
-): Promise<Awaited<ReturnType<T>>> {
-  return promise().catch((err) => {
-    if (retries === 0) throw err;
+): Promise<Awaited<ReturnType<T>> | undefined> {
+  return promise().catch(() => {
+    if (retries === 0) return undefined;
     return withRetry(promise, retries - 1);
   });
 }

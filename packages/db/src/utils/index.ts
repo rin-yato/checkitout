@@ -13,6 +13,7 @@ export const column = {
   real: real,
   blob: blob,
   integer: integer,
+  timestamp: (columnName: string) => integer(columnName, { mode: "timestamp_ms" }),
   id: text("id").notNull().primaryKey(),
   deletedAt: integer("deleted_at", { mode: "timestamp_ms" }),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull().$defaultFn(currentTime),
