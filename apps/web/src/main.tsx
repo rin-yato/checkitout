@@ -1,4 +1,6 @@
 import "./global.css";
+import "@fontsource-variable/manrope";
+import "@fontsource-variable/jetbrains-mono";
 
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -10,6 +12,7 @@ import { routeTree } from "./route.gen";
 import { DefaultCatchBoundary } from "@/component/default-catch-boundary";
 import { COLOR } from "@/constant/theme";
 import { Theme, ThemePanel } from "@radix-ui/themes";
+import { AuthProvider, useInternalAuth } from "./provider/auth.provider";
 
 const router = createRouter({
   routeTree,
@@ -30,7 +33,8 @@ declare module "@tanstack/react-router" {
 }
 
 function App() {
-  return <RouterProvider router={router} />;
+  const auth = useInternalAuth();
+  return <RouterProvider router={router} context={{ auth }} />;
 }
 
 const rootElement = document.getElementById("root");
@@ -41,13 +45,15 @@ if (rootElement && !rootElement.innerHTML) {
     <React.StrictMode>
       <QueryClientProvider>
         <Theme
+          scaling="95%"
           radius="medium"
           grayColor={COLOR.GRAY}
           accentColor={COLOR.PRIMARY}
-          panelBackground="translucent"
-          className="antialiased"
+          className="flex h-dvh antialiased"
         >
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
           <ThemePanel defaultOpen={false} />
         </Theme>
       </QueryClientProvider>

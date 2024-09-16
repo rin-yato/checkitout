@@ -128,7 +128,7 @@ const FormControl = React.forwardRef<
 FormControl.displayName = "FormControl";
 
 const FormDescription = React.forwardRef<HTMLParagraphElement, TextProps>(
-  ({ size = "3", color = "gray", trim = "both", ...props }, ref) => {
+  ({ size = "3", color = "gray", trim = "normal", ...props }, ref) => {
     const { formDescriptionId } = useFormField();
 
     return (
@@ -139,7 +139,7 @@ const FormDescription = React.forwardRef<HTMLParagraphElement, TextProps>(
 FormDescription.displayName = "FormDescription";
 
 const FormMessage = React.forwardRef<HTMLParagraphElement, TextProps>(
-  ({ className, trim = "both", children, ...props }, ref) => {
+  ({ className, trim = "normal", children, ...props }, ref) => {
     const { error, formMessageId } = useFormField();
     const body = error ? String(error?.message) : children;
 
@@ -153,7 +153,7 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, TextProps>(
         id={formMessageId}
         color="red"
         trim={trim}
-        className={className}
+        className={cn("leading-snug", className)}
         {...props}
       >
         {body}

@@ -50,6 +50,9 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    --default-font-family: var(--font-family-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI (Custom)', Roboto, 'Helvetica Neue', 'Open Sans (Custom)', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    --code-font-family: var(--font-family-mono), 'Menlo', 'Consolas (Custom)', 'Bitstream Vera Sans Mono', monospace, 'Apple Color Emoji', 'Segoe UI Emoji';
   }
 
   .radix-themes :not([data-accent-color=""]) {
@@ -61,6 +64,11 @@
 }
 
 @layer tw_base {
+  :root {
+    --font-family-sans: 'Manrope Variable';
+    --font-family-mono: 'JetBrains Mono Variable';
+  }
+
   * {
     @apply border-border;
   }
@@ -89,9 +97,30 @@
 
   .rt-TableCell {
     vertical-align: middle;
+    @apply px-6;
   }
 
   .rt-TableRow {
-    --table-row-box-shadow: inset 0 -2px var(--gray-a4);
+    --table-row-box-shadow: inset 0 -1px var(--gray-a4);
   }
+
+  .rt-TableRow:last-child {
+    --table-row-box-shadow: none;
+  }
+
+  .rt-TabNavLink {
+    @apply px-0 pb-1;
+  }
+
+  .rt-Separator {
+    background-color: var(--gray-a4);
+  }
+
+  .rt-DialogContent .rt-Heading {
+    @apply mb-0
+  }
+}
+
+.soft-table {
+  @apply *:bg-gray *:shadow-none [&>:first-child]:rounded-l [&>:last-child]:rounded-r
 }

@@ -4,7 +4,7 @@ import { MCheckout } from "@justmiracle/checkout";
 import type { CheckoutItemRequest } from "@justmiracle/checkout/type";
 import { Button } from "@/component/ui/button";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_app/")({
   component: Home,
 });
 
@@ -45,7 +45,7 @@ function Home() {
   };
 
   return (
-    <main className="flex h-dvh flex-col items-center pt-28">
+    <main className="flex flex-1 flex-col items-center justify-center p-5">
       <section className="flex flex-col gap-5">
         {products.map((product) => (
           <div key={product.name} className="flex flex-1 items-center gap-3">

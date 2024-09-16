@@ -5,3 +5,5 @@ export const COLOR = {
   SUCCESS: "green",
   WARNING: "yellow",
 } as const;
+
+export const SIDEBAR_WIDTH = 292;

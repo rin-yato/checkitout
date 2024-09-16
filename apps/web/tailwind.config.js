@@ -1,4 +1,5 @@
 import { radixColors } from "./src/lib/tailwind";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -89,6 +90,10 @@ export default {
     },
 
     extend: {
+      fontFamily: {
+        sans: ["var(--font-family-sans)", ...defaultTheme.fontFamily.sans],
+        mono: ["var(--font-family-mono)", ...defaultTheme.fontFamily.mono],
+      },
       boxShadow: {
         1: "var(--shadow-1)",
         2: "var(--shadow-2)",

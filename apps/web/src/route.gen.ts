@@ -11,14 +11,34 @@
 // Import Routes
 
 import { Route as rootRoute } from './route/__root'
-import { Route as IndexImport } from './route/index'
+import { Route as LoginImport } from './route/login'
+import { Route as AppRouteImport } from './route/_app/route'
+import { Route as AppIndexImport } from './route/_app/index'
 import { Route as PortalCheckoutIdImport } from './route/portal/$checkoutId'
+import { Route as AppTransactionsImport } from './route/_app/transactions'
+import { Route as AppSupportImport } from './route/_app/support'
+import { Route as AppCheckoutsImport } from './route/_app/checkouts'
+import { Route as AppAppearanceImport } from './route/_app/appearance'
+import { Route as AppSettingsRouteImport } from './route/_app/settings/route'
+import { Route as AppSettingsIndexImport } from './route/_app/settings/index'
+import { Route as AppSettingsApiImport } from './route/_app/settings/api'
+import { Route as AppSettingsAccountImport } from './route/_app/settings/account'
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
-  path: '/',
+const LoginRoute = LoginImport.update({
+  path: '/login',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AppRouteRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AppIndexRoute = AppIndexImport.update({
+  path: '/',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 
 const PortalCheckoutIdRoute = PortalCheckoutIdImport.update({
@@ -26,16 +46,98 @@ const PortalCheckoutIdRoute = PortalCheckoutIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AppTransactionsRoute = AppTransactionsImport.update({
+  path: '/transactions',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppSupportRoute = AppSupportImport.update({
+  path: '/support',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppCheckoutsRoute = AppCheckoutsImport.update({
+  path: '/checkouts',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppAppearanceRoute = AppAppearanceImport.update({
+  path: '/appearance',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppSettingsRouteRoute = AppSettingsRouteImport.update({
+  path: '/settings',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppSettingsIndexRoute = AppSettingsIndexImport.update({
+  path: '/',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
+
+const AppSettingsApiRoute = AppSettingsApiImport.update({
+  path: '/api',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
+
+const AppSettingsAccountRoute = AppSettingsAccountImport.update({
+  path: '/account',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRoute
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/_app/appearance': {
+      id: '/_app/appearance'
+      path: '/appearance'
+      fullPath: '/appearance'
+      preLoaderRoute: typeof AppAppearanceImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/_app/checkouts': {
+      id: '/_app/checkouts'
+      path: '/checkouts'
+      fullPath: '/checkouts'
+      preLoaderRoute: typeof AppCheckoutsImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/_app/support': {
+      id: '/_app/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof AppSupportImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/_app/transactions': {
+      id: '/_app/transactions'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof AppTransactionsImport
+      parentRoute: typeof AppRouteImport
     }
     '/portal/$checkoutId': {
       id: '/portal/$checkoutId'
@@ -44,42 +146,171 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalCheckoutIdImport
       parentRoute: typeof rootRoute
     }
+    '/_app/': {
+      id: '/_app/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AppIndexImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/_app/settings/account': {
+      id: '/_app/settings/account'
+      path: '/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof AppSettingsAccountImport
+      parentRoute: typeof AppSettingsRouteImport
+    }
+    '/_app/settings/api': {
+      id: '/_app/settings/api'
+      path: '/api'
+      fullPath: '/settings/api'
+      preLoaderRoute: typeof AppSettingsApiImport
+      parentRoute: typeof AppSettingsRouteImport
+    }
+    '/_app/settings/': {
+      id: '/_app/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AppSettingsIndexImport
+      parentRoute: typeof AppSettingsRouteImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface AppSettingsRouteRouteChildren {
+  AppSettingsAccountRoute: typeof AppSettingsAccountRoute
+  AppSettingsApiRoute: typeof AppSettingsApiRoute
+  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
+}
+
+const AppSettingsRouteRouteChildren: AppSettingsRouteRouteChildren = {
+  AppSettingsAccountRoute: AppSettingsAccountRoute,
+  AppSettingsApiRoute: AppSettingsApiRoute,
+  AppSettingsIndexRoute: AppSettingsIndexRoute,
+}
+
+const AppSettingsRouteRouteWithChildren =
+  AppSettingsRouteRoute._addFileChildren(AppSettingsRouteRouteChildren)
+
+interface AppRouteRouteChildren {
+  AppSettingsRouteRoute: typeof AppSettingsRouteRouteWithChildren
+  AppAppearanceRoute: typeof AppAppearanceRoute
+  AppCheckoutsRoute: typeof AppCheckoutsRoute
+  AppSupportRoute: typeof AppSupportRoute
+  AppTransactionsRoute: typeof AppTransactionsRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppSettingsRouteRoute: AppSettingsRouteRouteWithChildren,
+  AppAppearanceRoute: AppAppearanceRoute,
+  AppCheckoutsRoute: AppCheckoutsRoute,
+  AppSupportRoute: AppSupportRoute,
+  AppTransactionsRoute: AppTransactionsRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '': typeof AppRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/settings': typeof AppSettingsRouteRouteWithChildren
+  '/appearance': typeof AppAppearanceRoute
+  '/checkouts': typeof AppCheckoutsRoute
+  '/support': typeof AppSupportRoute
+  '/transactions': typeof AppTransactionsRoute
   '/portal/$checkoutId': typeof PortalCheckoutIdRoute
+  '/': typeof AppIndexRoute
+  '/settings/account': typeof AppSettingsAccountRoute
+  '/settings/api': typeof AppSettingsApiRoute
+  '/settings/': typeof AppSettingsIndexRoute
 }
 
 interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/appearance': typeof AppAppearanceRoute
+  '/checkouts': typeof AppCheckoutsRoute
+  '/support': typeof AppSupportRoute
+  '/transactions': typeof AppTransactionsRoute
   '/portal/$checkoutId': typeof PortalCheckoutIdRoute
+  '/': typeof AppIndexRoute
+  '/settings/account': typeof AppSettingsAccountRoute
+  '/settings/api': typeof AppSettingsApiRoute
+  '/settings': typeof AppSettingsIndexRoute
 }
 
 interface FileRoutesById {
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_app/settings': typeof AppSettingsRouteRouteWithChildren
+  '/_app/appearance': typeof AppAppearanceRoute
+  '/_app/checkouts': typeof AppCheckoutsRoute
+  '/_app/support': typeof AppSupportRoute
+  '/_app/transactions': typeof AppTransactionsRoute
   '/portal/$checkoutId': typeof PortalCheckoutIdRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/settings/account': typeof AppSettingsAccountRoute
+  '/_app/settings/api': typeof AppSettingsApiRoute
+  '/_app/settings/': typeof AppSettingsIndexRoute
 }
 
 interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/portal/$checkoutId'
+  fullPaths:
+    | ''
+    | '/login'
+    | '/settings'
+    | '/appearance'
+    | '/checkouts'
+    | '/support'
+    | '/transactions'
+    | '/portal/$checkoutId'
+    | '/'
+    | '/settings/account'
+    | '/settings/api'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/portal/$checkoutId'
-  id: '/' | '/portal/$checkoutId'
+  to:
+    | '/login'
+    | '/appearance'
+    | '/checkouts'
+    | '/support'
+    | '/transactions'
+    | '/portal/$checkoutId'
+    | '/'
+    | '/settings/account'
+    | '/settings/api'
+    | '/settings'
+  id:
+    | '/_app'
+    | '/login'
+    | '/_app/settings'
+    | '/_app/appearance'
+    | '/_app/checkouts'
+    | '/_app/support'
+    | '/_app/transactions'
+    | '/portal/$checkoutId'
+    | '/_app/'
+    | '/_app/settings/account'
+    | '/_app/settings/api'
+    | '/_app/settings/'
   fileRoutesById: FileRoutesById
 }
 
 interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
+  LoginRoute: typeof LoginRoute
   PortalCheckoutIdRoute: typeof PortalCheckoutIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  LoginRoute: LoginRoute,
   PortalCheckoutIdRoute: PortalCheckoutIdRoute,
 }
 
@@ -95,15 +326,68 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
+        "/_app",
+        "/login",
         "/portal/$checkoutId"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
+    "/_app": {
+      "filePath": "_app/route.tsx",
+      "children": [
+        "/_app/settings",
+        "/_app/appearance",
+        "/_app/checkouts",
+        "/_app/support",
+        "/_app/transactions",
+        "/_app/"
+      ]
+    },
+    "/login": {
+      "filePath": "login.tsx"
+    },
+    "/_app/settings": {
+      "filePath": "_app/settings/route.tsx",
+      "parent": "/_app",
+      "children": [
+        "/_app/settings/account",
+        "/_app/settings/api",
+        "/_app/settings/"
+      ]
+    },
+    "/_app/appearance": {
+      "filePath": "_app/appearance.tsx",
+      "parent": "/_app"
+    },
+    "/_app/checkouts": {
+      "filePath": "_app/checkouts.tsx",
+      "parent": "/_app"
+    },
+    "/_app/support": {
+      "filePath": "_app/support.tsx",
+      "parent": "/_app"
+    },
+    "/_app/transactions": {
+      "filePath": "_app/transactions.tsx",
+      "parent": "/_app"
     },
     "/portal/$checkoutId": {
       "filePath": "portal/$checkoutId.tsx"
+    },
+    "/_app/": {
+      "filePath": "_app/index.tsx",
+      "parent": "/_app"
+    },
+    "/_app/settings/account": {
+      "filePath": "_app/settings/account.tsx",
+      "parent": "/_app/settings"
+    },
+    "/_app/settings/api": {
+      "filePath": "_app/settings/api.tsx",
+      "parent": "/_app/settings"
+    },
+    "/_app/settings/": {
+      "filePath": "_app/settings/index.tsx",
+      "parent": "/_app/settings"
     }
   }
 }
