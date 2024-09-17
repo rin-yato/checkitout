@@ -1,9 +1,10 @@
-import { db, takeFirst } from "@/lib/db";
+import { db, takeFirst, takeFirstOrThrow } from "@/lib/db";
 import { nanoid } from "@/lib/id";
 import { withRetry } from "@/lib/retry";
-import { err, ok, unwrap, type Result } from "@justmiracle/result";
+import { omit } from "@/lib/transform";
+import { err, ok, type Result } from "@justmiracle/result";
 import { TB_token } from "@repo/db/table";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { Redis } from "ioredis";
 
 const redis = new Redis();
@@ -16,23 +17,36 @@ class TokenService {
   async create(userId: string, tokenName: string) {
     const key = `token_${nanoid(26)}`;
 
-    const redisToken = await this.setToken(key, userId);
-    if (redisToken.error) return redisToken;
+    const exist = await db
+      .select()
+      .from(TB_token)
+      .where(
+        and(
+          eq(TB_token.name, tokenName),
+          eq(TB_token.userId, userId),
+          isNull(TB_token.deletedAt),
+        ),
+      )
+      .execute()
+      .then(takeFirst)
+      .then(ok)
+      .catch(err);
+
+    if (exist.error) return exist;
+    if (exist.value) return err("Token name already exists");
 
     const dbToken = await db
       .insert(TB_token)
       .values({ token: key, name: tokenName, userId })
-      .execute()
+      .returning()
+      .then(takeFirstOrThrow)
       .then(ok)
       .catch(err);
+    if (dbToken.error) return dbToken;
 
-    if (dbToken.error) {
-      // rollback redis key with 3 retries
-      withRetry(() => redis.del(genKey(key)));
-      return dbToken;
-    }
+    withRetry(() => this.setToken(key, userId));
 
-    return ok({ token: key, userId });
+    return dbToken;
   }
 
   async findOne(key: string): Promise<Result<undefined | Token>> {
@@ -61,15 +75,43 @@ class TokenService {
     return tokenInDb;
   }
 
-  findMany(userId: string) {}
+  findMany(userId: string) {
+    return db.query.TB_token.findMany({
+      where: and(eq(TB_token.userId, userId), isNull(TB_token.deletedAt)),
+      columns: {
+        name: true,
+        token: false,
+        createdAt: true,
+      },
+      extras: {
+        token: sql`CONCAT(LEFT(token, 8), REPEAT('*', 12), RIGHT(token, 2))`.as("token"),
+      },
+    })
+      .execute()
+      .then(ok)
+      .catch(err);
+  }
+
+  async delete(tokenName: string, userId: string) {
+    const deleted = await db
+      .update(TB_token)
+      .set({ deletedAt: new Date() })
+      .where(and(eq(TB_token.name, tokenName), eq(TB_token.userId, userId)))
+      .returning()
+      .then(takeFirstOrThrow)
+      .then(ok)
+      .catch(err);
+    if (deleted.error) return deleted;
+
+    const deletedFromRedis = await redis.del(deleted.value.token).then(ok).catch(err);
+    if (deletedFromRedis.error) return deletedFromRedis;
+
+    return ok(omit(deleted.value, ["token"]));
+  }
 
   protected async setToken(key: string, userId: string, expiration?: number) {
     if (!expiration) return redis.set(genKey(key), userId).then(ok).catch(err);
     return redis.set(genKey(key), userId, "EX", expiration).then(ok).catch(err);
-  }
-
-  protected async deleteToken(key: string) {
-    return redis.del(genKey(key)).then(ok).catch(err);
   }
 }
 

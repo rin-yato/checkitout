@@ -2,6 +2,10 @@ import { Button } from "@/component/ui/button";
 import { CopyButton } from "@/component/ui/copy-button";
 import { Label } from "@/component/ui/label";
 import { COLOR } from "@/constant/theme";
+import { cn } from "@/lib/cn";
+import { confirmation } from "@/lib/confirmation";
+import { useCreateTokenMutation, useDeleteTokenMutation } from "@/query/token/token.mutation";
+import { tokenListQuery } from "@/query/token/token.query";
 import { FolderDashed, Plus, Trash } from "@phosphor-icons/react";
 import {
   Code,
@@ -9,19 +13,51 @@ import {
   Flex,
   Heading,
   IconButton,
-  Separator,
   Spinner,
   Text,
   TextField,
 } from "@radix-ui/themes";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, type PropsWithChildren } from "react";
+import { useRef, useState, type PropsWithChildren } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/settings/api")({
   component: ApiTokenPage,
+  loader: ({ context }) => {
+    context.queryClient.prefetchQuery(tokenListQuery());
+  },
 });
 
 function ApiTokenPage() {
+  const { data } = useSuspenseQuery(tokenListQuery());
+  const { mutate } = useDeleteTokenMutation();
+
+  const isEmpty = data.length === 0;
+
+  const createDeleteTokenHandler = (name: string) => () => {
+    confirmation.create({
+      type: "danger",
+      title: (
+        <div className="flex items-center">
+          Delete Token&nbsp;
+          <Code size="5" color={COLOR.DANGER} className="ml-1 px-2">
+            {name}
+          </Code>
+        </div>
+      ),
+      description:
+        "This action is not reversible. You will need to update your application with a new token.",
+      confirmText: "Delete Token",
+      onConfirm: () => {
+        mutate(name, {
+          onError: (error) => toast.error(error.message),
+          onSuccess: () => toast.success("Token deleted successfully!"),
+        });
+      },
+    });
+  };
+
   return (
     <div className="flex flex-1 flex-col gap-y-5 pb-3">
       <div className="flex max-w-md flex-col gap-2 pt-1">
@@ -33,7 +69,7 @@ function ApiTokenPage() {
       </div>
 
       <div className="w-full max-w-md rounded-4 bg-gray-2 p-5">
-        <div className="hidden flex-col items-center gap-y-3 py-2">
+        <div className={cn("hidden flex-col items-center gap-y-3 py-3", isEmpty && "flex")}>
           <FolderDashed size={48} className="text-gray-8" />
 
           <Text color="gray" align="center" wrap="balance" className="pb-1">
@@ -41,40 +77,41 @@ function ApiTokenPage() {
             below.
           </Text>
 
-          <Button>
-            Create Token <Plus weight="bold" />
-          </Button>
+          <CreateTokenDialog>
+            <Button>
+              Create Token <Plus weight="bold" />
+            </Button>
+          </CreateTokenDialog>
         </div>
 
-        <div className="flex items-center gap-x-3 rounded pr-1">
-          <Text>Production</Text>
+        {data.map((token) => (
+          <div
+            key={`api-token-${token.name}`}
+            className="mb-5 flex items-center gap-x-3 border-b pr-1 pb-5 last-of-type:border-0"
+          >
+            <Text>{token.name}</Text>
 
-          <Code color="gray" size="3" className="ml-auto px-2">
-            token_ey*********9n
-          </Code>
-          <IconButton color={COLOR.DANGER} variant="ghost">
-            <Trash />
-          </IconButton>
-        </div>
+            <Code color="gray" size="3" className="ml-auto px-2">
+              {token.token}
+            </Code>
 
-        <Separator size="4" className="my-5" />
+            <IconButton
+              color={COLOR.DANGER}
+              variant="ghost"
+              onClick={createDeleteTokenHandler(token.name)}
+            >
+              <Trash />
+            </IconButton>
+          </div>
+        ))}
 
-        <div className="flex items-center gap-x-3 rounded pr-1">
-          <Text className="">Staging</Text>
-
-          <Code color="gray" size="3" className="ml-auto px-2">
-            token_ey*********9n
-          </Code>
-          <IconButton color={COLOR.DANGER} variant="ghost">
-            <Trash />
-          </IconButton>
-        </div>
-
-        <CreateTokenDialog>
-          <Button variant="solid" className="mt-10">
-            Create Token <Plus weight="bold" />
-          </Button>
-        </CreateTokenDialog>
+        {!isEmpty && (
+          <CreateTokenDialog>
+            <Button variant="solid">
+              Create Token <Plus weight="bold" />
+            </Button>
+          </CreateTokenDialog>
+        )}
       </div>
     </div>
   );
@@ -95,20 +132,31 @@ const WORDING = {
 };
 
 function CreateTokenDialog(props: PropsWithChildren) {
+  const { mutate, isPending } = useCreateTokenMutation();
+
   const [open, setOpen] = useState(false);
-  const [pending, setPending] = useState(false);
-  const [token, setToken] = useState<{ value: string; name: string } | undefined>();
+
+  const [token, setToken] = useState<string>("");
+  const tokenName = useRef("");
 
   const handleCreateToken = () => {
-    setPending(true);
-    setTimeout(() => {
-      setToken({ value: "token_eyfea8f3waj3329n", name: "Production" });
-      setPending(false);
-    }, 2000);
+    mutate(tokenName.current.trim(), {
+      onSuccess: ({ token }) => {
+        toast.success("Token created successfully!");
+        setToken(token);
+      },
+      onError: (error) => toast.error(error.message),
+    });
   };
 
   const handleOpenChange = (open: boolean) => {
-    if (!open) setTimeout(() => setToken(undefined), 500);
+    if (!open) {
+      // reset form state
+      setTimeout(() => {
+        setToken("");
+        tokenName.current = "";
+      }, 300);
+    }
     setOpen(open);
   };
 
@@ -132,8 +180,8 @@ function CreateTokenDialog(props: PropsWithChildren) {
           // Token Created
           <Flex direction="column" gap="2" py="3">
             <Code size="4" color="gray" className="flex items-center px-2.5 py-1.5">
-              {token.value}
-              <CopyButton content={token.value} className="ml-auto" />
+              {token}
+              <CopyButton content={token} className="ml-auto" />
             </Code>
           </Flex>
         ) : (
@@ -145,6 +193,9 @@ function CreateTokenDialog(props: PropsWithChildren) {
               color="gray"
               variant="soft"
               onKeyDown={handleEnter}
+              onChange={(e) => {
+                tokenName.current = e.target.value.trim();
+              }}
               placeholder="e.g. Production"
             />
           </Flex>
@@ -152,14 +203,14 @@ function CreateTokenDialog(props: PropsWithChildren) {
 
         <Flex gap="3" mt="4" justify="end">
           <Dialog.Close>
-            <Button variant="soft" color="gray" disabled={pending}>
+            <Button variant="soft" color="gray" disabled={isPending}>
               {wording.close}
             </Button>
           </Dialog.Close>
           {!token && (
-            <Button onClick={handleCreateToken} disabled={pending}>
+            <Button onClick={handleCreateToken} disabled={isPending}>
               Create Token
-              <Spinner loading={pending} size="2" />
+              <Spinner loading={isPending} size="2" />
             </Button>
           )}
         </Flex>

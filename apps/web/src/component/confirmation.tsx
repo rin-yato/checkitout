@@ -1,8 +1,10 @@
+import { COLOR } from "@/constant/theme";
 import { $confirmationAtom } from "@/lib/confirmation";
 import { useStore } from "@nanostores/react";
-import { Button, Dialog, Flex, Spinner } from "@radix-ui/themes";
+import { Dialog, Flex, Spinner } from "@radix-ui/themes";
 import { useState } from "react";
 import { Fragment } from "react/jsx-runtime";
+import { Button } from "./ui/button";
 
 export function Confirmation() {
   const confirmation = useStore($confirmationAtom);
@@ -36,7 +38,7 @@ export function Confirmation() {
     $confirmationAtom.set({ ...confirmation, open: false });
   };
 
-  const color = confirmation?.type === "destructive" ? "red" : undefined;
+  const color = confirmation?.type === "danger" ? COLOR.DANGER : undefined;
 
   return (
     <Dialog.Root open={confirmation?.open} onOpenChange={handleOpenChange}>
@@ -53,11 +55,11 @@ export function Confirmation() {
         {confirmation && !confirmation.customContent && (
           <Fragment>
             <Dialog.Title>{confirmation.title}</Dialog.Title>
-            <Dialog.Description size="2" wrap="pretty">
+            <Dialog.Description size="3" my="2" wrap="balance">
               {confirmation.description}
             </Dialog.Description>
 
-            <Flex gap="3" mt="4" justify="end">
+            <Flex gap="3" mt="5" justify="end">
               <Button variant="soft" color="gray" onClick={handleCancel} disabled={isPending}>
                 {confirmation.cancelText}
               </Button>

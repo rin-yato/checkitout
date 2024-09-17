@@ -39,6 +39,6 @@ export const createTokenV1 = new OpenAPIHono<AppEnv>().openapi(
       throw token.error;
     }
 
-    return c.json({ token: token.value.token });
+    return c.json(token.value);
   },
 );

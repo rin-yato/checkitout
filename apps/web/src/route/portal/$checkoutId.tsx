@@ -1,11 +1,11 @@
 import { Flex, Grid } from "@radix-ui/themes";
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, PiggyBank, Scan } from "lucide-react";
 import { Invoice } from "./-component/invoice";
 import { QRPay } from "./-component/qr";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
 import { useEffect, useState } from "react";
+import { Check, PiggyBank, Scan } from "@phosphor-icons/react";
 
 export const Route = createFileRoute("/portal/$checkoutId")({
   component: CheckoutPage,

@@ -1,8 +1,8 @@
 import { formatCurrency } from "@/lib/currency";
 import { Box, Flex, Text } from "@radix-ui/themes";
-import { Check, Scan } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { InvoiceSeparator } from "./invoice";
+import { Check, Scan } from "@phosphor-icons/react";
 
 interface QRPayProps {
   qrCode: string;

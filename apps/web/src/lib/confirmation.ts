@@ -1,13 +1,13 @@
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 
 import { atom } from "nanostores";
 
 export type Confirmation = {
   open: boolean;
-  title: string;
-  description?: string;
+  title: string | ReactNode;
+  description?: string | ReactNode;
   customContent?: FC;
-  type: "default" | "destructive";
+  type: "default" | "danger";
   important?: boolean;
   cancelText: string;
   confirmText: string;
@@ -18,7 +18,7 @@ export type Confirmation = {
 export interface ConfirmationCreate
   extends Omit<Confirmation, "open" | "type" | "cancelText" | "confirmText"> {
   open?: boolean;
-  type?: "default" | "destructive";
+  type?: "default" | "danger";
   important?: boolean;
   cancelText?: string;
   confirmText?: string;
