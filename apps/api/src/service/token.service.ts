@@ -10,33 +10,22 @@ const redis = new Redis();
 
 const genKey = (key: string) => `token:${key}`;
 
-const DAY = 60 * 60 * 24;
-const MONTH = DAY * 30;
-
-const EXPIRATION = {
-  "3M": MONTH * 3,
-  "1Y": MONTH * 12,
-  FOREVER: undefined,
-};
-
-type Expiration = keyof typeof EXPIRATION;
-
 type Token = { token: string; userId: string };
 
 class TokenService {
-  async create(userId: string, expiration: Expiration = "FOREVER") {
+  async create(userId: string, tokenName: string) {
     const key = `token_${nanoid(26)}`;
-    const ttl = EXPIRATION[expiration];
 
-    const redisToken = await this.setToken(key, userId, ttl);
+    const redisToken = await this.setToken(key, userId);
     if (redisToken.error) return redisToken;
 
     const dbToken = await db
       .insert(TB_token)
-      .values({ token: key, userId, ttl })
+      .values({ token: key, name: tokenName, userId })
       .execute()
       .then(ok)
       .catch(err);
+
     if (dbToken.error) {
       // rollback redis key with 3 retries
       withRetry(() => redis.del(genKey(key)));
@@ -63,42 +52,16 @@ class TokenService {
       .then(ok)
       .catch(err);
     if (tokenInDb.error) return tokenInDb;
-    if (!tokenInDb.value) return ok(undefined);
 
-    // check if token is expired
-    const ttl = tokenInDb.value.ttl;
-
-    // if there is no expiration time, set it in cache and return
-    if (!ttl) {
-      withRetry(async () => {
-        if (!tokenInDb.value) return;
-        await this.setToken(genKey(key), tokenInDb.value.userId).then(unwrap);
-      });
-
-      return ok({ token: key, userId: tokenInDb.value.userId });
+    if (tokenInDb.value) {
+      // set the token in cache
+      this.setToken(key, tokenInDb.value.userId);
     }
 
-    const expiresAt = new Date(tokenInDb.value.createdAt).getTime() + ttl * 1000;
-
-    // if token is not expired, set it in cache and return
-    if (expiresAt < Date.now()) {
-      withRetry(async () => {
-        if (!tokenInDb.value) return;
-        await this.setToken(genKey(key), tokenInDb.value.userId).then(unwrap);
-      });
-
-      return ok({ token: key, userId: tokenInDb.value.userId });
-    }
-
-    // if token is expired, delete it from db and cache
-    withRetry(async () => {
-      if (!tokenInDb.value) return;
-      await db.delete(TB_token).where(eq(TB_token.token, key)).execute();
-      await this.deleteToken(genKey(key)).then(unwrap);
-    });
-
-    return ok(undefined);
+    return tokenInDb;
   }
+
+  findMany(userId: string) {}
 
   protected async setToken(key: string, userId: string, expiration?: number) {
     if (!expiration) return redis.set(genKey(key), userId).then(ok).catch(err);
