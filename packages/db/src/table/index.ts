@@ -5,3 +5,4 @@ export * from "./checkout-item.table";
 export * from "./transaction.table";
 export * from "./transaction-ref.table";
 export * from "./token.table";
+export * from "./file-upload.table";

@@ -24,6 +24,12 @@ export const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string(),
 
   JWT_SECRET: z.string(),
+
+  R2_BUCKET: z.string(),
+  R2_URL: z.string(),
+  R2_PUBLIC_URL: z.string(),
+  R2_ACCESS_KEY: z.string(),
+  R2_SECRET_ACCESS_KEY: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;

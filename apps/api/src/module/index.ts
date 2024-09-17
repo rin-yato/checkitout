@@ -6,6 +6,7 @@ import { UserRoute } from "./user";
 import { TransactionRoute } from "./transaction";
 import { CheckoutRoute } from "./checkout";
 import { TokenRoute } from "./token";
+import { FileUploadRoute } from "./file-upload";
 
 export const Modules = new OpenAPIHono()
   .use(logger())
@@ -13,4 +14,5 @@ export const Modules = new OpenAPIHono()
   .route("/", UserRoute)
   .route("/", TransactionRoute)
   .route("/", CheckoutRoute)
-  .route("/", TokenRoute);
+  .route("/", TokenRoute)
+  .route("/", FileUploadRoute);
