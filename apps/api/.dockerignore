@@ -1,0 +1,10 @@
+**/Dockerfile
+**/.dockerignore
+**/node_modules
+**/README.md
+**/.next
+**/.git
+**/.DS_Store
+**/.turbo
+**/node_modules
+

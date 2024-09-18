@@ -10,6 +10,7 @@
 
     "dev": { "cache": false, "persistent": true },
     "start": { "cache": false, "persistent": true },
+    "start:api": { "cache": false, "persistent": true },
 
     "check": { "cache": true },
     "check:ci": { "cache": true },

@@ -1,7 +1,11 @@
 {
   "name": "api",
+  "type": "module",
   "scripts": {
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --watch src/index.ts",
+    "start:api": "bun run src/index.ts",
+    "build": "bun build --target bun --outdir dist --minify --external sharp src/index.ts",
+    "compile": "bun build --target bun --compile --minify --outfile dist/main --external sharp src/index.ts"
   },
   "dependencies": {
     "@bull-board/api": "^5.21.4",
@@ -29,5 +33,6 @@
   },
   "devDependencies": {
     "@types/bun": "latest"
-  }
+  },
+  "trustedDependencies": ["sharp"]
 }
