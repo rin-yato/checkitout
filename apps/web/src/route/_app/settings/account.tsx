@@ -11,14 +11,25 @@ import {
   FormMessage,
 } from "@/component/ui/form";
 import { UploadRoot, UploadTrigger } from "@/component/upload";
-import { getFirstUploadedFile, hasPendingFiles } from "@/component/upload/utils";
+import {
+  generateDefaultFileState,
+  getFirstUploadedFile,
+  hasPendingFiles,
+} from "@/component/upload/utils";
 import { useAuth } from "@/provider/auth.provider";
-import { Code, Flex, Heading, Kbd, Separator, Text, TextField } from "@radix-ui/themes";
-import { useState } from "react";
+import { Code, Flex, Heading, Separator, Spinner, Text, TextField } from "@radix-ui/themes";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import type { z } from "zod";
 import { Check, Info } from "@phosphor-icons/react";
+import { userInsertSchema, type UserUpdate } from "@repo/db/schema";
+import { useUpdateUserMutation } from "@/query/account/account.mutation";
+import { err, ok } from "@justmiracle/result";
+import { toast } from "sonner";
+import { dequal } from "dequal";
+import { confirmation } from "@/lib/confirmation";
+import { P } from "ts-pattern";
 
 export const Route = createFileRoute("/_app/settings/account")({
   component: AccountSettingsPage,
@@ -26,32 +37,51 @@ export const Route = createFileRoute("/_app/settings/account")({
 
 const FORM_ID = "account-settings-form";
 
-const schema = z.object({
-  displayName: z.string().min(3).max(50),
-  address: z.string().min(3).max(50),
-  phone: z.string(),
-  profile: z.string().min(3).max(50),
+const accountSettingForm = userInsertSchema.pick({
+  phone: true,
+  profile: true,
+  address: true,
+  displayName: true,
+  bakongId: true,
 });
 
-type Schema = z.infer<typeof schema>;
+type AccountSettingForm = z.infer<typeof accountSettingForm>;
 
 function AccountSettingsPage() {
   const user = useAuth();
 
+  const { mutateAsync } = useUpdateUserMutation();
+
   const [_, setHasPendingFile] = useState(false);
 
-  const form = useForm<Schema>({
-    resolver: zodResolver(schema),
+  const form = useForm<AccountSettingForm>({
+    resolver: zodResolver(accountSettingForm),
     defaultValues: {
-      profile: user.profile ?? undefined,
+      profile: user.profile?.url ?? undefined,
       displayName: user.displayName,
       address: user.address,
       phone: user.phone,
+      bakongId: user.bakongId,
     },
   });
 
-  const onSubmit = (data: any) => {
-    console.log("Form data:", data);
+  const onSubmit = async (data: UserUpdate) => {
+    const updated = await mutateAsync(data).then(ok).catch(err);
+
+    if (updated.error) {
+      return toast.error(updated.error.message);
+    }
+
+    toast.success("Account updated successfully");
+  };
+
+  const handleReset = () => {
+    confirmation.create({
+      title: "Discard Changes",
+      type: "danger",
+      description: "Are you sure you want to discard changes?",
+      onConfirm: () => form.reset(),
+    });
   };
 
   return (
@@ -77,8 +107,12 @@ function AccountSettingsPage() {
                 </div>
 
                 <UploadRoot
+                  defaultFileStates={generateDefaultFileState([user.profile])}
                   dropzoneOpts={{ multiple: false, maxFiles: 1, accept: { "image/*": [] } }}
                   onFileStatesChange={(fileStates) => {
+                    const url = getFirstUploadedFile(fileStates)?.data.url;
+                    if (url === field.value) return;
+
                     field.onChange(getFirstUploadedFile(fileStates)?.data.url);
                     setHasPendingFile(hasPendingFiles(fileStates));
                   }}
@@ -201,8 +235,8 @@ function AccountSettingsPage() {
 
             <div className="w-full max-w-lg">
               <FormField
+                name="bakongId"
                 control={form.control}
-                name="address"
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel required>Bakong ID</FormLabel>
@@ -228,12 +262,20 @@ function AccountSettingsPage() {
           </div>
 
           <div className="mt-auto flex gap-3 pt-10">
-            <Button variant="soft" color="gray" type="reset" size="3">
+            <Button
+              variant="soft"
+              color="gray"
+              size="3"
+              onClick={handleReset}
+              disabled={form.formState.isSubmitting}
+            >
               Discard Changes
             </Button>
-            <Button type="submit" size="3">
+            <Button size="3" type="submit" disabled={form.formState.isSubmitting}>
               Save Changes
-              <Check size={16} weight="bold" />
+              <Spinner loading={form.formState.isSubmitting}>
+                <Check size={16} weight="bold" />
+              </Spinner>
             </Button>
           </div>
         </form>

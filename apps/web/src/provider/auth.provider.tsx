@@ -1,5 +1,4 @@
-import { useAccountQuery } from "@/query/account/account.query";
-import type { User } from "@repo/db/schema";
+import { useAccountQuery, type User } from "@/query/account/account.query";
 import { type PropsWithChildren, createContext, useContext, useMemo } from "react";
 
 export type AuthContext =

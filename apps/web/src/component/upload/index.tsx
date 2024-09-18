@@ -15,10 +15,11 @@ import {
   useUpload,
   type UploadContext as BaseUploadContext,
 } from "./upload.provider";
-import { type FileState, useFileStates } from "./use-file-states";
+import { type FileState, type FileStateEntry, useFileStates } from "./use-file-states";
 import { getFileStateEntries } from "./utils";
 
 export interface UploadProps {
+  defaultFileStates?: FileStateEntry[];
   dropzoneOpts?: DropzoneOptions;
   onFileStatesChange?: (fileStates: FileState[]) => void;
 }
@@ -31,7 +32,9 @@ export const FILE_VALIDATION_ERRORS = {
 } as const;
 
 export function UploadRoot(props: PropsWithChildren<UploadProps>) {
-  const { fileStates, setFiles, fileStatesActions, reorder, remove, retry } = useFileStates();
+  const { fileStates, setFiles, fileStatesActions, reorder, remove, retry } = useFileStates({
+    defaultFiles: props.defaultFileStates,
+  });
 
   const dropzoneState = useDropzone({
     ...props.dropzoneOpts,
@@ -113,7 +116,7 @@ export function UploadImagePreview({
   const url = useMemo(
     () =>
       match(fileState)
-        .with({ _tag: "SUCCESS" }, (state) => state.data.url)
+        .with({ _tag: "SUCCESS" }, { _tag: "DEFAULT" }, (state) => state.data.url)
         .with({ _tag: "PENDING" }, (state) => URL.createObjectURL(state.file))
         .with({ _tag: "ERROR" }, () => undefined)
         .exhaustive(),

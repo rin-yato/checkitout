@@ -1,35 +1,26 @@
-import { env } from "@/lib/env";
-import { type Result, err, ok } from "@justmiracle/result";
-// @ts-ignore
+import { api } from "./api";
+import { nanoid } from "@repo/libs";
 import type { FileUpload } from "@repo/db/schema";
-
-const nanoid = () => {
-  let id = "";
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (let i = 0; i < 21; i++) {
-    id += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-  }
-
-  return id;
-};
+import { type Result, err, ok } from "@justmiracle/result";
 
 export const Storage = {
   async upload(file: File): Promise<Result<FileUpload>> {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch(new URL("/upload/single", env.VITE_API_URL), {
-      credentials: "include",
-      method: "POST",
-      body: formData,
-    });
+    // const response = await fetch(new URL("/v1/upload", env.VITE_API_URL), {
+    //   credentials: "include",
+    //   method: "POST",
+    //   body: formData,
+    // });
 
-    if (!response.ok) {
-      return err(await response.json());
-    }
+    const response = await api
+      .post("v1/upload", { body: formData })
+      .json<FileUpload>()
+      .then(ok)
+      .catch(err);
 
-    return ok((await response.json()).data);
+    return response;
   },
   async mockUpload(file: File): Promise<Result<FileUpload>> {
     const random = Math.random();
@@ -47,10 +38,10 @@ export const Storage = {
       size: file.size,
       hash: `${nanoid()}.webp`,
       type: file.type,
-      storeId: nanoid(),
       userId: nanoid(),
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
     });
   },
 };

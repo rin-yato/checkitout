@@ -1,6 +1,6 @@
 import { db, takeFirstOrThrow } from "@/lib/db";
 import { type Result, err, ok } from "@justmiracle/result";
-import type { User, UserInsert } from "@repo/db/schema";
+import type { User, UserInsert, UserUpdate } from "@repo/db/schema";
 import { TB_user } from "@repo/db/table";
 import { eq } from "drizzle-orm";
 
@@ -23,6 +23,10 @@ export class UserService {
       .catch(err);
   }
 
+  async findMany() {
+    return db.query.TB_user.findMany().execute().then(ok).catch(err);
+  }
+
   async create(userInsert: UserInsert): Promise<Result<User>> {
     return db
       .insert(TB_user)
@@ -33,10 +37,16 @@ export class UserService {
       .catch(err);
   }
 
-  async update(id: string, userUpdate: Partial<UserInsert>) {
+  async update(id: string, userUpdate: UserUpdate) {
     return db
       .update(TB_user)
-      .set(userUpdate)
+      .set({
+        phone: userUpdate.phone,
+        address: userUpdate.address,
+        profile: userUpdate.profile,
+        bakongId: userUpdate.bakongId,
+        displayName: userUpdate.displayName,
+      })
       .where(eq(TB_user.id, id))
       .returning()
       .then(takeFirstOrThrow)

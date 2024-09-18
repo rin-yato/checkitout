@@ -4,19 +4,24 @@ import { Avatar, Text } from "@radix-ui/themes";
 import { useMemo } from "react";
 import { CheckmarkIcon, ErrorIcon } from "react-hot-toast";
 import { P, match } from "ts-pattern";
-import type { FileState, FileStatePending, FileStateSuccess } from "./use-file-states";
+import type {
+  FileState,
+  FileStateDefault,
+  FileStatePending,
+  FileStateSuccess,
+} from "./use-file-states";
 
 export function UploadImagePreview({
   fileState,
   className,
-}: { fileState: FileStateSuccess | FileStatePending; className?: string }) {
+}: { fileState: FileStateSuccess | FileStatePending | FileStateDefault; className?: string }) {
   const url = useMemo(
     () =>
       match(fileState)
-        .with({ _tag: "SUCCESS" }, (state) => state.data.url)
+        .with({ _tag: "SUCCESS" }, { _tag: "DEFAULT" }, (state) => state.data.url)
         .with({ _tag: "PENDING" }, (state) => URL.createObjectURL(state.file))
         .exhaustive(),
-    [],
+    [fileState],
   );
 
   return <Avatar src={url} fallback className={cn("size-full flex-1", className)} />;
@@ -32,10 +37,12 @@ export function UploadPreviewError(_: { error: string }) {
 
 export function UploadPreviewer({
   fileState,
-}: { fileState: FileStatePending | FileStateSuccess }) {
+}: { fileState: FileStatePending | FileStateSuccess | FileStateDefault }) {
   const isImage = match(fileState)
     .with({ _tag: "PENDING" }, (data) => data.file.type.startsWith("image/"))
-    .with({ _tag: "SUCCESS" }, (data) => data.data.type.startsWith("image/"))
+    .with({ _tag: "SUCCESS" }, { _tag: "DEFAULT" }, (data) =>
+      data.data.type.startsWith("image/"),
+    )
     .exhaustive();
 
   if (isImage) {
@@ -44,7 +51,7 @@ export function UploadPreviewer({
 
   const extension = match(fileState)
     .with({ _tag: "PENDING" }, (data) => data.file.name.split(".").pop())
-    .with({ _tag: "SUCCESS" }, (data) => data.data.name.split(".").pop())
+    .with({ _tag: "SUCCESS" }, { _tag: "DEFAULT" }, (data) => data.data.name.split(".").pop())
     .exhaustive();
 
   return (
@@ -95,6 +102,7 @@ export const UploadPreview = (props: { fileState: FileState; className?: string 
           .with("PENDING", UploadIcon.Loading)
           .with("SUCCESS", UploadIcon.Success)
           .with("ERROR", UploadIcon.Error)
+          .with("DEFAULT", () => null)
           .exhaustive()}
       </div>
 

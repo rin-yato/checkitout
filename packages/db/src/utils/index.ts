@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import {
   doublePrecision,
   integer,
@@ -31,7 +30,7 @@ export const column = {
   updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true })
     .notNull()
     .defaultNow()
-    .$onUpdate(() => sql`now()`),
+    .$onUpdate(() => new Date()),
 };
 
 export const table = pgTable;

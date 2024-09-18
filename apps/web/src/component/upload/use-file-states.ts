@@ -22,7 +22,12 @@ export interface FileStateError {
   file: File;
 }
 
-export type FileState = FileStatePending | FileStateSuccess | FileStateError;
+export interface FileStateDefault {
+  _tag: "DEFAULT";
+  data: FileUpload;
+}
+
+export type FileState = FileStatePending | FileStateSuccess | FileStateError | FileStateDefault;
 
 export type FileStateEntry = [string, FileState];
 export type FileStateIterable = IterableIterator<FileStateEntry>;
@@ -34,9 +39,7 @@ export type UseFileConfig = {
 export type UseFileStates = ReturnType<typeof useFileStates>;
 
 export function useFileStates(config?: UseFileConfig) {
-  const [fileStates, fileStatesActions] = useMap<string, FileState>(
-    config?.defaultFiles,
-  );
+  const [fileStates, fileStatesActions] = useMap<string, FileState>(config?.defaultFiles);
 
   const getFileState = useCallback(
     (filename: string) => {
@@ -90,8 +93,7 @@ export function useFileStates(config?: UseFileConfig) {
     (files: File[]) => {
       for (const file of files) {
         const fileState = getFileState(file.name);
-        if (fileState._tag === "FOUND" && fileState.state._tag !== "ERROR")
-          continue;
+        if (fileState._tag === "FOUND" && fileState.state._tag !== "ERROR") continue;
         triggerUpload(file);
       }
     },
@@ -104,7 +106,7 @@ export function useFileStates(config?: UseFileConfig) {
 
       for (const fileState of newFileStates) {
         match(fileState)
-          .with({ _tag: "SUCCESS" }, (data) => {
+          .with({ _tag: "SUCCESS" }, { _tag: "DEFAULT" }, (data) => {
             fileStatesActions.set(data.data.name, data);
           })
           .otherwise((data) => {
@@ -132,8 +134,7 @@ export function useFileStates(config?: UseFileConfig) {
   const retry = useCallback(
     (filename: string) => {
       const fileState = getFileState(filename);
-      if (fileState._tag !== "FOUND" || fileState.state._tag !== "ERROR")
-        return;
+      if (fileState._tag !== "FOUND" || fileState.state._tag !== "ERROR") return;
       triggerUpload(fileState.state.file);
     },
     [triggerUpload, getFileState, fileStates],

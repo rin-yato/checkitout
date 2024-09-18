@@ -1,22 +1,5 @@
-import { createRoute, response } from "@/lib/route";
-import { db } from "@/lib/db";
-import { OpenAPIHono, z } from "@hono/zod-openapi";
+import { OpenAPIHono } from "@hono/zod-openapi";
+import { findManyUserV1 } from "./route/v1.find-many";
+import { updateUserV1 } from "./route/v1.update";
 
-const GetUsers = createRoute(
-  {
-    method: "get",
-    path: "/users",
-    responses: {
-      200: response({
-        description: "List of users",
-        schema: z.object({ users: z.array(z.string()) }),
-      }),
-    },
-  },
-  async (c) => {
-    const users = await db.query.TB_user.findMany();
-    return c.json(users);
-  },
-);
-
-export const UserRoute = new OpenAPIHono().route("/", GetUsers);
+export const UserRoute = new OpenAPIHono().route("/", findManyUserV1).route("/", updateUserV1);
