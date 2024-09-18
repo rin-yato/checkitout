@@ -1,13 +1,11 @@
 import { db, takeFirst, takeFirstOrThrow } from "@/lib/db";
 import { nanoid } from "@/lib/id";
+import { redis } from "@/lib/redis";
 import { withRetry } from "@/lib/retry";
 import { omit } from "@/lib/transform";
 import { err, ok, type Result } from "@justmiracle/result";
 import { TB_token } from "@repo/db/table";
 import { and, eq, isNull, sql } from "drizzle-orm";
-import { Redis } from "ioredis";
-
-const redis = new Redis();
 
 const genKey = (key: string) => `token:${key}`;
 

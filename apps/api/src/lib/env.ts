@@ -10,7 +10,7 @@ export const envSchema = z.object({
     ])
     .default("development"),
 
-  PORT: z.number().default(3050),
+  PORT: z.number({ coerce: true }).default(3050),
 
   WEB_URL: z.string().default("http://localhost:3000"),
   API_URL: z.string().default("http://localhost:3050"),
@@ -19,6 +19,9 @@ export const envSchema = z.object({
   BAKONG_TOKEN: z.string(),
 
   DB_URL: z.string(),
+  REDIS_HOST: z.string().default("localhost"),
+  REDIS_PORT: z.number({ coerce: true }).default(6379),
+  REDIS_PASSWORD: z.string().optional(),
 
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),

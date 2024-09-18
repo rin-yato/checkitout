@@ -1,33 +1,39 @@
 import type { App } from "@/setup/context";
-// import { createBullBoard } from "@bull-board/api";
-// import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
-// import { HonoAdapter } from "@bull-board/hono";
-// import { Queue, type Worker } from "bullmq";
+import { createBullBoard } from "@bull-board/api";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
+import { HonoAdapter } from "@bull-board/hono";
+import { Queue, type Worker } from "bullmq";
 import { serveStatic } from "hono/bun";
+import { env } from "./env";
 
 export function registerTasker(app: App, taskers: Tasker[]) {
   // start all taskers
   taskers.forEach((tasker) => tasker.start());
 
-  // const serverAdapter = new HonoAdapter(serveStatic);
+  const serverAdapter = new HonoAdapter(serveStatic);
 
-  // createBullBoard({
-  //   queues: taskers.map(createBullAdapter),
-  //   serverAdapter,
-  // });
+  createBullBoard({
+    queues: taskers.map(createBullAdapter),
+    serverAdapter,
+  });
 
-  // serverAdapter.setBasePath("/queue");
+  serverAdapter.setBasePath("/queue");
 
-  // app.route("/queue", serverAdapter.registerPlugin());
+  app.route("/queue", serverAdapter.registerPlugin());
 }
 
-// function createBullAdapter(tasker: Tasker) {
-//   return new BullMQAdapter(new Queue(tasker.worker.name));
-// }
+function createBullAdapter(tasker: Tasker) {
+  return new BullMQAdapter(
+    new Queue(tasker.worker.name, {
+      connection: DEFAULT_CONNECTION,
+    }),
+  );
+}
 
 export const DEFAULT_CONNECTION = {
-  host: "127.0.0.1",
-  port: 6379,
+  host: env.REDIS_HOST,
+  port: env.REDIS_PORT,
+  password: env.REDIS_PASSWORD,
 };
 
 export interface Tasker {
