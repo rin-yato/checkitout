@@ -13,7 +13,7 @@ type Token = { token: string; userId: string };
 
 class TokenService {
   async create(userId: string, tokenName: string) {
-    const key = `token_${nanoid(26)}`;
+    const key = `token_${nanoid(32)}`;
 
     const exist = await db
       .select()

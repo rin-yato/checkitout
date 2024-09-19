@@ -1,7 +1,8 @@
 {
-  "name": "@justmiracle/checkout",
+  "name": "@justmiracle/checkitout",
   "module": "index.ts",
   "type": "module",
+  "private": false,
   "export": {
     ".": "index.ts"
   },
@@ -10,7 +11,8 @@
     "check:ci": "biome ci ./",
     "check:fix": "biome check --write --unsafe ./",
     "ci": "pnpm run check:ci && pnpm run type",
-    "type": "tsc --noEmit --skipLibCheck"
+    "type": "tsc --noEmit --skipLibCheck",
+    "build": "bun build --declaration --minify --target node --outdir dist index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"

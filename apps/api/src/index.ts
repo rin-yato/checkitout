@@ -11,8 +11,12 @@ import { registerTiming } from "@/setup/timing";
 import { registerAuthMiddleware } from "@/setup/auth";
 import type { AppEnv } from "@/setup/context";
 import { TransactionTasker } from "@/task/transaction";
+import { registerGlobalErrorHandler } from "./setup/error";
 
 const app = new OpenAPIHono<AppEnv>();
+
+// Register global error handler
+registerGlobalErrorHandler(app);
 
 // Register CORS
 registerCors(app);

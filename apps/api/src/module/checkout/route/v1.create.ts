@@ -1,13 +1,15 @@
-import { validateAuth } from "@/lib/auth";
 import type { AppEnv } from "@/setup/context";
 import { endTime, startTime } from "hono/timing";
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { checkoutRequestSchema, checkoutService } from "@/service/checkout.service";
+import { validateToken } from "@/setup/token.middleware";
+import { userService } from "@/service/user.service";
+import { HTTPException } from "hono/http-exception";
 
-export const createCheckout = new OpenAPIHono<AppEnv>().openapi(
+export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
   createRoute({
     method: "post",
-    path: "/checkout",
+    path: "/v1/checkout",
     tags: ["Checkout"],
     description: "Create a checkout",
     request: {
@@ -24,24 +26,31 @@ export const createCheckout = new OpenAPIHono<AppEnv>().openapi(
         description: "Checkout created",
         content: {
           "application/json": {
-            schema: z.object({ data: z.any() }),
+            schema: z.any(),
           },
         },
       },
     },
   }),
   async (c) => {
-    const { user } = validateAuth(c);
     const body = c.req.valid("json");
 
+    startTime(c, "token validation");
+    const token = await validateToken(c);
+    const user = await userService.findById(token.userId);
+    if (user.error || !user.value) {
+      throw new HTTPException(401, { message: "Unauthorized" });
+    }
+    endTime(c, "token validation");
+
     startTime(c, "db");
-    const checkout = await checkoutService.create(user, body);
+    const checkout = await checkoutService.create(user.value, body);
     endTime(c, "db");
 
     if (checkout.error) {
       throw checkout.error;
     }
 
-    return c.json({ data: checkout.value });
+    return c.json(checkout.value);
   },
 );

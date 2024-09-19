@@ -16,6 +16,8 @@ import {
 import { checkoutInsert, checkoutItemInsert, type CheckoutInsert } from "@repo/db/schema";
 import { genId } from "@/lib/id";
 import { withRetry } from "@/lib/retry";
+import { apiError } from "@/lib/error";
+import { ERROR } from "@/constant/error";
 
 export const checkoutRequestSchema = checkoutInsert.omit({ refId: true, userId: true }).extend({
   items: z.array(checkoutItemInsert.omit({ checkoutId: true }).openapi("CheckoutItem Insert"), {
@@ -27,7 +29,13 @@ export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
 
 export class CheckoutService {
   async create(user: User, { items, ...checkoutReq }: CheckoutRequest) {
-    if (!user.bakongId) throw new Error("User has no bakongId");
+    if (!user.bakongId) {
+      throw apiError({
+        status: 400,
+        name: "NO_BAKONG_ID",
+        message: "User does not have a Bakong ID",
+      });
+    }
 
     const checkoutId = genId(CHECKOUT_ID_PREFIX);
 
@@ -43,11 +51,22 @@ export class CheckoutService {
     const itemInserts = z
       .array(checkoutItemInsert)
       .safeParse(items.map((item) => ({ ...item, checkoutId })));
-    if (!itemInserts.success) throw new Error("Invalid items data");
+    if (!itemInserts.success) {
+      throw apiError({
+        status: 400,
+        name: "INVALID_DATA",
+        message: "Invalid items data",
+        details: itemInserts.error.flatten,
+      });
+    }
 
     const txResult = await db
       .transaction(async (tx) => {
-        const checkout = await tx.insert(TB_checkout).values(checkoutData.data).returning();
+        const checkout = await tx
+          .insert(TB_checkout)
+          .values(checkoutData.data)
+          .returning()
+          .then(takeFirstOrThrow);
         const items = await tx.insert(TB_checkoutItem).values(itemInserts.data).returning();
         const transaction = await transactionServcie.createTransactionQuery(
           {
@@ -74,7 +93,12 @@ export class CheckoutService {
       with: { transactions: true, items: true, user: true },
     });
 
-    if (!checkout) return err("CHECKOUT_NOT_FOUND");
+    if (!checkout) {
+      throw apiError({
+        status: 404,
+        message: "Checkout not found",
+      });
+    }
 
     if (checkout.status === "SUCCESS") {
       return ok({ ...checkout, activeTransaction: null });
@@ -91,7 +115,6 @@ export class CheckoutService {
           merchantName: checkout.user.displayName,
           accountID: checkout.user.bakongId,
         })
-        .then(takeFirstOrThrow)
         .then(ok)
         .catch(err);
 

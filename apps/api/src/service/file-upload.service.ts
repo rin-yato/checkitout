@@ -5,6 +5,7 @@ import { err, ok } from "@justmiracle/result";
 import { storage } from "@/lib/storage";
 import { db, takeFirstOrThrow } from "@/lib/db";
 import { TB_fileUpload } from "@repo/db/table";
+import { apiError } from "@/lib/error";
 
 const OPTIMIZE_IMAGE = {
   format: "webp",
@@ -34,12 +35,11 @@ class FileUploadService {
       .catch(err);
 
     if (optimizedImageResult.error) {
-      // throw new ApiError({
-      //   code: 400,
-      //   message: "Failed to optimize your file",
-      //   details: optimizedImageResult.error,
-      // });
-      return optimizedImageResult;
+      throw apiError({
+        status: 500,
+        message: "Failed to optimize file",
+        details: optimizedImageResult.error,
+      });
     }
 
     const url = await storage
@@ -53,12 +53,11 @@ class FileUploadService {
       .catch(err);
 
     if (url.error) {
-      // throw new ApiError({
-      //   code: 500,
-      //   message: "Failed to upload your file",
-      //   details: url.error,
-      // });
-      return url;
+      throw apiError({
+        status: 500,
+        message: "Failed to upload file",
+        details: url.error,
+      });
     }
 
     const fileUpload = await db
@@ -76,13 +75,13 @@ class FileUploadService {
       .then(ok)
       .catch(err);
 
-    // if (fileUpload.error) {
-    //   // throw new ApiError({
-    //   //   code: 500,
-    //   //   message: "Failed to save your file",
-    //   //   details: fileUpload.error,
-    //   // });
-    // }
+    if (fileUpload.error) {
+      throw apiError({
+        status: 500,
+        message: "Failed to save your file",
+        details: fileUpload.error,
+      });
+    }
 
     return fileUpload;
   }

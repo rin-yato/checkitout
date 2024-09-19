@@ -17,7 +17,7 @@ interface CreateTransactionOpts {
 }
 
 class TransactionService {
-  createTransactionQuery(opts: CreateTransactionOpts, _db: DBTrx = db) {
+  async createTransactionQuery(opts: CreateTransactionOpts, _db: DBTrx = db) {
     const khqr = bakongService.createKHQR({
       amount: opts.amount,
       currency: opts.currency,
@@ -36,7 +36,8 @@ class TransactionService {
         qrCode: khqr.value.qr,
         checkoutId: opts.checkoutId,
       })
-      .returning();
+      .returning()
+      .then(takeFirstOrThrow);
   }
 
   getTransactionByMd5(md5: string) {

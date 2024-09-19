@@ -1,3 +1,4 @@
+import { apiError } from "@/lib/error";
 import { SESSION_COOKIE_NAME, lucia } from "@/lib/lucia";
 import { err, ok } from "@justmiracle/result";
 import type { OAuth2ProviderWithPKCE } from "arctic";
@@ -13,12 +14,11 @@ export class AuthService {
     storedCodeVerifier: string | undefined,
   ) {
     if (!code || !state || !storedState || state !== storedState || !storedCodeVerifier) {
-      // throw new ApiError({
-      //   code: 400,
-      //   message: "Invalid OAuth callback",
-      //   details: "Invalid state, code, codeVerifier or cookie",
-      // });
-      throw new Error("Invalid OAuth callback");
+      throw apiError({
+        status: 400,
+        message: "Invalid OAuth callback",
+        details: "Invalid state, code, codeVerifier or cookie",
+      });
     }
 
     const token = await provider
@@ -27,12 +27,11 @@ export class AuthService {
       .catch(err);
 
     if (token.error) {
-      // throw new ApiError({
-      //   code: 500,
-      //   message: "Failed to validate authorization code",
-      //   details: token.error,
-      // });
-      throw new Error("Failed to validate authorization code");
+      throw apiError({
+        status: 500,
+        message: "Failed to validate authorization code",
+        details: token.error.message,
+      });
     }
 
     return token.value;

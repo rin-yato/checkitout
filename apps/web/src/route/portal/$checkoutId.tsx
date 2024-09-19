@@ -54,7 +54,7 @@ function CheckoutPage() {
   }
 
   return (
-    <main className="h-dvh">
+    <main className="h-dvh w-full">
       <Grid columns="2" className="size-full bg-gray-2 pt-10">
         <Flex className="fade-in-0 size-full animate-in justify-end px-12 py-10">
           <Invoice data={data.data} />

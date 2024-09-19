@@ -2,6 +2,7 @@ type AdditionalInfo = Record<string, any> | unknown;
 
 export type Currency = "USD" | "KHR";
 export type CheckoutStatus = "IDLE" | "PENDING" | "PAID" | "CANCELED";
+export type TransactionStatus = "TIMEOUT" | "PENDING" | "SUCCESS" | "FAILED";
 
 export interface Checkout<TInfo extends AdditionalInfo = unknown> {
   id: string;
@@ -34,6 +35,22 @@ export type CheckoutItem = {
   img: string;
   price: number;
   quantity: number;
+
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Transaction = {
+  id: string;
+  checkoutId: string;
+
+  md5: string;
+  qrCode: string;
+
+  amount: number;
+  currency: Currency;
+
+  status: TransactionStatus;
 
   createdAt: Date;
   updatedAt: Date;

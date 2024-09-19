@@ -19,13 +19,17 @@ export function createApiCall() {
   ): Promise<ApiResponse<TSuccess>> => {
     return fetch(url, requestInit)
       .then(async (res) => {
+        console.log(res);
         const json = await res.json();
         if (res.ok) return { data: json as TSuccess, error: null, response: res };
         return { error: json, data: null, response: res } as ApiResponseError;
       })
-      .catch(() => ({
-        error: { code: 500, message: "Something went wrong." },
-        data: null,
-      }));
+      .catch((e) => {
+        console.error("CHECKITOUT_ERROR", e);
+        return {
+          error: { code: 500, message: "Something went wrong." },
+          data: null,
+        };
+      });
   };
 }

@@ -2,7 +2,8 @@ import { formatCurrency } from "@/lib/currency";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import { QRCodeSVG } from "qrcode.react";
 import { InvoiceSeparator } from "./invoice";
-import { Check, Scan } from "@phosphor-icons/react";
+import { Check } from "@phosphor-icons/react";
+import { IconBorderCorners } from "@tabler/icons-react";
 
 interface QRPayProps {
   qrCode: string;
@@ -59,8 +60,8 @@ export function QRPay(props: QRPayProps) {
         </Flex>
       ) : (
         <Flex className="relative m-2 aspect-square px-4 pt-7 pb-4">
-          <Scan
-            className="absolute inset-0 size-full scale-125 text-gray-3"
+          <IconBorderCorners
+            className="absolute inset-0 size-full scale-[1.4] text-gray-3"
             strokeWidth={0.5}
           />
 

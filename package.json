@@ -1,5 +1,5 @@
 {
-  "name": "pay",
+  "name": "checkitout",
   "private": true,
   "scripts": {
     "build": "turbo run build --env-mode=loose",

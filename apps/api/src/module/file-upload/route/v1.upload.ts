@@ -31,10 +31,6 @@ export const uploadFileV1 = new OpenAPIHono<AppEnv>().openapi(
 
     const fileUpload = await fileUploadService.uploadFile(file, user.id);
 
-    if (fileUpload.error) {
-      return c.json(fileUpload.error.message, 400);
-    }
-
     return c.json(fileUpload.value);
   },
 );
