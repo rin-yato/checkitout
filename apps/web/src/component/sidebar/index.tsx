@@ -51,7 +51,7 @@ export function Sidebar() {
         >
           <Avatar
             radius="full"
-            src={user.profile ?? ""}
+            src={user.profile?.url ?? ""}
             fallback={getInitial(user.displayName)}
           />
           <Flex direction="column" overflowX="hidden">

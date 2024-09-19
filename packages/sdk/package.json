@@ -5,6 +5,13 @@
   "export": {
     ".": "index.ts"
   },
+  "scripts": {
+    "check": "biome check ./",
+    "check:ci": "biome ci ./",
+    "check:fix": "biome check --write --unsafe ./",
+    "ci": "pnpm run check:ci && pnpm run type",
+    "type": "tsc --noEmit --skipLibCheck"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

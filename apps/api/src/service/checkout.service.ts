@@ -7,7 +7,12 @@ import { db, takeFirstOrThrow } from "@/lib/db";
 import { transactionQueue } from "@/task/transaction";
 import { transactionServcie } from "./transaction.service";
 
-import { CHECKOUT_ID_PREFIX, TB_checkout, TB_checkoutItem } from "@repo/db/table";
+import {
+  CHECKOUT_ID_PREFIX,
+  TB_checkout,
+  TB_checkoutItem,
+  TB_transaction,
+} from "@repo/db/table";
 import { checkoutInsert, checkoutItemInsert, type CheckoutInsert } from "@repo/db/schema";
 import { genId } from "@/lib/id";
 import { withRetry } from "@/lib/retry";
@@ -40,28 +45,27 @@ export class CheckoutService {
       .safeParse(items.map((item) => ({ ...item, checkoutId })));
     if (!itemInserts.success) throw new Error("Invalid items data");
 
-    const createtransactionQuery = transactionServcie.createTransactionQuery({
-      checkoutId: checkoutId,
-      currency: checkoutData.data.currency,
-      amount: checkoutData.data.total,
-      merchantName: user.displayName,
-      accountID: user.bakongId,
-    });
-    const createCheckoutQuery = db.insert(TB_checkout).values(checkoutData.data).returning();
-    const createItemsQuery = db.insert(TB_checkoutItem).values(itemInserts.data).returning();
+    const txResult = await db
+      .transaction(async (tx) => {
+        const checkout = await tx.insert(TB_checkout).values(checkoutData.data).returning();
+        const items = await tx.insert(TB_checkoutItem).values(itemInserts.data).returning();
+        const transaction = await transactionServcie.createTransactionQuery(
+          {
+            checkoutId: checkoutId,
+            currency: checkoutData.data.currency,
+            amount: checkoutData.data.total,
+            merchantName: user.displayName,
+            accountID: user.bakongId,
+          },
+          tx,
+        );
 
-    const batch = await db
-      .batch([createCheckoutQuery, createItemsQuery, createtransactionQuery])
+        return { checkout, items, transaction };
+      })
       .then(ok)
       .catch(err);
 
-    if (batch.error) return batch;
-
-    const createdItems = batch.value[1];
-    const checkout = takeFirstOrThrow(batch.value[0]);
-    const transaction = takeFirstOrThrow(batch.value[2]);
-
-    return ok({ checkout, items: createdItems, transaction });
+    return txResult;
   }
 
   async portal(id: string) {

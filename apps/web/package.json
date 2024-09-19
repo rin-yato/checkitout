@@ -4,7 +4,12 @@
   "scripts": {
     "dev": "vite --port 3000",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check": "biome check ./",
+    "check:ci": "biome ci ./",
+    "check:fix": "biome check --write --unsafe ./",
+    "ci": "pnpm run check:ci && pnpm run type",
+    "type": "tsc --noEmit --skipLibCheck"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.51.21",

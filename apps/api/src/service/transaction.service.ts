@@ -1,4 +1,4 @@
-import { db, takeFirstOrThrow } from "@/lib/db";
+import { db, takeFirstOrThrow, type DBTrx } from "@/lib/db";
 import { TB_checkout, TB_transaction, TB_transactionRef } from "@repo/db/table";
 import type { Currency } from "@/constant/bakong";
 
@@ -17,7 +17,7 @@ interface CreateTransactionOpts {
 }
 
 class TransactionService {
-  createTransactionQuery(opts: CreateTransactionOpts) {
+  createTransactionQuery(opts: CreateTransactionOpts, _db: DBTrx = db) {
     const khqr = bakongService.createKHQR({
       amount: opts.amount,
       currency: opts.currency,
@@ -27,7 +27,7 @@ class TransactionService {
 
     if (khqr.error) throw khqr.error;
 
-    return db
+    return _db
       .insert(TB_transaction)
       .values({
         amount: opts.amount,

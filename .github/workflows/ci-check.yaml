@@ -37,10 +37,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile 
 
-
-      - name: Create .env file
-        run: |
-          echo "${{ secrets.ENV }}" >> .env
-
       - name: Run ci command
         run: pnpm run ci
