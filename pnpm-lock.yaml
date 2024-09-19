@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      dotenv-mono:
-        specifier: ^1.3.14
-        version: 1.3.14
     devDependencies:
       '@biomejs/biome':
         specifier: 1.8.3
@@ -5498,21 +5494,6 @@ packages:
   /dlv@1.1.3:
     resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
     dev: true
-
-  /dotenv-expand@11.0.6:
-    resolution: {integrity: sha512-8NHi73otpWsZGBSZwwknTXS5pqMOrk9+Ssrna8xCaxkzEpU9OTf9R5ArQGVw03//Zmk9MOwLPng9WwndvpAJ5g==}
-    engines: {node: '>=12'}
-    dependencies:
-      dotenv: 16.4.5
-    dev: false
-
-  /dotenv-mono@1.3.14:
-    resolution: {integrity: sha512-Wz8nIv9gU1IuAuHrsA0GfA3r7EygUE9JHyjJ7Tx3e8hZOWc/LI6V3k5XVLZ0/1Jd0/RFGnmb798NwtSpJGCK1Q==}
-    hasBin: true
-    dependencies:
-      dotenv: 16.4.5
-      dotenv-expand: 11.0.6
-    dev: false
 
   /dotenv@16.4.5:
     resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
