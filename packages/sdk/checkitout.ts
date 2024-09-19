@@ -1,5 +1,5 @@
 import { API_URL, WEB_URL } from "./constant";
-import type { Checkout, CheckoutRequest, CreateCheckoutResponse } from "./type";
+import type { CheckoutRequest, CreateCheckoutResponse, FindOneResponse } from "./type";
 import { createApiCall } from "./util";
 
 export class Checkitout {
@@ -46,8 +46,8 @@ export class Checkitout {
   // }
 
   async findOne(checkoutId: string) {
-    const url = new URL(`/checkout/${checkoutId}`, this.apiUrl);
-    return this.api<Checkout>(url, {
+    const url = new URL(`v1/checkout/${checkoutId}`, this.apiUrl);
+    return this.api<FindOneResponse>(url, {
       headers: {
         Authorization: `Bearer ${this.token}`,
       },

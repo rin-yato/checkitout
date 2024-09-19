@@ -62,6 +62,11 @@ export interface CreateCheckoutResponse {
   transaction: Transaction;
 }
 
+export interface FindOneResponse extends Checkout {
+  items: CheckoutItem[];
+  transactions: Transaction[];
+}
+
 export interface CheckoutItemRequest {
   productId: string;
   name: string;
