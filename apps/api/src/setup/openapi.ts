@@ -41,6 +41,7 @@ There is no need to fill in the \`Client ID\` or check any \`scopes\`.
   app.get(
     "/docs",
     apiReference({
+      servers: [{ url: env.API_URL }],
       cdn: "https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.25.7",
       pageTitle: "Miracle Checkout",
       tagsSorter: "alpha",
