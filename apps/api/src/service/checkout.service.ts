@@ -7,17 +7,11 @@ import { db, takeFirstOrThrow } from "@/lib/db";
 import { transactionQueue } from "@/task/transaction";
 import { transactionServcie } from "./transaction.service";
 
-import {
-  CHECKOUT_ID_PREFIX,
-  TB_checkout,
-  TB_checkoutItem,
-  TB_transaction,
-} from "@repo/db/table";
+import { CHECKOUT_ID_PREFIX, TB_checkout, TB_checkoutItem } from "@repo/db/table";
 import { checkoutInsert, checkoutItemInsert, type CheckoutInsert } from "@repo/db/schema";
 import { genId } from "@/lib/id";
 import { withRetry } from "@/lib/retry";
 import { apiError } from "@/lib/error";
-import { ERROR } from "@/constant/error";
 
 export const checkoutRequestSchema = checkoutInsert.omit({ refId: true, userId: true }).extend({
   items: z.array(checkoutItemInsert.omit({ checkoutId: true }).openapi("CheckoutItem Insert"), {
@@ -46,7 +40,14 @@ export class CheckoutService {
       id: checkoutId,
     } satisfies CheckoutInsert);
 
-    if (!checkoutData.success) throw checkoutData.error;
+    if (!checkoutData.success) {
+      throw apiError({
+        status: 400,
+        name: "INVALID_DATA",
+        message: "Invalid checkout data",
+        details: checkoutData.error.flatten,
+      });
+    }
 
     const itemInserts = z
       .array(checkoutItemInsert)
@@ -101,7 +102,7 @@ export class CheckoutService {
     }
 
     if (checkout.status === "SUCCESS") {
-      return ok({ ...checkout, activeTransaction: null });
+      return ok({ checkout, activeTransaction: null });
     }
 
     let activeTransaction = checkout.transactions.find((t) => t.status === "PENDING");
@@ -118,7 +119,13 @@ export class CheckoutService {
         .then(ok)
         .catch(err);
 
-      if (transaction.error) return transaction;
+      if (transaction.error) {
+        throw apiError({
+          status: 500,
+          message: "Failed to create transaction",
+          details: transaction.error.message,
+        });
+      }
       activeTransaction = transaction.value;
     }
 
@@ -130,7 +137,7 @@ export class CheckoutService {
       console.error("Unable to add transaction to queue:", err);
     });
 
-    return ok({ ...checkout, activeTransaction });
+    return ok({ checkout, activeTransaction });
   }
 }
 

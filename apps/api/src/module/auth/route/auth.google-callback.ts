@@ -1,4 +1,5 @@
 import { env } from "@/lib/env";
+import { apiError } from "@/lib/error";
 import { google } from "@/lib/lucia/auth-provider";
 import { authService } from "@/service/auth.service";
 import { userService } from "@/service/user.service";
@@ -59,41 +60,38 @@ export const googleAuthCallback = new OpenAPIHono().openapi(
       .catch(err);
 
     if (googleUser.error) {
-      // throw new ApiError({
-      //   code: 500,
-      //   message: "Unable to get the Google user data",
-      //   details: googleUser.error,
-      // });
-      throw googleUser.error;
+      throw apiError({
+        status: 500,
+        message: "Unable to get the Google user data",
+        details: googleUser.error,
+      });
     }
 
     let user = await userService.findByGoogleId(googleUser.value.sub);
 
     if (user.error) {
-      // throw new ApiError({
-      //   code: 500,
-      //   message: "Something went wrong, please try again later",
-      //   details: {
-      //     message: "Unable to check if user already exist",
-      //     error: user.error,
-      //   },
-      // });
-      throw user.error;
+      throw apiError({
+        status: 500,
+        message: "Something went wrong, please try again later",
+        details: {
+          message: "Unable to check if user already exist",
+          error: user.error,
+        },
+      });
     }
 
     if (!user.value) {
       const username = googleUser.value.email.split("@")[0];
 
       if (!username) {
-        // throw new ApiError({
-        //   code: 500,
-        //   message: "Something went wrong, please try again later",
-        //   details: {
-        //     message: "Unable to generate username",
-        //     email: googleUser.value.email,
-        //   },
-        // });
-        throw new Error("Unable to generate username");
+        throw apiError({
+          status: 500,
+          message: "Something went wrong, please try again later",
+          details: {
+            message: "Unable to generate username",
+            email: googleUser.value.email,
+          },
+        });
       }
 
       user = await userService.create({
@@ -105,12 +103,11 @@ export const googleAuthCallback = new OpenAPIHono().openapi(
       });
 
       if (user.error || !user.value) {
-        // throw new ApiError({
-        //   code: 500,
-        //   message: "Unable to create user",
-        //   details: user.error,
-        // });
-        throw user.error;
+        throw apiError({
+          status: 500,
+          message: "Unable to create user",
+          details: user.error,
+        });
       }
     }
 

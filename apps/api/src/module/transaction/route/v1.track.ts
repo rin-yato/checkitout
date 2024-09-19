@@ -4,10 +4,10 @@ import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 
 import { transactionQueue } from "@/task/transaction";
 
-export const trackTransaction = new OpenAPIHono().openapi(
+export const trackTransactionV1 = new OpenAPIHono().openapi(
   createRoute({
     method: "get",
-    path: "/transaction/track/{md5}",
+    path: "/v1/transaction/track/{md5}",
     tags: ["Transaction"],
     request: { params: z.object({ md5: z.string() }) },
     responses: {

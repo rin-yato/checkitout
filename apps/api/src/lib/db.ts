@@ -1,7 +1,6 @@
 import { createDB, createDBClient } from "@repo/db";
 import { env } from "./env";
 import { apiError } from "./error";
-import { ERROR } from "@/constant/error";
 
 const client = createDBClient({ url: env.DB_URL });
 export const db = createDB(client);
@@ -21,6 +20,6 @@ export function takeFirstOrThrow<T>(data: T[]): T {
     status: 500,
     message: "Internal Server Error",
     details: "Take first or throw failed: No data found",
-    name: ERROR.TAKE_FIRST_OR_THROW,
+    name: "TAKE_FIRST_OR_THROW",
   });
 }

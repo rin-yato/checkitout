@@ -5,6 +5,7 @@ import { checkoutRequestSchema, checkoutService } from "@/service/checkout.servi
 import { validateToken } from "@/setup/token.middleware";
 import { userService } from "@/service/user.service";
 import { HTTPException } from "hono/http-exception";
+import { apiError } from "@/lib/error";
 
 export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
   createRoute({
@@ -48,7 +49,11 @@ export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
     endTime(c, "db");
 
     if (checkout.error) {
-      throw checkout.error;
+      throw apiError({
+        status: 400,
+        message: "Failed to create checkout",
+        details: checkout.error.message,
+      });
     }
 
     return c.json(checkout.value);

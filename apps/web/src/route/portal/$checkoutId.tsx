@@ -19,7 +19,7 @@ function CheckoutPage() {
     queryKey: ["checkout", checkoutId],
     queryFn: () => {
       return ky
-        .get(`http://localhost:3050/checkout/portal/${checkoutId}`, { retry: 0 })
+        .get(`http://localhost:3050/v1/checkout/portal/${checkoutId}`, { retry: 0 })
         .json<any>();
     },
     retry: false,
@@ -33,7 +33,7 @@ function CheckoutPage() {
     if (!data?.data?.activeTransaction) return;
 
     const event = new EventSource(
-      `http://localhost:3050/transaction/track/${data.data?.activeTransaction.md5}`,
+      `http://localhost:3050/v1/transaction/track/${data.data?.activeTransaction.md5}`,
     );
 
     event.onmessage = (e) => {
