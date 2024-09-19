@@ -139,6 +139,15 @@ export class CheckoutService {
 
     return ok({ checkout, activeTransaction });
   }
+
+  findById(id: string) {
+    return db.query.TB_checkout.findFirst({
+      where: eq(TB_checkout.id, id),
+      with: { transactions: true, items: true },
+    })
+      .then(ok)
+      .catch(err);
+  }
 }
 
 export const checkoutService = new CheckoutService();

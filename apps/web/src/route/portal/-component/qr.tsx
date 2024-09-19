@@ -79,8 +79,8 @@ export function QRPay(props: QRPayProps) {
         </Flex>
       )}
 
-      <Flex className="items-center justify-center gap-3">
-        <Text color="gray">Powered by</Text>
+      <Flex className="items-center justify-center gap-2">
+        <Text color="gray">Payment via</Text>
         <img
           alt="powered by khqr"
           className="h-5 object-contain"

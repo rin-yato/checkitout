@@ -1,4 +1,4 @@
-import { Flex, Grid } from "@radix-ui/themes";
+import { Em, Flex, Grid, Text } from "@radix-ui/themes";
 import { createFileRoute } from "@tanstack/react-router";
 import { Invoice } from "./-component/invoice";
 import { QRPay } from "./-component/qr";
@@ -24,16 +24,16 @@ function CheckoutPage() {
     },
     retry: false,
     refetchInterval: (query) =>
-      query.state.status === "error" || query.state?.data?.data?.status === "SUCCESS"
+      query.state.status === "error" || query.state?.data?.checkout?.status === "SUCCESS"
         ? false
         : 3000,
   });
 
   useEffect(() => {
-    if (!data?.data?.activeTransaction) return;
+    if (!data?.activeTransaction) return;
 
     const event = new EventSource(
-      `http://localhost:3050/v1/transaction/track/${data.data?.activeTransaction.md5}`,
+      `http://localhost:3050/v1/transaction/track/${data?.activeTransaction.md5}`,
     );
 
     event.onmessage = (e) => {
@@ -57,19 +57,21 @@ function CheckoutPage() {
     <main className="h-dvh w-full">
       <Grid columns="2" className="size-full bg-gray-2 pt-10">
         <Flex className="fade-in-0 size-full animate-in justify-end px-12 py-10">
-          <Invoice data={data.data} />
+          <Invoice data={data.checkout} />
         </Flex>
         <Flex
           direction="column"
           className="fade-in-0 size-full animate-in justify-start px-12 py-10"
         >
-          <QRPay
-            paid={success || data.data.status === "SUCCESS"}
-            currency={data.data.currency}
-            amount={data.data.total}
-            merchantName={"Mi Home BKK"}
-            qrCode={data.data?.activeTransaction?.qrCode}
-          />
+          <div className="flex w-fit flex-col">
+            <QRPay
+              paid={success || data.checkout.status === "SUCCESS"}
+              currency={data.checkout.currency}
+              amount={data.checkout.total}
+              merchantName={"Mi Home BKK"}
+              qrCode={data?.activeTransaction?.qrCode}
+            />
+          </div>
 
           {/* Step by step guide for scanning QR code and paying with Bakong KHQR */}
           <Flex className="mt-8 flex-col gap-3 text-gray-foreground">

@@ -1,5 +1,5 @@
 import { API_URL, WEB_URL } from "./constant";
-import type { Checkout, CheckoutItem, CheckoutRequest, Transaction } from "./type";
+import type { Checkout, CheckoutRequest, CreateCheckoutResponse } from "./type";
 import { createApiCall } from "./util";
 
 export class Checkitout {
@@ -9,9 +9,9 @@ export class Checkitout {
   protected token;
 
   constructor(opts: { apiUrl?: string; webUrl?: string; token: string }) {
-    if (typeof window !== "undefined") {
-      throw new Error("Checkitout SDK should be used in server environment only");
-    }
+    // if (typeof window !== "undefined") {
+    //   throw new Error("Checkitout SDK should be used in server environment only");
+    // }
 
     this.token = opts.token;
     this.apiUrl = opts.apiUrl || API_URL;
@@ -26,11 +26,7 @@ export class Checkitout {
 
   async create(request: CheckoutRequest) {
     const url = new URL("/v1/checkout", this.apiUrl);
-    return this.api<{
-      checkout: Checkout;
-      items: CheckoutItem[];
-      transaction: Transaction;
-    }>(url, {
+    return this.api<CreateCheckoutResponse>(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,14 +36,14 @@ export class Checkitout {
     });
   }
 
-  async findMany() {
-    const url = new URL("/checkout", this.apiUrl);
-    return this.api<Checkout[]>(url, {
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-      },
-    });
-  }
+  // async findMany() {
+  //   const url = new URL("/checkout", this.apiUrl);
+  //   return this.api<Checkout[]>(url, {
+  //     headers: {
+  //       Authorization: `Bearer ${this.token}`,
+  //     },
+  //   });
+  // }
 
   async findOne(checkoutId: string) {
     const url = new URL(`/checkout/${checkoutId}`, this.apiUrl);

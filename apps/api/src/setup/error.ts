@@ -1,5 +1,6 @@
 import { isApiError } from "@/lib/error";
 import type { App } from "./context";
+import { HTTPException } from "hono/http-exception";
 
 export function registerGlobalErrorHandler(app: App) {
   app.onError((err, c) => {
@@ -8,7 +9,23 @@ export function registerGlobalErrorHandler(app: App) {
       return c.json({ message, details, name, status }, status);
     }
 
-    return c.json({ status: 500, message: err.message, name: "UNKNOWN_ERROR" }, 500);
+    if (err instanceof HTTPException) {
+      const res = err.getResponse();
+      return new Response(
+        JSON.stringify({
+          name: "HTTP_EXCEPTION",
+          status: res.status,
+          message: err.message,
+        }),
+        {
+          status: res.status,
+          statusText: res.statusText,
+          headers: res.headers,
+        },
+      );
+    }
+
+    return c.json({ status: 500, message: err.message, name: "UNKNOWN" }, 500);
   });
 
   app.notFound((c) => {

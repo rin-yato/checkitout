@@ -3,36 +3,40 @@ import { checkoutService } from "@/service/checkout.service";
 import type { AppEnv } from "@/setup/context";
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 
-export const checkoutPortalV1 = new OpenAPIHono<AppEnv>().openapi(
+export const findOneCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
   createRoute({
     method: "get",
-    path: "/v1/checkout/portal/{checkoutId}",
+    path: "/v1/checkout/{id}",
     tags: ["Checkout"],
+    description: "Find a checkout",
     request: {
-      params: z.object({ checkoutId: z.string() }),
+      params: z.object({ id: z.string() }),
     },
     responses: {
-      200: { description: "Checkout portal" },
+      200: {
+        description: "Checkout found",
+      },
     },
   }),
   async (c) => {
-    const checkoutId = c.req.param("checkoutId");
-
-    const checkout = await checkoutService.portal(checkoutId);
+    const { id } = c.req.valid("param");
+    const checkout = await checkoutService.findById(id);
 
     if (checkout.error) {
       throw apiError({
-        status: 500,
-        message: "Failed to get checkout",
+        status: 404,
+        message: "Checkout not found",
         details: checkout.error.message,
       });
     }
 
-    if (!checkout.value)
+    if (!checkout.value) {
       throw apiError({
         status: 404,
         message: "Checkout not found",
+        details: "Checkout not found",
       });
+    }
 
     return c.json(checkout.value);
   },

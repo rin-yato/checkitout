@@ -56,6 +56,12 @@ export type Transaction = {
   updatedAt: Date;
 };
 
+export interface CreateCheckoutResponse {
+  checkout: Checkout;
+  items: CheckoutItem[];
+  transaction: Transaction;
+}
+
 export interface CheckoutItemRequest {
   productId: string;
   name: string;

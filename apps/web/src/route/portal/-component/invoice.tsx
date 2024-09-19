@@ -16,7 +16,7 @@ export function Invoice({ data }: any) {
                 alt="Merchant logo"
                 // src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Xiaomi_logo_%282021-%29.svg"
                 src={data.user.profile}
-                className="rounded object-contain"
+                className="rounded object-contain ring-1 ring-gray"
               />
             </Box>
             <Text trim="both" color="gray" className="text-right">
