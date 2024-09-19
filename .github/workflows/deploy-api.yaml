@@ -1,4 +1,4 @@
-name: Deploy API app
+name: Build and push API
 
 on:
   workflow_dispatch:
@@ -21,33 +21,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Create .env file
-        run: |
-          echo "${{ secrets.ENV }}" >> .env
+      # - name: Create .env file
+      #   run: |
+      #     echo "${{ secrets.ENV }}" >> .env
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: apps/api/Dockerfile 
           push: true
-          tags: ghcr.io/${{ github.repository }}-api:latest
+          tags: |
+            ghcr.io/${{ github.repository }}-api:latest
+            ghcr.io/${{ github.repository }}-api:${{ github.sha }}
 
       - name: Logout from GitHub Container Registry
         run: docker logout ghcr.io
-
-  trigger-admin-deployment:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Wait for 5s
-        run: sleep 5
-
-      - name: Redeploy Admin
-        env:
-          REDEPLOY_TOKEN: ${{ secrets.DEPLOYMENT_TOKEN }}
-        run: |
-          curl --request GET \
-          --url "https://coolify.rinyato.com/api/v1/deploy?uuid=hwwc4o8&force=false" \
-          --header "Authorization: Bearer $REDEPLOY_TOKEN"
