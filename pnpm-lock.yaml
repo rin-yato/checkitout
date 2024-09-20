@@ -120,9 +120,6 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.9.0(react-hook-form@7.53.0)
-      '@justmiracle/checkitout':
-        specifier: workspace:*
-        version: link:../../packages/sdk
       '@justmiracle/result':
         specifier: ^1.2.0
         version: 1.2.0

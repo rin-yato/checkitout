@@ -1,11 +1,11 @@
-import { Em, Flex, Grid, Text } from "@radix-ui/themes";
+import { Flex, Grid } from "@radix-ui/themes";
 import { createFileRoute } from "@tanstack/react-router";
 import { Invoice } from "./-component/invoice";
 import { QRPay } from "./-component/qr";
 import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
-import { useEffect, useState } from "react";
 import { Check, PiggyBank, Scan } from "@phosphor-icons/react";
+import { env } from "@/lib/env";
 
 export const Route = createFileRoute("/portal/$checkoutId")({
   component: CheckoutPage,
@@ -13,37 +13,20 @@ export const Route = createFileRoute("/portal/$checkoutId")({
 
 function CheckoutPage() {
   const { checkoutId } = Route.useParams();
-  const [success, setSuccess] = useState(false);
 
   const { data, isPending, error } = useQuery({
     queryKey: ["checkout", checkoutId],
     queryFn: () => {
       return ky
-        .get(`http://localhost:3050/v1/checkout/portal/${checkoutId}`, { retry: 0 })
+        .get(`v1/checkout/portal/${checkoutId}`, { retry: 0, prefixUrl: env.VITE_API_URL })
         .json<any>();
     },
     retry: false,
     refetchInterval: (query) =>
       query.state.status === "error" || query.state?.data?.checkout?.status === "SUCCESS"
         ? false
-        : 3000,
+        : 2869,
   });
-
-  useEffect(() => {
-    if (!data?.activeTransaction) return;
-
-    const event = new EventSource(
-      `http://localhost:3050/v1/transaction/track/${data?.activeTransaction.md5}`,
-    );
-
-    event.onmessage = (e) => {
-      const status = e.data;
-      if (status === "COMPLETED") {
-        setSuccess(true);
-        event.close();
-      }
-    };
-  }, [data]);
 
   if (isPending) {
     return <div className="h-dvh w-full bg-gray-2" />;
@@ -65,7 +48,7 @@ function CheckoutPage() {
         >
           <div className="flex w-fit flex-col">
             <QRPay
-              paid={success || data.checkout.status === "SUCCESS"}
+              paid={data.checkout.status === "SUCCESS"}
               currency={data.checkout.currency}
               amount={data.checkout.total}
               merchantName={"Mi Home BKK"}
