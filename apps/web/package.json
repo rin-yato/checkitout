@@ -1,5 +1,6 @@
 {
   "name": "web",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000",

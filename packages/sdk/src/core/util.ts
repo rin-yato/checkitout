@@ -7,10 +7,12 @@ export interface ApiResponseSuccess<T> {
 }
 
 export interface ApiResponseError {
-  error: { code: number; message: string };
+  error: { status: number; message: string };
   data: null;
   response?: Response;
 }
+
+export type Api = ReturnType<typeof createApiCall>;
 
 export function createApiCall() {
   return async <TSuccess>(
@@ -19,7 +21,6 @@ export function createApiCall() {
   ): Promise<ApiResponse<TSuccess>> => {
     return fetch(url, requestInit)
       .then(async (res) => {
-        console.log(res);
         const json = await res.json();
         if (res.ok) return { data: json as TSuccess, error: null, response: res };
         return { error: json, data: null, response: res } as ApiResponseError;
@@ -27,7 +28,7 @@ export function createApiCall() {
       .catch((e) => {
         console.error("CHECKITOUT_ERROR", e);
         return {
-          error: { code: 500, message: "Something went wrong." },
+          error: { status: 500, message: "Something went wrong." },
           data: null,
         };
       });

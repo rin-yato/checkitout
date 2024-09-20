@@ -1,12 +1,12 @@
 import { API_URL, WEB_URL } from "./constant";
-import type { CheckoutRequest, CreateCheckoutResponse, FindOneResponse } from "./type";
-import { createApiCall } from "./util";
+import type { CheckoutRequest, CreateCheckoutResponse, FindOneResponse } from "../type";
+import { type Api, createApiCall } from "./util";
 
 export class Checkitout {
-  protected api;
-  protected apiUrl;
-  protected webUrl;
-  protected token;
+  protected api: Api;
+  protected apiUrl: string;
+  protected webUrl: string;
+  protected token: string;
 
   constructor(opts: { apiUrl?: string; webUrl?: string; token: string }) {
     // if (typeof window !== "undefined") {

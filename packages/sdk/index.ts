@@ -1,3 +1,3 @@
-export * from "./type";
-export { Checkitout } from "./checkitout";
-export type { ApiResponse, ApiResponseError, ApiResponseSuccess } from "./util";
+export * from "../type";
+export { Checkitout } from "../checkitout";
+export type { ApiResponse, ApiResponseError, ApiResponseSuccess } from "../util";

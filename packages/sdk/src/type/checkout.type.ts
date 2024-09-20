@@ -1,8 +1,7 @@
-type AdditionalInfo = Record<string, any> | unknown;
+import type { Currency } from "./shared.type";
 
-export type Currency = "USD" | "KHR";
+export type AdditionalInfo = Record<string, any> | unknown;
 export type CheckoutStatus = "IDLE" | "PENDING" | "PAID" | "CANCELED";
-export type TransactionStatus = "TIMEOUT" | "PENDING" | "SUCCESS" | "FAILED";
 
 export interface Checkout<TInfo extends AdditionalInfo = unknown> {
   id: string;
@@ -39,33 +38,6 @@ export type CheckoutItem = {
   createdAt: Date;
   updatedAt: Date;
 };
-
-export type Transaction = {
-  id: string;
-  checkoutId: string;
-
-  md5: string;
-  qrCode: string;
-
-  amount: number;
-  currency: Currency;
-
-  status: TransactionStatus;
-
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-export interface CreateCheckoutResponse {
-  checkout: Checkout;
-  items: CheckoutItem[];
-  transaction: Transaction;
-}
-
-export interface FindOneResponse extends Checkout {
-  items: CheckoutItem[];
-  transactions: Transaction[];
-}
 
 export interface CheckoutItemRequest {
   productId: string;

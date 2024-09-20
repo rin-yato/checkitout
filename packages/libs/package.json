@@ -1,5 +1,6 @@
 {
   "name": "@repo/libs",
+  "private": true,
   "exports": {
     ".": "./src/index.ts",
     "./utils": "./src/utils/index.ts",
