@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.6.3/schema.json",
   "files": {
-    "ignore": [".next", "public", "./src/route-tree.gen.ts"]
+    "ignore": ["dist", "public", "./src/route.gen.ts"]
   },
   "extends": ["../../biome.json"],
   "linter": {
