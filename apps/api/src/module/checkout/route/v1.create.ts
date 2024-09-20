@@ -4,7 +4,6 @@ import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { checkoutRequestSchema, checkoutService } from "@/service/checkout.service";
 import { validateToken } from "@/setup/token.middleware";
 import { userService } from "@/service/user.service";
-import { HTTPException } from "hono/http-exception";
 import { apiError } from "@/lib/error";
 
 export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(

@@ -12,12 +12,11 @@ export function registerGlobalErrorHandler(app: App) {
       }
     });
 
-    logger.trace(err.stack);
-
     if (err instanceof ApiError) {
       const { status, message, details, name } = err;
 
       logger.error({
+        stack: err.stack,
         status,
         message,
         details,
@@ -34,6 +33,7 @@ export function registerGlobalErrorHandler(app: App) {
 
       logger.error({
         body,
+        stack: err.stack,
         status: res.status,
         message: err.message,
         name: "HTTP_EXCEPTION",
@@ -55,6 +55,7 @@ export function registerGlobalErrorHandler(app: App) {
     }
 
     logger.error({
+      stack: err.stack,
       body,
       status: 500,
       message: err.message,

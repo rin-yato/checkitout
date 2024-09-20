@@ -17,8 +17,8 @@ import { registerHeaderMiddleware } from "./setup/header";
 
 const app = new OpenAPIHono<AppEnv>();
 
-// Register global error handler
-registerGlobalErrorHandler(app);
+// Register headers middleware
+registerHeaderMiddleware(app);
 
 // Register CORS
 registerCors(app);
@@ -26,8 +26,8 @@ registerCors(app);
 // Register Timing
 registerTiming(app);
 
-// Register OpenAPI docs
-registerOpenAPI(app);
+// Register global error handler
+registerGlobalErrorHandler(app);
 
 // Register taskers
 registerTasker(app, [new TransactionTasker()]);
@@ -38,8 +38,8 @@ registerAuthMiddleware(app);
 // Register Logger
 registerLogger(app);
 
-// Register headers middleware
-registerHeaderMiddleware(app);
+// Register OpenAPI docs
+registerOpenAPI(app);
 
 // Register modules
 app.route("/", Modules);
