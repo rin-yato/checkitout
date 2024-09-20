@@ -5,10 +5,13 @@ import { logger } from "./logger";
 
 export function registerGlobalErrorHandler(app: App) {
   app.onError((err, c) => {
+    console.error("error", { err, reqHeader: c.req.header });
+
     if (err instanceof ApiError) {
       const { status, message, details, name, stack, cause } = err;
 
       logger.error({
+        header: c.req.header,
         cause,
         stack,
         status,
