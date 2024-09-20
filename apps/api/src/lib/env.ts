@@ -33,6 +33,9 @@ export const envSchema = z.object({
   R2_PUBLIC_URL: z.string(),
   R2_ACCESS_KEY: z.string(),
   R2_SECRET_ACCESS_KEY: z.string(),
+
+  AXIOM_DATASET: z.string().optional(),
+  AXIOM_TOKEN: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

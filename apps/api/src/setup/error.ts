@@ -1,18 +1,38 @@
 import { ApiError } from "@/lib/error";
 import type { App } from "./context";
 import { HTTPException } from "hono/http-exception";
+import { logger } from "./logger";
 
 export function registerGlobalErrorHandler(app: App) {
   app.onError((err, c) => {
-    console.log("henlo", err);
-
     if (err instanceof ApiError) {
-      const { status, message, details, name } = err;
+      const { status, message, details, name, stack, cause } = err;
+
+      logger.error({
+        cause,
+        stack,
+        status,
+        message,
+        details,
+        name,
+        type: "Error",
+      });
+
       return c.json({ message, details, name, status }, status);
     }
 
     if (err instanceof HTTPException) {
       const res = err.getResponse();
+
+      logger.error({
+        stack: err.stack,
+        cause: err.cause,
+        status: res.status,
+        message: err.message,
+        name: "HTTP_EXCEPTION",
+        type: "Error",
+      });
+
       return new Response(
         JSON.stringify({
           name: "HTTP_EXCEPTION",
@@ -26,6 +46,15 @@ export function registerGlobalErrorHandler(app: App) {
         },
       );
     }
+
+    logger.error({
+      stack: err.stack,
+      cause: err.cause,
+      status: 500,
+      message: err.message,
+      name: "UNKNOWN",
+      type: "Error",
+    });
 
     return c.json({ status: 500, message: err.message, name: "UNKNOWN" }, 500);
   });

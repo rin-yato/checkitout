@@ -12,6 +12,7 @@ import { registerAuthMiddleware } from "@/setup/auth";
 import type { AppEnv } from "@/setup/context";
 import { TransactionTasker } from "@/task/transaction";
 import { registerGlobalErrorHandler } from "./setup/error";
+import { registerLogger } from "./setup/logger";
 
 const app = new OpenAPIHono<AppEnv>();
 
@@ -32,6 +33,9 @@ registerTasker(app, [new TransactionTasker()]);
 
 // Register Auth middleware
 registerAuthMiddleware(app);
+
+// Register Logger
+registerLogger(app);
 
 // Register modules
 app.route("/", Modules);

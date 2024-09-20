@@ -1,4 +1,3 @@
-import { logger } from "hono/logger";
 import { OpenAPIHono } from "@hono/zod-openapi";
 
 import { AuthRoute } from "./auth";
@@ -9,7 +8,6 @@ import { TokenRoute } from "./token";
 import { FileUploadRoute } from "./file-upload";
 
 export const Modules = new OpenAPIHono()
-  .use(logger())
   .route("/", AuthRoute)
   .route("/", UserRoute)
   .route("/", TransactionRoute)
