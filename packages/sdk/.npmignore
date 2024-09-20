@@ -1,3 +1,5 @@
+.turbo
+.DS_STORE
 src
 .gitignore
 .npmignore
