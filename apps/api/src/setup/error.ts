@@ -2,21 +2,26 @@ import { ApiError } from "@/lib/error";
 import type { App } from "./context";
 import { HTTPException } from "hono/http-exception";
 import { logger } from "./logger";
+import { scoped } from "@repo/libs";
 
 export function registerGlobalErrorHandler(app: App) {
-  app.onError((err, c) => {
-    console.error("error", { err, reqHeader: c.req.header });
+  app.onError(async (err, c) => {
+    const body = await scoped(async () => {
+      if (c.req.header("Content-Type") === "application/json") {
+        return await c.req.json().catch(() => ({ message: "Invalid JSON" }));
+      }
+    });
+
+    logger.trace(err.stack);
 
     if (err instanceof ApiError) {
-      const { status, message, details, name, stack, cause } = err;
+      const { status, message, details, name } = err;
 
       logger.error({
-        header: c.req.header,
-        cause,
-        stack,
         status,
         message,
         details,
+        body,
         name,
         type: "Error",
       });
@@ -28,8 +33,7 @@ export function registerGlobalErrorHandler(app: App) {
       const res = err.getResponse();
 
       logger.error({
-        stack: err.stack,
-        cause: err.cause,
+        body,
         status: res.status,
         message: err.message,
         name: "HTTP_EXCEPTION",
@@ -51,8 +55,7 @@ export function registerGlobalErrorHandler(app: App) {
     }
 
     logger.error({
-      stack: err.stack,
-      cause: err.cause,
+      body,
       status: 500,
       message: err.message,
       name: "UNKNOWN",

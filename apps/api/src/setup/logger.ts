@@ -1,6 +1,5 @@
 import pino from "pino";
 import type { App } from "./context";
-import { getConnInfo } from "hono/bun";
 import { env } from "@/lib/env";
 
 const axiomTransport = pino.transport({
@@ -19,20 +18,32 @@ const pinoTransport = env.NODE_ENV === "production" ? axiomTransport : pinoPrett
 
 export const logger = pino({ level: "info" }, pinoTransport);
 
+function maskSensitiveHeaders(headers: Record<string, string>) {
+  const sensitiveHeaders = ["authorization", "cookie"];
+
+  return Object.fromEntries(
+    Object.entries(headers).map(([key, value]) => [
+      key,
+      sensitiveHeaders.includes(key.toLowerCase())
+        ? `${value.slice(0, 2)}****${value.slice(-1)}`
+        : value,
+    ]),
+  );
+}
+
 export function registerLogger(app: App) {
   app.use(async (c, next) => {
-    const connInfo = getConnInfo(c);
+    const reqHeader = maskSensitiveHeaders(c.req.header());
+    const query = c.req.query();
 
     const reqIn = {
+      query,
       type: "In",
       path: c.req.path,
-      referer: c.req.header("referer"),
-      "user-agent": c.req.header("user-agent"),
-      ua: c.req.header("sec-ch-ua"),
-      "ua-mobile": c.req.header("sec-ch-ua-mobile"),
-      "ua-platform": c.req.header("sec-ch-ua-platform"),
-      "client-conn": connInfo.remote,
+      method: c.req.method,
+      header: reqHeader,
     };
+
     logger.info(reqIn);
 
     const startTime = performance.now();
@@ -41,11 +52,13 @@ export function registerLogger(app: App) {
 
     const duration = Math.round(endTime - startTime) * 1000_000;
     const status = c.res.status;
+    const resHeader = maskSensitiveHeaders(Object.fromEntries(c.res.headers));
 
     const resOut = {
       type: "Out",
       duration,
       status,
+      header: resHeader,
     };
     logger.info(resOut);
   });

@@ -17,7 +17,6 @@ export function registerAuthMiddleware(app: App) {
     startTime(c, METRIC_NAME);
 
     const sessionId = getCookie(c, SESSION_COOKIE_NAME);
-    console.log("session cookie", sessionId);
 
     if (!sessionId) {
       c.set("user", null);
@@ -30,7 +29,6 @@ export function registerAuthMiddleware(app: App) {
 
     startTime(c, "validate-session");
     const session = await lucia.validateSession(sessionId).then(ok).catch(err);
-    console.log("session", session);
     endTime(c, "validate-session");
 
     if (session.error) {

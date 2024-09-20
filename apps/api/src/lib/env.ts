@@ -1,25 +1,23 @@
 import { z } from "zod";
 
 export const envSchema = z.object({
-  NODE_ENV: z
-    .union([
-      z.literal("development"),
-      z.literal("production"),
-      z.literal("test"),
-      z.literal("stage"),
-    ])
-    .default("development"),
+  NODE_ENV: z.union([
+    z.literal("development"),
+    z.literal("production"),
+    z.literal("test"),
+    z.literal("stage"),
+  ]),
 
   PORT: z.number({ coerce: true }).default(3050),
 
-  WEB_URL: z.string().default("http://localhost:3000"),
-  API_URL: z.string().default("http://localhost:3050"),
-  BASE_URL: z.string().default("localhost"),
+  WEB_URL: z.string(),
+  API_URL: z.string(),
+  BASE_URL: z.string(),
 
   BAKONG_TOKEN: z.string(),
 
   DB_URL: z.string(),
-  REDIS_HOST: z.string().default("localhost"),
+  REDIS_HOST: z.string(),
   REDIS_PORT: z.number({ coerce: true }).default(6379),
   REDIS_PASSWORD: z.string().optional(),
 
