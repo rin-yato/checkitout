@@ -3,6 +3,7 @@ import { getCookie } from "hono/cookie";
 import { endTime, startTime } from "hono/timing";
 import type { Session, User } from "lucia";
 import type { App } from "./context";
+import { err, ok } from "@justmiracle/result";
 
 export interface Auth {
   user: User | null;
@@ -27,12 +28,24 @@ export function registerAuthMiddleware(app: App) {
     }
 
     startTime(c, "validate-session");
-    const { session, user } = await lucia.validateSession(sessionId);
+    const session = await lucia.validateSession(sessionId).then(ok).catch(err);
     endTime(c, "validate-session");
 
-    if (session?.fresh) {
+    if (session.error) {
+      c.set("user", null);
+      c.set("session", null);
+
+      c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
+        append: true,
+      });
+
+      endTime(c, METRIC_NAME);
+      return next();
+    }
+
+    if (session.value.session?.fresh) {
       // use `header()` instead of `setCookie()` to avoid TS errors
-      c.header("Set-Cookie", lucia.createSessionCookie(session.id).serialize(), {
+      c.header("Set-Cookie", lucia.createSessionCookie(session.value.session.id).serialize(), {
         append: true,
       });
     }
@@ -43,8 +56,8 @@ export function registerAuthMiddleware(app: App) {
       });
     }
 
-    c.set("user", user);
-    c.set("session", session);
+    c.set("user", session.value.user);
+    c.set("session", session.value.session);
 
     endTime(c, METRIC_NAME);
 

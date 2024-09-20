@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import type { AppEnv } from "./context";
-import { HTTPException } from "hono/http-exception";
 import { tokenService } from "@/service/token.service";
+import { apiError } from "@/lib/error";
 
 function getBearerToken(token: string) {
   return token.replace("Bearer ", "");
@@ -10,7 +10,11 @@ function getBearerToken(token: string) {
 export async function validateToken(c: Context<AppEnv>) {
   const authorizationHeader = c.req.header("Authorization");
   if (!authorizationHeader) {
-    throw new HTTPException(401, { message: "Unauthorized" });
+    throw apiError({
+      status: 401,
+      message: "Unauthorized",
+      details: "Authorization header is missing",
+    });
   }
 
   const token = getBearerToken(authorizationHeader);
@@ -18,7 +22,11 @@ export async function validateToken(c: Context<AppEnv>) {
   const validToken = await tokenService.findOne(token);
 
   if (validToken.error || !validToken.value) {
-    throw new HTTPException(401, { message: "Unauthorized" });
+    throw apiError({
+      status: 401,
+      message: "Unauthorized",
+      details: validToken.error,
+    });
   }
 
   return validToken.value;

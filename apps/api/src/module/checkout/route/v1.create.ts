@@ -40,7 +40,11 @@ export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
     const token = await validateToken(c);
     const user = await userService.findById(token.userId);
     if (user.error || !user.value) {
-      throw new HTTPException(401, { message: "Unauthorized" });
+      throw apiError({
+        status: 401,
+        message: "Unauthorized",
+        details: user.error,
+      });
     }
     endTime(c, "token validation");
 

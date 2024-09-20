@@ -1,10 +1,12 @@
-import { isApiError } from "@/lib/error";
+import { ApiError } from "@/lib/error";
 import type { App } from "./context";
 import { HTTPException } from "hono/http-exception";
 
 export function registerGlobalErrorHandler(app: App) {
   app.onError((err, c) => {
-    if (isApiError(err)) {
+    console.log("henlo", err);
+
+    if (err instanceof ApiError) {
       const { status, message, details, name } = err;
       return c.json({ message, details, name, status }, status);
     }

@@ -1,27 +1,37 @@
 import type { NamedError } from "@/constant/error";
 import type { StatusCode } from "hono/utils/http-status";
 
-type ApiError = {
-  _tag: "ApiError";
-  name: NamedError;
-  status: StatusCode;
-  message: string;
-  details?: unknown;
-};
-
 export function apiError(opts: {
   name?: NamedError;
   status: StatusCode;
   message: string;
   details?: unknown;
 }): ApiError {
-  return {
-    _tag: "ApiError",
-    ...opts,
-    name: opts.name ?? "UNKNOWN",
-  };
+  return new ApiError({ ...opts, name: opts.name ?? "UNKNOWN" });
 }
 
-export function isApiError(e: any): e is ApiError {
-  return e?._tag === "ApiError";
+export class ApiError extends Error {
+  _tag = "ApiError";
+  status: StatusCode;
+  message: string;
+  details?: unknown;
+  name: NamedError;
+
+  constructor({
+    name,
+    status,
+    message,
+    details,
+  }: {
+    name: NamedError;
+    status: StatusCode;
+    message: string;
+    details?: unknown;
+  }) {
+    super(message);
+    this.name = name;
+    this.status = status;
+    this.message = message;
+    this.details = details;
+  }
 }
