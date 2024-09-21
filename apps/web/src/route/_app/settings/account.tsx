@@ -18,7 +18,7 @@ import {
 } from "@/component/upload/utils";
 import { useAuth } from "@/provider/auth.provider";
 import { Code, Flex, Heading, Separator, Spinner, Text, TextField } from "@radix-ui/themes";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
@@ -27,9 +27,7 @@ import { userInsertSchema, type UserUpdate } from "@repo/db/schema";
 import { useUpdateUserMutation } from "@/query/account/account.mutation";
 import { err, ok } from "@justmiracle/result";
 import { toast } from "sonner";
-import { dequal } from "dequal";
 import { confirmation } from "@/lib/confirmation";
-import { P } from "ts-pattern";
 
 export const Route = createFileRoute("/_app/settings/account")({
   component: AccountSettingsPage,

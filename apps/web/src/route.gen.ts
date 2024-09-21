@@ -21,6 +21,7 @@ import { Route as AppCheckoutsImport } from './route/_app/checkouts'
 import { Route as AppAppearanceImport } from './route/_app/appearance'
 import { Route as AppSettingsRouteImport } from './route/_app/settings/route'
 import { Route as AppSettingsIndexImport } from './route/_app/settings/index'
+import { Route as AppSettingsWebhookImport } from './route/_app/settings/webhook'
 import { Route as AppSettingsApiImport } from './route/_app/settings/api'
 import { Route as AppSettingsAccountImport } from './route/_app/settings/account'
 
@@ -73,6 +74,11 @@ const AppSettingsRouteRoute = AppSettingsRouteImport.update({
 
 const AppSettingsIndexRoute = AppSettingsIndexImport.update({
   path: '/',
+  getParentRoute: () => AppSettingsRouteRoute,
+} as any)
+
+const AppSettingsWebhookRoute = AppSettingsWebhookImport.update({
+  path: '/webhook',
   getParentRoute: () => AppSettingsRouteRoute,
 } as any)
 
@@ -167,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsApiImport
       parentRoute: typeof AppSettingsRouteImport
     }
+    '/_app/settings/webhook': {
+      id: '/_app/settings/webhook'
+      path: '/webhook'
+      fullPath: '/settings/webhook'
+      preLoaderRoute: typeof AppSettingsWebhookImport
+      parentRoute: typeof AppSettingsRouteImport
+    }
     '/_app/settings/': {
       id: '/_app/settings/'
       path: '/'
@@ -182,12 +195,14 @@ declare module '@tanstack/react-router' {
 interface AppSettingsRouteRouteChildren {
   AppSettingsAccountRoute: typeof AppSettingsAccountRoute
   AppSettingsApiRoute: typeof AppSettingsApiRoute
+  AppSettingsWebhookRoute: typeof AppSettingsWebhookRoute
   AppSettingsIndexRoute: typeof AppSettingsIndexRoute
 }
 
 const AppSettingsRouteRouteChildren: AppSettingsRouteRouteChildren = {
   AppSettingsAccountRoute: AppSettingsAccountRoute,
   AppSettingsApiRoute: AppSettingsApiRoute,
+  AppSettingsWebhookRoute: AppSettingsWebhookRoute,
   AppSettingsIndexRoute: AppSettingsIndexRoute,
 }
 
@@ -228,6 +243,7 @@ interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/settings/account': typeof AppSettingsAccountRoute
   '/settings/api': typeof AppSettingsApiRoute
+  '/settings/webhook': typeof AppSettingsWebhookRoute
   '/settings/': typeof AppSettingsIndexRoute
 }
 
@@ -241,6 +257,7 @@ interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/settings/account': typeof AppSettingsAccountRoute
   '/settings/api': typeof AppSettingsApiRoute
+  '/settings/webhook': typeof AppSettingsWebhookRoute
   '/settings': typeof AppSettingsIndexRoute
 }
 
@@ -256,6 +273,7 @@ interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_app/settings/account': typeof AppSettingsAccountRoute
   '/_app/settings/api': typeof AppSettingsApiRoute
+  '/_app/settings/webhook': typeof AppSettingsWebhookRoute
   '/_app/settings/': typeof AppSettingsIndexRoute
 }
 
@@ -273,6 +291,7 @@ interface FileRouteTypes {
     | '/'
     | '/settings/account'
     | '/settings/api'
+    | '/settings/webhook'
     | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -285,6 +304,7 @@ interface FileRouteTypes {
     | '/'
     | '/settings/account'
     | '/settings/api'
+    | '/settings/webhook'
     | '/settings'
   id:
     | '/_app'
@@ -298,6 +318,7 @@ interface FileRouteTypes {
     | '/_app/'
     | '/_app/settings/account'
     | '/_app/settings/api'
+    | '/_app/settings/webhook'
     | '/_app/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -351,6 +372,7 @@ export const routeTree = rootRoute
       "children": [
         "/_app/settings/account",
         "/_app/settings/api",
+        "/_app/settings/webhook",
         "/_app/settings/"
       ]
     },
@@ -383,6 +405,10 @@ export const routeTree = rootRoute
     },
     "/_app/settings/api": {
       "filePath": "_app/settings/api.tsx",
+      "parent": "/_app/settings"
+    },
+    "/_app/settings/webhook": {
+      "filePath": "_app/settings/webhook.tsx",
       "parent": "/_app/settings"
     },
     "/_app/settings/": {

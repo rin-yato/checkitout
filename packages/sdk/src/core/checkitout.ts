@@ -54,18 +54,21 @@ export class Checkitout {
     });
   }
 
-  // protected async track(checkoutId: string, onPaid: () => void) {
-  //   const url = new URL(`/checkout/${checkoutId}/track`, this.apiUrl);
-  //   const eventSource = new EventSource(url);
+  protected async track(checkoutId: string, onPaid: () => void) {
+    const url = new URL(`/checkout/${checkoutId}/track`, this.apiUrl);
 
-  //   eventSource.onmessage = (event) => {
-  //     const data = event.data;
-  //     if (data === "COMPLETED") {
-  //       onPaid();
-  //       eventSource.close();
-  //     }
-  //   };
+    const eventSource = new EventSource(url, {
+      withCredentials: true,
+    });
 
-  //   return () => eventSource.close();
-  // }
+    eventSource.onmessage = (event) => {
+      const data = event.data;
+      if (data === "COMPLETED") {
+        onPaid();
+        eventSource.close();
+      }
+    };
+
+    return () => eventSource.close();
+  }
 }

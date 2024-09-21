@@ -31,6 +31,11 @@ function SettingsPage() {
               <Text size="3">API Token</Text>
             </Link>
           </TabNav.Link>
+          <TabNav.Link asChild active={matchRoute("/settings/webhook")}>
+            <Link to="/settings/webhook">
+              <Text size="3">Webhook</Text>
+            </Link>
+          </TabNav.Link>
         </TabNav.Root>
       </nav>
 
