@@ -34,6 +34,13 @@ export const createTokenV1 = new OpenAPIHono<AppEnv>().openapi(
     const { user } = validateAuth(c);
     const { name } = c.req.valid("json");
 
+    if (!name) {
+      throw apiError({
+        status: 400,
+        message: "Token name is required",
+      });
+    }
+
     const token = await tokenService.create(user.id, name);
 
     if (token.error) {

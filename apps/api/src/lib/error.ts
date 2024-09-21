@@ -7,7 +7,7 @@ export function apiError(opts: {
   message: string;
   details?: unknown;
 }): ApiError {
-  return new ApiError({ ...opts, name: opts.name ?? "UNKNOWN" });
+  return new ApiError({ ...opts, name: opts.name ?? "DEFAULT" });
 }
 
 export class ApiError extends Error {

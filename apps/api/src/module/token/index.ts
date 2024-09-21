@@ -4,7 +4,7 @@ import { findOneTokenV1 } from "./route/v1.find-one";
 import { findManyTokenV1 } from "./route/v1.find-many";
 import { deleteTokenV1 } from "./route/v1.delete";
 
-export const TokenRoute = new OpenAPIHono()
+export const TokenRoute = new OpenAPIHono({ strict: true })
   .route("/", createTokenV1)
   .route("/", findOneTokenV1)
   .route("/", findManyTokenV1)

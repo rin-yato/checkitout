@@ -1,4 +1,5 @@
 import { validateAuth } from "@/lib/auth";
+import { apiError } from "@/lib/error";
 import { tokenService } from "@/service/token.service";
 import type { AppEnv } from "@/setup/context";
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
@@ -26,7 +27,12 @@ export const deleteTokenV1 = new OpenAPIHono<AppEnv>().openapi(
 
     const deleted = await tokenService.delete(tokenName, user.id);
 
-    if (deleted.error) throw deleted.error;
+    if (deleted.error) {
+      throw apiError({
+        status: 404,
+        message: "Token not found",
+      });
+    }
 
     return c.json(deleted.value, 204);
   },

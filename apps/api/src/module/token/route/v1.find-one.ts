@@ -1,3 +1,4 @@
+import { apiError } from "@/lib/error";
 import { tokenService } from "@/service/token.service";
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { endTime, startTime } from "hono/timing";
@@ -9,7 +10,9 @@ export const findOneTokenV1 = new OpenAPIHono().openapi(
     tags: ["Token"],
     description: "Find one token",
     request: {
-      params: z.object({ token: z.string() }),
+      params: z.object({
+        token: z.string({ required_error: "Missing token ID" }).min(16, "Invalid token ID"),
+      }),
     },
     responses: {
       200: {
@@ -29,9 +32,21 @@ export const findOneTokenV1 = new OpenAPIHono().openapi(
     const token = await tokenService.findOne(param.token);
     endTime(c, "redis");
 
-    if (token.error) throw token.error;
+    if (token.error) {
+      throw apiError({
+        status: 500,
+        message: "Unable to query token",
+        details: "Could not query token from database",
+      });
+    }
 
-    if (!token.value) throw new Error("Token not found");
+    if (!token.value) {
+      throw apiError({
+        status: 404,
+        message: "Token not found",
+        details: "Token does not exist in database",
+      });
+    }
 
     return c.json(token.value);
   },

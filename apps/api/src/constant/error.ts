@@ -1,5 +1,5 @@
 export const ERROR = [
-  "UNKNOWN",
+  "DEFAULT",
 
   // NO
   "NO_BAKONG_ID",

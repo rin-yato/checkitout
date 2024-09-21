@@ -1,6 +1,7 @@
 import pino from "pino";
 import type { App } from "./context";
 import { env } from "@/lib/env";
+import { maskSensitiveHeaders } from "@/lib/mask";
 
 const axiomTransport = pino.transport({
   target: "@axiomhq/pino",
@@ -18,48 +19,38 @@ const pinoTransport = env.NODE_ENV === "production" ? axiomTransport : pinoPrett
 
 export const logger = pino({ level: "info" }, pinoTransport);
 
-function maskSensitiveHeaders(headers: Record<string, string>) {
-  const sensitiveHeaders = ["authorization", "cookie"];
-
-  return Object.fromEntries(
-    Object.entries(headers).map(([key, value]) => [
-      key,
-      sensitiveHeaders.includes(key.toLowerCase())
-        ? `${value.slice(0, 2)}****${value.slice(-1)}`
-        : value,
-    ]),
-  );
-}
-
 export function registerLogger(app: App) {
   app.use(async (c, next) => {
-    const reqHeader = maskSensitiveHeaders(c.req.header());
-    const query = c.req.query();
-
-    const reqIn = {
-      query,
-      type: "In",
-      path: c.req.path,
-      method: c.req.method,
-      header: reqHeader,
-    };
-
-    logger.info(reqIn);
-
     const startTime = performance.now();
     await next();
     const endTime = performance.now();
 
-    const duration = Math.round(endTime - startTime) * 1000_000;
+    const query = c.req.query();
     const status = c.res.status;
+    const reqHeader = maskSensitiveHeaders(c.req.header());
     const resHeader = maskSensitiveHeaders(Object.fromEntries(c.res.headers));
 
+    const duration = Math.round(endTime - startTime) * 1000_000;
+
+    // const body = await scoped(async () => {
+    //   if (c.req.header("Content-Type") === "application/json") {
+    //     return await c.req.json().catch(() => "Invalid JSON");
+    //   }
+
+    //   return undefined;
+    // });
+
     const resOut = {
-      type: "Out",
-      duration,
       status,
-      header: resHeader,
+      method: c.req.method,
+      path: c.req.path,
+      query,
+      duration,
+      "res-header": resHeader,
+      "req-header": reqHeader,
+      // body,
     };
+
     logger.info(resOut);
   });
 }
