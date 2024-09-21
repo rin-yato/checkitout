@@ -3,6 +3,7 @@ import { type Job, UnrecoverableError, Worker } from "bullmq";
 import { TRANSACTION_QUEUE_NAME } from "./queue";
 import { bakongService } from "@/service/bakong.service";
 import { transactionServcie } from "@/service/transaction.service";
+import { logger } from "@/setup/logger";
 
 export class TransactionTasker implements Tasker {
   worker;
@@ -40,6 +41,7 @@ export class TransactionTasker implements Tasker {
       if (timeout.error) {
         // this should try to set the transaction status to timeout again until max attempts
         job.log(`Failed to set transaction status to timeout: ${timeout.error.message}`);
+        logger.error(timeout.error, "Failed to set transaction status to timeout");
         throw timeout.error;
       }
 
@@ -51,6 +53,7 @@ export class TransactionTasker implements Tasker {
 
     if (transactionStatus.error) {
       job.log(`Failed to get transaction status: ${transactionStatus.error.message}`);
+      logger.error(transactionStatus.error, "Failed to get transaction status");
       throw transactionStatus.error;
     }
 
@@ -63,10 +66,12 @@ export class TransactionTasker implements Tasker {
         if (failed.error) {
           // this should try to reprocess the transaction
           job.log(`Failed to set transaction status to failed: ${failed.error.message}`);
+          logger.error(failed.error, "Failed to set transaction status to failed");
           throw failed.error;
         }
 
         job.log(`Transaction failed: ${transactionStatus.value.responseMessage}`);
+        logger.error(transactionStatus.value, "Transaction failed");
         throw new UnrecoverableError(transactionStatus.value.responseMessage);
       }
 
@@ -83,6 +88,7 @@ export class TransactionTasker implements Tasker {
     if (result.error) {
       // this should try to reprocess the transaction
       job.log(`Failed to update transaction status to success: ${result.error.message}`);
+      logger.error(result.error, "Failed to update transaction status to success");
       throw result.error;
     }
 

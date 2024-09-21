@@ -43,26 +43,30 @@ export function Sidebar() {
       </Flex>
 
       <Flex direction="column" className="mt-auto">
-        <Button
-          color="gray"
-          variant="ghost"
+        <button
+          type="button"
           aria-label="account-profile-menu"
-          className={cn("h-fit justify-start gap-x-3 rounded py-2.5")}
+          className={cn(
+            "flex items-center gap-x-2.5 transition",
+            "cursor-[var(--cursor-button)] rounded px-2.5 py-2 hover:bg-gray active:bg-gray-hover",
+          )}
         >
           <Avatar
+            color="gray"
             radius="full"
             src={user.profile?.url ?? ""}
+            className="border"
             fallback={getInitial(user.displayName)}
           />
           <Flex direction="column" overflowX="hidden">
-            <Text size="2" truncate className="font-medium text-foreground" align="left">
+            <Text truncate className="font-medium text-foreground" align="left">
               {user.displayName}
             </Text>
             <Text size="2" truncate color="gray" align="left">
               {user.email}
             </Text>
           </Flex>
-        </Button>
+        </button>
       </Flex>
     </aside>
   );
