@@ -13,11 +13,14 @@ import { useAuth } from "@/provider/auth.provider";
 import { Heading, Separator, Spinner, Switch, Text, TextField } from "@radix-ui/themes";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import type { z } from "zod";
 import { Check } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { confirmation } from "@/lib/confirmation";
 import { cn } from "@/lib/cn";
+import { userUpdateSchema } from "@repo/db/schema";
+import { useUpdateUserMutation } from "@/query/account/account.mutation";
+import { err, ok } from "@justmiracle/result";
 
 export const Route = createFileRoute("/_app/settings/webhook")({
   component: WebhookSettingsPage,
@@ -25,29 +28,36 @@ export const Route = createFileRoute("/_app/settings/webhook")({
 
 const FORM_ID = "webhook-settings-form";
 
-const webhookFormSchema = z.object({
-  url: z.string().url(),
-  allowRetry: z.boolean({ coerce: true }),
-  waitBeforeRedirect: z.boolean({ coerce: true }),
+const webhookFormSchema = userUpdateSchema.pick({
+  webhookUrl: true,
+  allowRetry: true,
+  waitBeforeRedirect: true,
 });
 
 type WebhookForm = z.infer<typeof webhookFormSchema>;
 
 function WebhookSettingsPage() {
-  const _user = useAuth();
+  const user = useAuth();
+
+  const { mutateAsync } = useUpdateUserMutation();
 
   const form = useForm<WebhookForm>({
     resolver: zodResolver(webhookFormSchema),
+    defaultValues: {
+      allowRetry: user.allowRetry,
+      waitBeforeRedirect: user.waitBeforeRedirect,
+      webhookUrl: user.webhookUrl,
+    },
   });
 
-  const onSubmit = async (_data: WebhookForm) => {
-    // const updated = await mutateAsync(data).then(ok).catch(err);
+  const onSubmit = async (data: WebhookForm) => {
+    const updated = await mutateAsync(data).then(ok).catch(err);
 
-    // if (updated.error) {
-    //   return toast.error(updated.error.message);
-    // }
+    if (updated.error) {
+      return toast.error(updated.error.message);
+    }
 
-    toast.success("Webhook updated successfully");
+    toast.success("Webhook settings updated successfully");
   };
 
   const handleReset = () => {
@@ -78,53 +88,9 @@ function WebhookSettingsPage() {
             </div>
 
             <div className="flex w-full max-w-lg flex-col gap-5">
-              {/* <div className="flex gap-x-5"> */}
-              {/*   <FormField */}
-              {/*     control={form.control} */}
-              {/*     name="displayName" */}
-              {/*     render={({ field }) => ( */}
-              {/*       <FormItem className="flex-1"> */}
-              {/*         <FormLabel required>Display Name</FormLabel> */}
-              {/*         <FormControl> */}
-              {/*           <TextField.Root */}
-              {/*             {...field} */}
-              {/*             size="3" */}
-              {/*             color="gray" */}
-              {/*             variant="soft" */}
-              {/*             className="w-full" */}
-              {/*             placeholder="e.g. Formal Outfits" */}
-              {/*           /> */}
-              {/*         </FormControl> */}
-              {/*         <FormMessage /> */}
-              {/*       </FormItem> */}
-              {/*     )} */}
-              {/*   /> */}
-
-              {/*   <FormField */}
-              {/*     control={form.control} */}
-              {/*     name="phone" */}
-              {/*     render={({ field }) => ( */}
-              {/*       <FormItem className="flex-1"> */}
-              {/*         <FormLabel required>Phone Number</FormLabel> */}
-              {/*         <FormControl> */}
-              {/*           <TextField.Root */}
-              {/*             {...field} */}
-              {/*             size="3" */}
-              {/*             color="gray" */}
-              {/*             variant="soft" */}
-              {/*             className="w-full" */}
-              {/*             placeholder="012345678" */}
-              {/*           /> */}
-              {/*         </FormControl> */}
-              {/*         <FormMessage /> */}
-              {/*       </FormItem> */}
-              {/*     )} */}
-              {/*   /> */}
-              {/* </div> */}
-
               <FormField
                 control={form.control}
-                name="url"
+                name="webhookUrl"
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel required>Webhook URL</FormLabel>

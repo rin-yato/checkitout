@@ -1,6 +1,9 @@
-import { createDB, createDBClient } from "@repo/db";
+import { createDB, createDBClient, migrate } from "@repo/db";
 import { env } from "./env";
 import { apiError } from "./error";
+
+// Auto run migration
+await migrate();
 
 const client = createDBClient({ url: env.DB_URL });
 export const db = createDB(client);

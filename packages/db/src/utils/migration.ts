@@ -15,9 +15,8 @@ export async function migrate() {
     console.log("🍀 Migrating...");
     await migrateFn(migrationDB, { migrationsFolder });
     console.log("🎉 Migration ran successfully");
-    return true;
   } catch (error) {
-    console.error("❌ Migration failed", error);
-    return false;
+    console.error("❌ Migration failed");
+    throw error;
   }
 }

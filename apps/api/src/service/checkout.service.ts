@@ -12,6 +12,7 @@ import { checkoutInsert, checkoutItemInsert, type CheckoutInsert } from "@repo/d
 import { genId } from "@/lib/id";
 import { withRetry } from "@/lib/retry";
 import { apiError } from "@/lib/error";
+import { isValidUrl } from "@/lib/is";
 
 export const checkoutRequestSchema = checkoutInsert.omit({ refId: true, userId: true }).extend({
   items: z.array(checkoutItemInsert.omit({ checkoutId: true }).openapi("CheckoutItem Insert"), {
@@ -28,6 +29,13 @@ export class CheckoutService {
         status: 400,
         name: "NO_BAKONG_ID",
         message: "User does not have a Bakong ID",
+      });
+    }
+
+    if (!isValidUrl(user.webhookUrl)) {
+      throw apiError({
+        status: 400,
+        message: "User does not have a valid webhook",
       });
     }
 
@@ -130,12 +138,7 @@ export class CheckoutService {
     }
 
     // Add transaction to queue without waiting
-    withRetry(
-      () => transactionQueue.add(activeTransaction.id, activeTransaction.md5),
-      3, // retries 3 times
-    ).catch((err) => {
-      console.error("Unable to add transaction to queue:", err);
-    });
+    withRetry(() => transactionQueue.add(activeTransaction.id, activeTransaction.md5));
 
     return ok({ checkout, activeTransaction });
   }

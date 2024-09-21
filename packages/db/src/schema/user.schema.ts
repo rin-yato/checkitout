@@ -29,6 +29,12 @@ export const userUpdateSchema = userInsertSchema
     phone: true,
     address: true,
     bakongId: true,
+    webhookUrl: true,
+    allowRetry: true,
+    waitBeforeRedirect: true,
+  })
+  .extend({
+    webhookUrl: z.string().url("Invalid webhook URL"),
   })
   .partial();
 

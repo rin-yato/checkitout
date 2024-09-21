@@ -46,6 +46,9 @@ export class UserService {
         profile: userUpdate.profile,
         bakongId: userUpdate.bakongId,
         displayName: userUpdate.displayName,
+        webhookUrl: userUpdate.webhookUrl,
+        allowRetry: userUpdate.allowRetry,
+        waitBeforeRedirect: userUpdate.waitBeforeRedirect,
       })
       .where(eq(TB_user.id, id))
       .returning()

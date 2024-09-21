@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts",
     "check": "biome check ./",
     "check:ci": "biome ci ./",
     "check:fix": "biome check --write --unsafe ./",

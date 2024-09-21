@@ -1,4 +1,5 @@
 import {
+  boolean,
   doublePrecision,
   integer,
   json,
@@ -19,6 +20,7 @@ export const column = {
   varchar: varchar,
   real: real,
   double: doublePrecision,
+  boolean: boolean,
   json: json,
   timestamp: timestamp,
   enum: pgEnum,
