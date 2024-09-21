@@ -99,7 +99,22 @@ export class CheckoutService {
   async portal(id: string) {
     const checkout = await db.query.TB_checkout.findFirst({
       where: eq(TB_checkout.id, id),
-      with: { transactions: true, items: true, user: true },
+      with: {
+        transactions: true,
+        items: true,
+        user: {
+          columns: {
+            waitBeforeRedirect: true,
+            email: true,
+            phone: true,
+            address: true,
+            profile: true,
+            displayName: true,
+            username: true,
+            bakongId: true,
+          },
+        },
+      },
     });
 
     if (!checkout) {
