@@ -30,7 +30,6 @@ export const userUpdateSchema = userInsertSchema
     address: true,
     bakongId: true,
     webhookUrl: true,
-    allowRetry: true,
     waitBeforeRedirect: true,
   })
   .extend({

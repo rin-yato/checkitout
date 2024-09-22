@@ -30,7 +30,6 @@ const FORM_ID = "webhook-settings-form";
 
 const webhookFormSchema = userUpdateSchema.pick({
   webhookUrl: true,
-  allowRetry: true,
   waitBeforeRedirect: true,
 });
 
@@ -44,7 +43,6 @@ function WebhookSettingsPage() {
   const form = useForm<WebhookForm>({
     resolver: zodResolver(webhookFormSchema),
     defaultValues: {
-      allowRetry: user.allowRetry,
       waitBeforeRedirect: user.waitBeforeRedirect,
       webhookUrl: user.webhookUrl,
     },
@@ -152,44 +150,44 @@ function WebhookSettingsPage() {
             </div>
           </div>
 
-          <Separator size="4" className="my-5" />
+          {/* <Separator size="4" className="my-5" /> */}
 
-          <div className="flex items-start gap-x-28">
-            <div className="flex w-full max-w-sm flex-col gap-2 pt-1">
-              <Heading size="4">Retry on failure</Heading>
-              <Text wrap="pretty" color="gray">
-                Enable this setting to retry the webhook request in case of a failure. (Max 5
-                retries)
-              </Text>
-            </div>
+          {/* <div className="flex items-start gap-x-28"> */}
+          {/*   <div className="flex w-full max-w-sm flex-col gap-2 pt-1"> */}
+          {/*     <Heading size="4">Retry on failure</Heading> */}
+          {/*     <Text wrap="pretty" color="gray"> */}
+          {/*       Enable this setting to retry the webhook request in case of a failure. (Max 5 */}
+          {/*       retries) */}
+          {/*     </Text> */}
+          {/*   </div> */}
 
-            <div className="my-auto w-full max-w-lg">
-              <FormField
-                name="allowRetry"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="flex-1 flex-row items-center gap-x-4">
-                    <FormControl>
-                      <Switch
-                        size="3"
-                        onCheckedChange={field.onChange}
-                        checked={field.value}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                        name={field.name}
-                        disabled={field.disabled}
-                      />
-                    </FormControl>
+          {/*   {/1* <div className="my-auto w-full max-w-lg"> *1/} */}
+          {/*   {/1*   <FormField *1/} */}
+          {/*   {/1*     name="allowRetry" *1/} */}
+          {/*   {/1*     control={form.control} *1/} */}
+          {/*   {/1*     render={({ field }) => ( *1/} */}
+          {/*   {/1*       <FormItem className="flex-1 flex-row items-center gap-x-4"> *1/} */}
+          {/*   {/1*         <FormControl> *1/} */}
+          {/*   {/1*           <Switch *1/} */}
+          {/*   {/1*             size="3" *1/} */}
+          {/*   {/1*             onCheckedChange={field.onChange} *1/} */}
+          {/*   {/1*             checked={field.value} *1/} */}
+          {/*   {/1*             onBlur={field.onBlur} *1/} */}
+          {/*   {/1*             ref={field.ref} *1/} */}
+          {/*   {/1*             name={field.name} *1/} */}
+          {/*   {/1*             disabled={field.disabled} *1/} */}
+          {/*   {/1*           /> *1/} */}
+          {/*   {/1*         </FormControl> *1/} */}
 
-                    <FormLabel className={cn(!field.value && "text-gray-foreground")}>
-                      Allow Retry
-                    </FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
+          {/*   {/1*         <FormLabel className={cn(!field.value && "text-gray-foreground")}> *1/} */}
+          {/*   {/1*           Allow Retry *1/} */}
+          {/*   {/1*         </FormLabel> *1/} */}
+          {/*   {/1*         <FormMessage /> *1/} */}
+          {/*   {/1*       </FormItem> *1/} */}
+          {/*   {/1*     )} *1/} */}
+          {/*   {/1*   /> *1/} */}
+          {/*   {/1* </div> *1/} */}
+          {/* </div> */}
 
           <div className="mt-auto flex gap-3 pt-10">
             <Button

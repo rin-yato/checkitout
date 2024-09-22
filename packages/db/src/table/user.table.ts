@@ -20,7 +20,6 @@ export const TB_user = table("user", {
   phone: column.text("phone").notNull().default(""),
 
   webhookUrl: column.text("webhook_url").notNull().default(""),
-  allowRetry: column.boolean("allow_retry").notNull().default(true),
   waitBeforeRedirect: column.boolean("wait_before_redirect").notNull().default(true),
 
   createdAt: column.createdAt,

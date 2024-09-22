@@ -32,6 +32,7 @@ export const TB_checkout = table("checkout", {
 
   additionalInfo: column.json("additional_info"),
 
+  redirectUrl: column.text("redirect_url").notNull().default(""),
   status: column.text("status", { enum: CHECKOUT_STATUS }).default("IDLE"),
 
   // transaction: [...]

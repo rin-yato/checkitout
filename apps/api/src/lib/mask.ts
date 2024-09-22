@@ -1,5 +1,5 @@
 export function maskSensitiveHeaders(headers: Record<string, string>) {
-  const sensitiveHeaders = ["authorization", "cookie"];
+  const sensitiveHeaders = ["authorization", "cookie", "set-cookie"];
 
   return Object.fromEntries(
     Object.entries(headers).map(([key, value]) => [

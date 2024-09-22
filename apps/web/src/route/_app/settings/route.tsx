@@ -15,7 +15,7 @@ function SettingsPage() {
       <nav className="space-y-5">
         <Heading trim="normal">Settings</Heading>
 
-        <TabNav.Root className="gap-x-5 pt-2.5">
+        <TabNav.Root className="gap-x-5 pt-3">
           <TabNav.Link asChild active={matchRoute("/settings")}>
             <Link to="/settings" activeOptions={{ exact: true }}>
               <Text size="3">General Settings</Text>
