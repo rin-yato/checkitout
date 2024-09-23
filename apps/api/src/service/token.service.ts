@@ -3,7 +3,7 @@ import { nanoid } from "@/lib/id";
 import { redis } from "@/lib/redis";
 import { withRetry } from "@/lib/retry";
 import { omit } from "@/lib/transform";
-import { err, ok, type Result } from "@justmiracle/result";
+import { err, ok, unwrap, type Result } from "@justmiracle/result";
 import { TB_token } from "@repo/db/table";
 import { and, eq, isNull, sql } from "drizzle-orm";
 
@@ -42,7 +42,7 @@ class TokenService {
       .catch(err);
     if (dbToken.error) return dbToken;
 
-    withRetry(() => this.setToken(key, userId));
+    withRetry(() => this.setToken(key, userId).then(unwrap));
 
     return dbToken;
   }

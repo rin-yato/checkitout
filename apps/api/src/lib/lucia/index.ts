@@ -33,7 +33,6 @@ export const lucia = new Lucia(adapter, {
       address: attributes.address,
       phone: attributes.phone,
       webhookUrl: attributes.webhookUrl,
-      allowRetry: attributes.allowRetry,
       waitBeforeRedirect: attributes.waitBeforeRedirect,
       createdAt: attributes.createdAt,
       updatedAt: attributes.createdAt,

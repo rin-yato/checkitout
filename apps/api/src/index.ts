@@ -14,6 +14,7 @@ import { TransactionTasker } from "@/task/transaction";
 import { registerGlobalErrorHandler } from "./setup/error";
 import { registerLogger } from "./setup/logger";
 import { registerHeaderMiddleware } from "./setup/header";
+import { WebhookTasker } from "./task/webhook";
 
 const app = new OpenAPIHono<AppEnv>();
 
@@ -30,7 +31,7 @@ registerTiming(app);
 registerGlobalErrorHandler(app);
 
 // Register taskers
-registerTasker(app, [new TransactionTasker()]);
+registerTasker(app, [new TransactionTasker(), new WebhookTasker()]);
 
 // Register Auth middleware
 registerAuthMiddleware(app);

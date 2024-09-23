@@ -1,7 +1,14 @@
 import { formatCurrency } from "@/lib/currency";
 import { Box, DataList, Flex, Separator, Text, Theme } from "@radix-ui/themes";
+import type { Checkout, CheckoutItem, User } from "@repo/db/schema";
 
-export function Invoice({ data }: any) {
+export function Invoice({
+  user,
+  checkout,
+}: {
+  user: User;
+  checkout: Checkout & { items: CheckoutItem[] };
+}) {
   return (
     <Theme hasBackground={false}>
       <Flex
@@ -14,8 +21,7 @@ export function Invoice({ data }: any) {
             <Box asChild className="h-10">
               <img
                 alt="Merchant logo"
-                // src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Xiaomi_logo_%282021-%29.svg"
-                src={data.user.profile}
+                src={user.profile ?? ""}
                 className="rounded object-contain ring-1 ring-gray"
               />
             </Box>
@@ -27,13 +33,13 @@ export function Invoice({ data }: any) {
 
           <Flex direction="column" gap="2">
             <Text size="4" weight="medium">
-              {data.user.displayName}
+              {user.displayName}
             </Text>
             <Text color="gray" wrap="balance">
-              {data.user.address}
+              {user.address}
             </Text>
             <Text color="gray" wrap="pretty">
-              Tel. {data.user.phone}
+              Tel. {user.phone}
             </Text>
           </Flex>
 
@@ -43,21 +49,21 @@ export function Invoice({ data }: any) {
           >
             <DataList.Item>
               <DataList.Label>For</DataList.Label>
-              <DataList.Value>{data.clientName}</DataList.Value>
+              <DataList.Value>{checkout.clientName}</DataList.Value>
             </DataList.Item>
 
             <Separator orientation="vertical" size="2" />
 
             <DataList.Item>
               <DataList.Label>Tel.</DataList.Label>
-              <DataList.Value>{data.clientPhone}</DataList.Value>
+              <DataList.Value>{checkout.clientPhone}</DataList.Value>
             </DataList.Item>
 
             <Separator orientation="vertical" size="2" />
 
             <DataList.Item className="pr-2">
               <DataList.Label>Location</DataList.Label>
-              <DataList.Value>{data.clientAddress ?? "--"}</DataList.Value>
+              <DataList.Value>{checkout.clientAddress ?? "--"}</DataList.Value>
             </DataList.Item>
           </DataList.Root>
         </Flex>
@@ -67,7 +73,7 @@ export function Invoice({ data }: any) {
         <Flex direction="column" gap="5" pt="3" pb="4">
           <Text color="gray">Items</Text>
 
-          {data.items.map((product: any) => (
+          {checkout.items.map((product: any) => (
             <Flex gap="3" align="start" key={product.name}>
               <Box asChild className="size-12 ring-2 ring-gray">
                 <img
@@ -85,7 +91,7 @@ export function Invoice({ data }: any) {
               </Box>
 
               <Text weight="medium" className="mb-auto ml-5 text-right">
-                {formatCurrency(product.price * product.quantity, data.currency)}
+                {formatCurrency(product.price * product.quantity, checkout.currency)}
               </Text>
             </Flex>
           ))}
@@ -99,11 +105,11 @@ export function Invoice({ data }: any) {
               <DataList.Label>Subtotal</DataList.Label>
               <DataList.Value className="justify-end">
                 {formatCurrency(
-                  data.items.reduce(
+                  checkout.items.reduce(
                     (acc: number, product: any) => acc + product.price * product.quantity,
                     0,
                   ),
-                  data.currency,
+                  checkout.currency,
                 )}
               </DataList.Value>
             </DataList.Item>
@@ -111,7 +117,7 @@ export function Invoice({ data }: any) {
             <DataList.Item>
               <DataList.Label>Discount</DataList.Label>
               <DataList.Value className="justify-end">
-                {formatCurrency(data.discount, data.currency)}
+                {formatCurrency(checkout?.discount ?? 0, checkout.currency)}
               </DataList.Value>
             </DataList.Item>
 
@@ -119,11 +125,11 @@ export function Invoice({ data }: any) {
               <DataList.Label>VAT (10%)</DataList.Label>
               <DataList.Value className="justify-end">
                 {formatCurrency(
-                  data.items.reduce(
+                  checkout.items.reduce(
                     (acc: number, product: any) => acc + product.price * product.quantity,
                     0,
-                  ) * data.tax,
-                  data.currency,
+                  ) * (checkout?.tax ?? 0),
+                  checkout.currency,
                 )}
               </DataList.Value>
             </DataList.Item>
@@ -138,7 +144,7 @@ export function Invoice({ data }: any) {
               </DataList.Label>
               <DataList.Value className="justify-end">
                 <Text size="5" weight="medium" className="rounded-4 text-right">
-                  {formatCurrency(data.total, data.currency)}
+                  {formatCurrency(checkout.total, checkout.currency)}
                 </Text>
               </DataList.Value>
             </DataList.Item>

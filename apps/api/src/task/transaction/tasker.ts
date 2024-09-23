@@ -1,15 +1,17 @@
 import { DEFAULT_CONNECTION, type Tasker } from "@/lib/tasker";
-import { type Job, UnrecoverableError, Worker } from "bullmq";
-import { TRANSACTION_QUEUE_NAME } from "./queue";
+import { UnrecoverableError, Worker } from "bullmq";
+import { TRANSACTION_QUEUE_NAME, type TransactionJob, type TransactionJobData } from "./queue";
 import { bakongService } from "@/service/bakong.service";
 import { transactionServcie } from "@/service/transaction.service";
 import { logger } from "@/setup/logger";
+import { withRetry } from "@/lib/retry";
+import { webhookQueue } from "../webhook";
 
 export class TransactionTasker implements Tasker {
   worker;
 
   constructor() {
-    this.worker = new Worker(TRANSACTION_QUEUE_NAME, this.process, {
+    this.worker = new Worker<TransactionJobData>(TRANSACTION_QUEUE_NAME, this.process, {
       autorun: false,
       connection: DEFAULT_CONNECTION,
       concurrency: 20,
@@ -32,7 +34,7 @@ export class TransactionTasker implements Tasker {
     await this.worker.close();
   }
 
-  async process(job: Job<{ md5: string; transactionId: string }>) {
+  async process(job: TransactionJob) {
     // if the job age exceeds 5mn, it will be considered failed
     const TIMEOUT = 1000 * 60 * 5;
     if (job.timestamp + TIMEOUT < Date.now()) {
@@ -91,6 +93,14 @@ export class TransactionTasker implements Tasker {
       logger.error(result.error, "Failed to update transaction status to success");
       throw result.error;
     }
+
+    withRetry(async () => {
+      await webhookQueue.add({
+        userId: job.data.userId,
+        checkoutId: job.data.checkoutId,
+        webhookUrl: job.data.webhookUrl,
+      });
+    });
 
     await job.updateProgress(100);
     job.log("Transaction is successful");

@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
 import { Check, PiggyBank, Scan } from "@phosphor-icons/react";
 import { env } from "@/lib/env";
+import type { Checkout, CheckoutItem, Transaction, User } from "@repo/db/schema";
 
 export const Route = createFileRoute("/portal/$checkoutId")({
   component: CheckoutPage,
@@ -19,7 +20,11 @@ function CheckoutPage() {
     queryFn: () => {
       return ky
         .get(`v1/checkout/portal/${checkoutId}`, { retry: 0, prefixUrl: env.VITE_API_URL })
-        .json<any>();
+        .json<{
+          checkout: Checkout & { items: CheckoutItem[] };
+          activeTransaction: Transaction;
+          user: User;
+        }>();
     },
     retry: false,
     refetchInterval: (query) =>
@@ -40,7 +45,7 @@ function CheckoutPage() {
     <main className="h-dvh w-full">
       <Grid columns="2" className="size-full bg-gray-2 pt-10">
         <Flex className="fade-in-0 size-full animate-in justify-end px-12 py-10">
-          <Invoice data={data.checkout} />
+          <Invoice user={data.user} checkout={data.checkout} />
         </Flex>
         <Flex
           direction="column"
@@ -51,7 +56,7 @@ function CheckoutPage() {
               paid={data.checkout.status === "SUCCESS"}
               currency={data.checkout.currency}
               amount={data.checkout.total}
-              merchantName={"Mi Home BKK"}
+              merchantName={data.user.displayName}
               qrCode={data?.activeTransaction?.qrCode}
             />
           </div>

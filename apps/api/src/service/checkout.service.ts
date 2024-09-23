@@ -112,6 +112,7 @@ export class CheckoutService {
             displayName: true,
             username: true,
             bakongId: true,
+            webhookUrl: true,
           },
         },
       },
@@ -125,7 +126,12 @@ export class CheckoutService {
     }
 
     if (checkout.status === "SUCCESS") {
-      return ok({ checkout, activeTransaction: null });
+      const {
+        user: { webhookUrl, ...user },
+        transactions,
+        ...checkoutOnly
+      } = checkout;
+      return ok({ checkout: checkoutOnly, user, activeTransaction: null });
     }
 
     let activeTransaction = checkout.transactions.find((t) => t.status === "PENDING");
@@ -153,9 +159,24 @@ export class CheckoutService {
     }
 
     // Add transaction to queue without waiting
-    withRetry(() => transactionQueue.add(activeTransaction.id, activeTransaction.md5));
+    withRetry(() =>
+      transactionQueue.add({
+        userId: checkout.userId,
+        checkoutId: checkout.id,
+        webhookUrl: checkout.user.webhookUrl,
+        transactionId: activeTransaction.id,
+        md5: activeTransaction.md5,
+      }),
+    );
 
-    return ok({ checkout, activeTransaction });
+    // Ugly i know, but bare with me
+    const {
+      user: { webhookUrl, ...user },
+      transactions,
+      ...checkoutOnly
+    } = checkout;
+
+    return ok({ checkout: checkoutOnly, user, activeTransaction });
   }
 
   findById(id: string) {

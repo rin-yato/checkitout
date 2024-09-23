@@ -19,6 +19,7 @@ class BakongService {
   private token = env.BAKONG_TOKEN;
   private api = ky.extend({
     prefixUrl: BAKONG_API_URL,
+    retry: 2,
   });
 
   createKHQR(opts: KHQROpts) {
