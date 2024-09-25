@@ -48,7 +48,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      dragonfly:
+      keydb:
         condition: service_healthy
 
   postgres:
@@ -71,21 +71,16 @@ services:
       retries: 5
     restart: unless-stopped
 
-  dragonfly:
-    image: "docker.dragonflydb.io/dragonflydb/dragonfly"
-    ulimits:
-      memlock: -1
-    command:
-      - "--cluster_mode=emulated"
-      - "--lock_on_hashtags"
-    environment:
-      - DFLY_requirepass=${DFLY_requirepass}
-    expose:
-      - 6379
+  keydb:
+    image: "eqalpha/keydb"
+    command: keydb-server /etc/keydb/keydb.conf
+    ports:
+      - 6379:6379
     volumes:
-      - dragonfly:/data
+      - keydb:/data
+      - ./keydb.conf:/etc/keydb/keydb.conf
     healthcheck:
-      test: ["CMD", "redis-cli", "PING"]
+      test: ["CMD", "redis-cli -a $REDIS_PASSWORD", "PING"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -93,5 +88,5 @@ services:
 
 volumes:
   postgres:
-  dragonfly:
+  keydb:
   letsencrypt:

@@ -36,7 +36,11 @@ export class WebhookTasker implements Tasker {
 
   async process(job: WebhookJob) {
     const response = await ky
-      .post(job.data.webhookUrl, { retry: 0, redirect: "error" })
+      .post(job.data.webhookUrl, {
+        retry: 0,
+        redirect: "error",
+        json: { checkoutId: job.data.checkoutId },
+      })
       .then(ok)
       .catch(err);
 

@@ -1,0 +1,5 @@
+bind $KEYDB_BIND
+protected-mode yes
+appendonly yes
+requirepass $KEYDB_PASS
+
