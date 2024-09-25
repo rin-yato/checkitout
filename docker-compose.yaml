@@ -80,7 +80,7 @@ services:
       - keydb:/data
       - ./keydb.conf:/etc/keydb/keydb.conf
     healthcheck:
-      test: ["CMD", "redis-cli -a $REDIS_PASSWORD", "PING"]
+      test: ["CMD", "keydb-cli -a $REDIS_PASSWORD", "PING"]
       interval: 10s
       timeout: 5s
       retries: 5
