@@ -66,7 +66,7 @@ services:
       - postgres:/var/lib/postgresql/data:rw
     healthcheck:
       test: ["CMD", "pg_isready"]
-      interval: 10s
+      interval: 3s
       timeout: 5s
       retries: 5
     restart: unless-stopped
@@ -80,8 +80,8 @@ services:
       - keydb:/data
       - ./keydb.conf:/etc/keydb/keydb.conf
     healthcheck:
-      test: ["CMD", "keydb-cli -a $REDIS_PASSWORD", "PING"]
-      interval: 10s
+      test: ["CMD-SHELL", "keydb-cli -a $REDIS_PASSWORD PING | grep PONG"]
+      interval: 3s
       timeout: 5s
       retries: 5
     restart: unless-stopped
