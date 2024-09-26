@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import { column, table } from "../utils";
 import { genId } from "../utils/id";
-import { CHECKOUT_STATUS, CURRENCY } from "../utils/type";
+import { CHECKOUT_STATUS, CURRENCY, DISCOUNT } from "../utils/type";
 import { TB_transaction } from "./transaction.table";
 import { TB_checkoutItem } from "./checkout-item.table";
 import { TB_user } from "./user.table";
@@ -22,8 +22,9 @@ export const TB_checkout = table("checkout", {
   // items: [...]
   currency: column.text("currency", { enum: CURRENCY }).notNull(),
   subTotal: column.real("sub_total").notNull(),
-  discount: column.real("discount").default(0),
-  tax: column.real("tax").default(0),
+  discountType: column.text("discount_type", { enum: DISCOUNT }),
+  discount: column.real("discount"),
+  tax: column.real("tax"),
   total: column.real("total").notNull(),
 
   clientName: column.text("client_name").notNull(),
@@ -32,7 +33,7 @@ export const TB_checkout = table("checkout", {
 
   additionalInfo: column.json("additional_info"),
 
-  redirectUrl: column.text("redirect_url").notNull().default(""),
+  redirectUrl: column.text("redirect_url").notNull(),
   status: column.text("status", { enum: CHECKOUT_STATUS }).default("IDLE"),
 
   // transaction: [...]
