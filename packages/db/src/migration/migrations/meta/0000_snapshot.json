@@ -1,5 +1,5 @@
 {
-  "id": "f151414d-4a75-47a3-877b-df9c88a10502",
+  "id": "52989465-8119-40d3-9f03-036d3777531e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -71,13 +71,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "''"
-        },
-        "allow_retry": {
-          "name": "allow_retry",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
         },
         "wait_before_redirect": {
           "name": "wait_before_redirect",
@@ -200,19 +193,23 @@
           "primaryKey": false,
           "notNull": true
         },
+        "discount_type": {
+          "name": "discount_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "discount": {
           "name": "discount",
           "type": "real",
           "primaryKey": false,
-          "notNull": false,
-          "default": 0
+          "notNull": false
         },
         "tax": {
           "name": "tax",
           "type": "real",
           "primaryKey": false,
-          "notNull": false,
-          "default": 0
+          "notNull": false
         },
         "total": {
           "name": "total",
@@ -243,6 +240,12 @@
           "type": "json",
           "primaryKey": false,
           "notNull": false
+        },
+        "redirect_url": {
+          "name": "redirect_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         },
         "status": {
           "name": "status",
@@ -307,7 +310,7 @@
           "name": "product_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "name": {
           "name": "name",
@@ -332,6 +335,18 @@
           "type": "real",
           "primaryKey": false,
           "notNull": true
+        },
+        "discount_type": {
+          "name": "discount_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "discount": {
+          "name": "discount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -695,6 +710,72 @@
           "tableFrom": "file_upload",
           "tableTo": "user",
           "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.webhook": {
+      "name": "webhook",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "checkout_id": {
+          "name": "checkout_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "json": {
+          "name": "json",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "webhook_user_id_user_id_fk": {
+          "name": "webhook_user_id_user_id_fk",
+          "tableFrom": "webhook",
+          "tableTo": "user",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "webhook_checkout_id_checkout_id_fk": {
+          "name": "webhook_checkout_id_checkout_id_fk",
+          "tableFrom": "webhook",
+          "tableTo": "checkout",
+          "columnsFrom": ["checkout_id"],
           "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"

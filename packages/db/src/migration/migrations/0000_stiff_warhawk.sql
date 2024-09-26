@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"address" text DEFAULT '' NOT NULL,
 	"phone" text DEFAULT '' NOT NULL,
 	"webhook_url" text DEFAULT '' NOT NULL,
-	"allow_retry" boolean DEFAULT true NOT NULL,
 	"wait_before_redirect" boolean DEFAULT true NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -31,13 +30,15 @@ CREATE TABLE IF NOT EXISTS "checkout" (
 	"ref_id" text NOT NULL,
 	"currency" text NOT NULL,
 	"sub_total" real NOT NULL,
-	"discount" real DEFAULT 0,
-	"tax" real DEFAULT 0,
+	"discount_type" text,
+	"discount" real,
+	"tax" real,
 	"total" real NOT NULL,
 	"client_name" text NOT NULL,
 	"client_phone" text NOT NULL,
 	"client_address" text,
 	"additional_info" json,
+	"redirect_url" text NOT NULL,
 	"status" text DEFAULT 'IDLE',
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
@@ -47,11 +48,13 @@ CREATE TABLE IF NOT EXISTS "checkout" (
 CREATE TABLE IF NOT EXISTS "checkout_item" (
 	"id" text PRIMARY KEY NOT NULL,
 	"checkout_id" text NOT NULL,
-	"product_id" text NOT NULL,
+	"product_id" text,
 	"name" text NOT NULL,
 	"img" text NOT NULL,
 	"price" real NOT NULL,
 	"quantity" real NOT NULL,
+	"discount_type" text,
+	"discount" real,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"deleted_at" timestamp with time zone
@@ -110,6 +113,15 @@ CREATE TABLE IF NOT EXISTS "file_upload" (
 	"deleted_at" timestamp with time zone
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "webhook" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"checkout_id" text NOT NULL,
+	"status" integer NOT NULL,
+	"json" json,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
@@ -148,6 +160,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "file_upload" ADD CONSTRAINT "file_upload_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "webhook" ADD CONSTRAINT "webhook_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "webhook" ADD CONSTRAINT "webhook_checkout_id_checkout_id_fk" FOREIGN KEY ("checkout_id") REFERENCES "public"."checkout"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
