@@ -4,7 +4,7 @@ import { fileUploadSchema } from "../model/file-upload.model";
 
 export const authMeResponse = userSchema
   .extend({
-    profile: fileUploadSchema.omit({ deletedAt: true }),
+    profile: fileUploadSchema.omit({ deletedAt: true }).nullable(),
   })
   .omit({ deletedAt: true });
 

@@ -99,7 +99,6 @@ export const googleAuthCallback = new OpenAPIHono().openapi(
         googleId: googleUser.value.sub,
         email: googleUser.value.email,
         displayName: googleUser.value.name,
-        profile: googleUser.value.picture,
       });
 
       if (user.error || !user.value) {
