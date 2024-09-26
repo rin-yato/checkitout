@@ -6,6 +6,8 @@ import { err, ok } from "@justmiracle/result";
 import { TB_fileUpload } from "@repo/db/table";
 import { scoped } from "@repo/libs";
 import { and, eq } from "drizzle-orm";
+import { authMeResponse } from "@repo/schema";
+import { apiError } from "@/lib/error";
 
 export const me = new OpenAPIHono<AppEnv>().openapi(
   createRoute({
@@ -16,6 +18,9 @@ export const me = new OpenAPIHono<AppEnv>().openapi(
     responses: {
       200: {
         description: "The current user",
+        content: {
+          "application/json": { schema: authMeResponse },
+        },
       },
     },
   }),
@@ -41,6 +46,16 @@ export const me = new OpenAPIHono<AppEnv>().openapi(
       return maybeProfile.value;
     });
 
-    return c.json({ ...user, profile });
+    const response = authMeResponse.safeParse({ ...user, profile });
+
+    if (!response.success) {
+      throw apiError({
+        status: 500,
+        message: "Failed to parse response",
+        details: response.error,
+      });
+    }
+
+    return c.json(response.data);
   },
 );

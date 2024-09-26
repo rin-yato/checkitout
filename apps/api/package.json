@@ -20,6 +20,7 @@
     "@lucia-auth/adapter-drizzle": "^1.1.0",
     "@repo/db": "workspace:*",
     "@repo/libs": "workspace:*",
+    "@repo/schema": "workspace:*",
     "@scalar/hono-api-reference": "^0.5.144",
     "arctic": "^1.9.2",
     "bullmq": "^5.12.13",
