@@ -43,7 +43,7 @@ services:
       - .env
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 2
     restart: unless-stopped
     depends_on:
       postgres:
