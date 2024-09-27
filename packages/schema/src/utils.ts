@@ -3,7 +3,7 @@ import { z } from "zod";
 export const CURRENCY = z.union([z.literal("USD"), z.literal("KHR")]);
 export type Currency = z.infer<typeof CURRENCY>;
 
-export const DISCOUNT_TYPE = z.union([z.literal("PERCENT"), z.literal("AMOUNT")]).nullable();
+export const DISCOUNT_TYPE = z.union([z.literal("PERCENTAGE"), z.literal("AMOUNT")]).nullable();
 export type DiscountType = z.infer<typeof DISCOUNT_TYPE>;
 
 export const TRANSACTION_STATUS = z.union([

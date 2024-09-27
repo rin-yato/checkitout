@@ -77,11 +77,6 @@ class TransactionService {
           .returning()
           .then(takeFirstOrThrow);
 
-        await trx
-          .update(TB_checkout)
-          .set({ status: "SUCCESS" })
-          .where(eq(TB_checkout.id, updatedTrx.checkoutId));
-
         const trxRef = await trx
           .insert(TB_transactionRef)
           .values({

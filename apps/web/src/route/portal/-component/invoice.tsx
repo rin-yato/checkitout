@@ -14,7 +14,7 @@ export function Invoice({
   const discount = useMemo(() => {
     if (!checkout.discountType || !checkout.discount) return null;
 
-    if (checkout.discountType === "PERCENT") {
+    if (checkout.discountType === "PERCENTAGE") {
       return {
         percentage: checkout.discount,
         amount: getDiscountAmount(checkout.subTotal, checkout.discount),

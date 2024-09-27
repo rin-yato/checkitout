@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import { column, table } from "../utils";
 import { genId } from "../utils/id";
-import { CHECKOUT_STATUS, CURRENCY, DISCOUNT } from "../utils/type";
+import { CURRENCY, DISCOUNT } from "../utils/type";
 import { TB_transaction } from "./transaction.table";
 import { TB_checkoutItem } from "./checkout-item.table";
 import { TB_user } from "./user.table";
