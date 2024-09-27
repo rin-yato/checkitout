@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { CURRENCY, DISCOUNT_TYPE } from "../utils";
+import { publicCheckoutItemSchema } from "./checkout-item.model";
 
 export const checkoutSchema = z.object({
   id: z.string(),
@@ -8,14 +9,46 @@ export const checkoutSchema = z.object({
 
   currency: CURRENCY,
   discountType: DISCOUNT_TYPE,
-  discount: z.number().int(),
-  tax: z.number().int(),
+  discount: z.number().int().nullable(),
+  tax: z.number().int().nullable(),
   subTotal: z.number().int(),
   total: z.number().int(),
 
   clientName: z.string(),
   clientPhone: z.string(),
-  clientAddress: z.string().optional(),
+  clientAddress: z.string().nullable(),
 
   redirectUrl: z.string().url(),
+
+  additionalInfo: z.record(z.string(), z.any()).nullable(),
+
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date().nullable(),
 });
+
+export const publicCheckoutSchema = checkoutSchema.pick({
+  id: true,
+  refId: true,
+  currency: true,
+  discountType: true,
+  discount: true,
+  tax: true,
+  subTotal: true,
+  total: true,
+  clientName: true,
+  clientPhone: true,
+  clientAddress: true,
+  redirectUrl: true,
+  additionalInfo: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const publicCheckoutWithItemsSchema = publicCheckoutSchema.extend({
+  items: z.array(publicCheckoutItemSchema).min(1, "Checkout must have at least 1 product"),
+});
+
+export type Checkout = z.infer<typeof checkoutSchema>;
+export type PublicCheckout = z.infer<typeof publicCheckoutSchema>;
+export type PublicCheckoutWithItems = z.infer<typeof publicCheckoutWithItemsSchema>;

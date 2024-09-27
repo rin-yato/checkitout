@@ -18,7 +18,7 @@ const router = createRouter({
   routeTree,
   defaultPendingMs: 200,
   defaultPreloadStaleTime: 0,
-  defaultPendingComponent: () => <div>Loading...</div>,
+  // defaultPendingComponent: () => <div>Loading...</div>,
   defaultErrorComponent: (props) => <DefaultCatchBoundary {...props} />,
 
   context: {
@@ -49,7 +49,8 @@ if (rootElement && !rootElement.innerHTML) {
           radius="medium"
           grayColor={COLOR.GRAY}
           accentColor={COLOR.PRIMARY}
-          className="flex h-dvh antialiased"
+          appearance="inherit"
+          className="flex min-h-dvh overflow-x-hidden antialiased"
         >
           <AuthProvider>
             <App />

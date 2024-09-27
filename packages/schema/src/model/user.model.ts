@@ -20,6 +20,15 @@ export const userSchema = z.object({
   deletedAt: z.date().nullable(),
 });
 
+export const publicUserSchema = userSchema.pick({
+  email: true,
+  phone: true,
+  address: true,
+  profile: true,
+  displayName: true,
+  waitBeforeRedirect: true,
+});
+
 export const userUpdateSchema = z.object({
   displayName: z
     .string({ required_error: "Display name is required" })
@@ -42,3 +51,4 @@ export const userUpdateSchema = z.object({
 
 export type User = z.infer<typeof userSchema>;
 export type UserUpdate = z.infer<typeof userUpdateSchema>;
+export type PublicUser = z.infer<typeof publicUserSchema>;

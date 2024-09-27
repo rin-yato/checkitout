@@ -1,20 +1,41 @@
 import { formatCurrency } from "@/lib/currency";
+import type { PublicUser, PublicCheckoutWithItems } from "@repo/schema";
 import { Box, DataList, Flex, Separator, Text, Theme } from "@radix-ui/themes";
-import type { Checkout, CheckoutItem, User } from "@repo/db/schema";
+import { useMemo } from "react";
+import { getDiscountAmount } from "@/lib/utils";
 
 export function Invoice({
   user,
   checkout,
 }: {
-  user: User;
-  checkout: Checkout & { items: CheckoutItem[] };
+  user: PublicUser;
+  checkout: PublicCheckoutWithItems;
 }) {
+  const discount = useMemo(() => {
+    if (!checkout.discountType || !checkout.discount) return null;
+
+    if (checkout.discountType === "PERCENT") {
+      return {
+        percentage: checkout.discount,
+        amount: getDiscountAmount(checkout.subTotal, checkout.discount),
+      };
+    }
+
+    return { percentage: null, amount: checkout.discount };
+  }, [checkout]);
+
+  const tax = useMemo(() => {
+    if (!checkout.tax) return null;
+    const amountAfterDiscount = checkout.subTotal - (discount?.amount ?? 0);
+    return getDiscountAmount(amountAfterDiscount, checkout.tax);
+  }, [checkout, discount]);
+
   return (
     <Theme hasBackground={false}>
       <Flex
         gap="3"
         direction="column"
-        className="z-10 w-[410px] rounded-6 border-2 border-gray-3 bg-surface p-7"
+        className="z-10 rounded-6 border-2 border-gray-3 bg-surface p-7 sm:w-[410px]"
       >
         <Flex direction="column" gapY="4" pb="5">
           <Flex align="center" justify="between">
@@ -25,10 +46,10 @@ export function Invoice({
                 className="rounded object-contain ring-1 ring-gray"
               />
             </Box>
-            <Text trim="both" color="gray" className="text-right">
-              <span className="select-none text-gray-6">#</span>
-              <span>C10249</span>
-            </Text>
+            {/* <Text trim="both" color="gray" className="text-right"> */}
+            {/*   <span className="select-none text-gray-6">#</span> */}
+            {/*   <span>C10249</span> */}
+            {/* </Text> */}
           </Flex>
 
           <Flex direction="column" gap="2">
@@ -56,7 +77,7 @@ export function Invoice({
 
             <DataList.Item>
               <DataList.Label>Tel.</DataList.Label>
-              <DataList.Value>{checkout.clientPhone}</DataList.Value>
+              <DataList.Value>{checkout.clientPhone ?? "-"}</DataList.Value>
             </DataList.Item>
 
             <Separator orientation="vertical" size="2" />
@@ -104,33 +125,27 @@ export function Invoice({
             <DataList.Item>
               <DataList.Label>Subtotal</DataList.Label>
               <DataList.Value className="justify-end">
-                {formatCurrency(
-                  checkout.items.reduce(
-                    (acc: number, product: any) => acc + product.price * product.quantity,
-                    0,
-                  ),
-                  checkout.currency,
-                )}
+                {formatCurrency(checkout.subTotal, checkout.currency)}
               </DataList.Value>
             </DataList.Item>
 
             <DataList.Item>
-              <DataList.Label>Discount</DataList.Label>
+              <DataList.Label>
+                Discount&nbsp;
+                {discount?.percentage && <span>({discount.percentage}%)</span>}
+              </DataList.Label>
               <DataList.Value className="justify-end">
-                {formatCurrency(checkout?.discount ?? 0, checkout.currency)}
+                {formatCurrency(discount?.amount ?? 0, checkout.currency)}
               </DataList.Value>
             </DataList.Item>
 
             <DataList.Item>
-              <DataList.Label>VAT (10%)</DataList.Label>
+              <DataList.Label>
+                VAT&nbsp;
+                {checkout.tax && <span>({checkout.tax}%)</span>}
+              </DataList.Label>
               <DataList.Value className="justify-end">
-                {formatCurrency(
-                  checkout.items.reduce(
-                    (acc: number, product: any) => acc + product.price * product.quantity,
-                    0,
-                  ) * (checkout?.tax ?? 0),
-                  checkout.currency,
-                )}
+                {formatCurrency(tax ?? 0, checkout.currency)}
               </DataList.Value>
             </DataList.Item>
 

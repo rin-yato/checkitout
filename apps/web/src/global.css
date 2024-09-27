@@ -41,6 +41,11 @@
     --success-hover: var(--green-10);
     --success-active: var(--green-11);
 
+    --warning: var(--yellow-9);
+    --warning-foreground: var(--yellow-1);
+    --warning-hover: var(--yellow-10);
+    --warning-active: var(--yellow-11);
+
     --border: var(--gray-5);
     --input: var(--gray-6);
     --ring: var(--gray-6);

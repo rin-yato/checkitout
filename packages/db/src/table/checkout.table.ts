@@ -5,6 +5,7 @@ import { CHECKOUT_STATUS, CURRENCY, DISCOUNT } from "../utils/type";
 import { TB_transaction } from "./transaction.table";
 import { TB_checkoutItem } from "./checkout-item.table";
 import { TB_user } from "./user.table";
+import { TB_webhook } from "./webhook.table";
 
 export type TB_Checkout = typeof TB_checkout;
 export const CHECKOUT_ID_PREFIX = "ch";
@@ -34,8 +35,6 @@ export const TB_checkout = table("checkout", {
   additionalInfo: column.json("additional_info"),
 
   redirectUrl: column.text("redirect_url").notNull(),
-  status: column.text("status", { enum: CHECKOUT_STATUS }).default("IDLE"),
-
   // transaction: [...]
 
   createdAt: column.createdAt,
@@ -45,6 +44,7 @@ export const TB_checkout = table("checkout", {
 
 export const checkoutRelations = relations(TB_checkout, ({ many, one }) => ({
   transactions: many(TB_transaction),
+  webhooks: many(TB_webhook),
   items: many(TB_checkoutItem),
   user: one(TB_user, {
     fields: [TB_checkout.userId],

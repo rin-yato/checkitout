@@ -3,7 +3,7 @@ export const COLOR = {
   GRAY: "gray",
   DANGER: "red",
   SUCCESS: "green",
-  WARNING: "yellow",
+  WARNING: "amber",
 } as const;
 
 export const SIDEBAR_WIDTH = 292;

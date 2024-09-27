@@ -36,6 +36,9 @@
       "suspicious": {
         "noExplicitAny": "off"
       },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
       "style": {
         "useNodejsImportProtocol": "off"
       },

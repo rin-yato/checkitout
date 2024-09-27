@@ -31,6 +31,7 @@ function RootComponent() {
         <Toaster
           icons={{ success: <CheckmarkIcon />, error: <ErrorIcon /> }}
           position="top-center"
+          richColors
         />
       </Portal>
     </Fragment>

@@ -4,13 +4,11 @@ import { z } from "@hono/zod-openapi";
 import { err, ok } from "@justmiracle/result";
 
 import { db, takeFirstOrThrow } from "@/lib/db";
-import { transactionQueue } from "@/task/transaction";
 import { transactionServcie } from "./transaction.service";
 
 import { CHECKOUT_ID_PREFIX, TB_checkout, TB_checkoutItem } from "@repo/db/table";
 import { checkoutInsert, checkoutItemInsert, type CheckoutInsert } from "@repo/db/schema";
 import { genId } from "@/lib/id";
-import { withRetry } from "@/lib/retry";
 import { apiError } from "@/lib/error";
 import { isValidUrl } from "@/lib/is";
 
@@ -94,89 +92,6 @@ export class CheckoutService {
       .catch(err);
 
     return txResult;
-  }
-
-  async portal(id: string) {
-    const checkout = await db.query.TB_checkout.findFirst({
-      where: eq(TB_checkout.id, id),
-      with: {
-        transactions: true,
-        items: true,
-        user: {
-          columns: {
-            waitBeforeRedirect: true,
-            email: true,
-            phone: true,
-            address: true,
-            profile: true,
-            displayName: true,
-            username: true,
-            bakongId: true,
-            webhookUrl: true,
-          },
-        },
-      },
-    });
-
-    if (!checkout) {
-      throw apiError({
-        status: 404,
-        message: "Checkout not found",
-      });
-    }
-
-    if (checkout.status === "SUCCESS") {
-      const {
-        user: { webhookUrl, ...user },
-        transactions,
-        ...checkoutOnly
-      } = checkout;
-      return ok({ checkout: checkoutOnly, user, activeTransaction: null });
-    }
-
-    let activeTransaction = checkout.transactions.find((t) => t.status === "PENDING");
-
-    if (!activeTransaction) {
-      const transaction = await transactionServcie
-        .createTransactionQuery({
-          checkoutId: checkout.id,
-          currency: checkout.currency,
-          amount: checkout.total,
-          merchantName: checkout.user.displayName,
-          accountID: checkout.user.bakongId,
-        })
-        .then(ok)
-        .catch(err);
-
-      if (transaction.error) {
-        throw apiError({
-          status: 500,
-          message: "Failed to create transaction",
-          details: transaction.error.message,
-        });
-      }
-      activeTransaction = transaction.value;
-    }
-
-    // Add transaction to queue without waiting
-    withRetry(() =>
-      transactionQueue.add({
-        userId: checkout.userId,
-        checkoutId: checkout.id,
-        webhookUrl: checkout.user.webhookUrl,
-        transactionId: activeTransaction.id,
-        md5: activeTransaction.md5,
-      }),
-    );
-
-    // Ugly i know, but bare with me
-    const {
-      user: { webhookUrl, ...user },
-      transactions,
-      ...checkoutOnly
-    } = checkout;
-
-    return ok({ checkout: checkoutOnly, user, activeTransaction });
   }
 
   findById(id: string) {

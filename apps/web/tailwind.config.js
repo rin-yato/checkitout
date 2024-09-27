@@ -54,6 +54,14 @@ export default {
         hover: "var(--success-hover)",
         active: "var(--success-active)",
       },
+
+      warning: {
+        DEFAULT: "var(--warning)",
+        foreground: "var(--warning-foreground)",
+
+        hover: "var(--warning-hover)",
+        active: "var(--warning-active)",
+      },
     },
 
     borderRadius: {

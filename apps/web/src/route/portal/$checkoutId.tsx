@@ -1,12 +1,14 @@
-import { Flex, Grid } from "@radix-ui/themes";
-import { createFileRoute } from "@tanstack/react-router";
-import { Invoice } from "./-component/invoice";
-import { QRPay } from "./-component/qr";
-import { useQuery } from "@tanstack/react-query";
 import ky from "ky";
-import { Check, PiggyBank, Scan } from "@phosphor-icons/react";
 import { env } from "@/lib/env";
-import type { Checkout, CheckoutItem, Transaction, User } from "@repo/db/schema";
+import { QRPay } from "./-component/qr";
+import { Flex } from "@radix-ui/themes";
+import { Invoice } from "./-component/invoice";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { Check, CornersOut, PiggyBank } from "@phosphor-icons/react";
+import type { CheckoutPortalV1Response } from "@repo/schema";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/portal/$checkoutId")({
   component: CheckoutPage,
@@ -15,23 +17,69 @@ export const Route = createFileRoute("/portal/$checkoutId")({
 function CheckoutPage() {
   const { checkoutId } = Route.useParams();
 
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const firstDataLoad = useRef(true);
+  const toastIdRef = useRef<string | number>("");
+
   const { data, isPending, error } = useQuery({
     queryKey: ["checkout", checkoutId],
     queryFn: () => {
       return ky
         .get(`v1/checkout/portal/${checkoutId}`, { retry: 0, prefixUrl: env.VITE_API_URL })
-        .json<{
-          checkout: Checkout & { items: CheckoutItem[] };
-          activeTransaction: Transaction;
-          user: User;
-        }>();
+        .json<CheckoutPortalV1Response>();
     },
     retry: false,
     refetchInterval: (query) =>
-      query.state.status === "error" || query.state?.data?.checkout?.status === "SUCCESS"
-        ? false
-        : 2869,
+      query.state.status === "error" || query.state?.data?.hasSuccessfulWebhook ? false : 2869,
   });
+
+  useEffect(() => {
+    if (!data) return;
+
+    // If it's the first data load, and the transaction is successful but
+    // the webhook hasn't been received yet, we should show the processing state.
+    if (firstDataLoad.current && data.hasSuccessfulTransaction && !data.hasSuccessfulWebhook) {
+      setIsProcessing(true);
+    }
+
+    // We dont show the toast, if we are already in the processing state
+    if (!firstDataLoad.current && data.hasSuccessfulTransaction && !toastIdRef.current) {
+      toastIdRef.current = toast.loading("Hold on tight! We're processing your payment.");
+
+      setTimeout(() => {
+        toast.info("Unable to process your payment.", {
+          id: toastIdRef.current,
+          richColors: true,
+          duration: 10_000, // 10s
+        });
+        setIsProcessing(true);
+      }, 5000);
+    }
+
+    if (data.hasSuccessfulWebhook && data.hasSuccessfulTransaction) {
+      const redirectUrl = data.checkout.redirectUrl;
+      const validURL = URL.canParse(redirectUrl);
+
+      if (validURL) {
+        return window.location.assign(redirectUrl);
+      }
+
+      if (window.history.length > 1) {
+        return window.history.back();
+      }
+
+      toast.success("Payment successful!", {
+        id: toastIdRef.current,
+        description: "Your payment has been successfully processed.",
+      });
+    }
+
+    // update the firstDataLoad ref
+    // this is needed to properly set processing state
+    // and show the toast only when needed
+    firstDataLoad.current = false;
+  }, [data]);
 
   if (isPending) {
     return <div className="h-dvh w-full bg-gray-2" />;
@@ -42,27 +90,24 @@ function CheckoutPage() {
   }
 
   return (
-    <main className="h-dvh w-full">
-      <Grid columns="2" className="size-full bg-gray-2 pt-10">
-        <Flex className="fade-in-0 size-full animate-in justify-end px-12 py-10">
+    <main className="flex flex-1 overflow-x-hidden border bg-gray-2 p-5 sm:p-10">
+      <Flex className="mx-auto flex-1 flex-wrap-reverse justify-center gap-12 overflow-x-hidden">
+        <Flex className="fade-in-0 animate-in">
           <Invoice user={data.user} checkout={data.checkout} />
         </Flex>
-        <Flex
-          direction="column"
-          className="fade-in-0 size-full animate-in justify-start px-12 py-10"
-        >
-          <div className="flex w-fit flex-col">
-            <QRPay
-              paid={data.checkout.status === "SUCCESS"}
-              currency={data.checkout.currency}
-              amount={data.checkout.total}
-              merchantName={data.user.displayName}
-              qrCode={data?.activeTransaction?.qrCode}
-            />
-          </div>
+
+        <Flex direction="column" className="fade-in-0 animate-in max-sm:flex-1">
+          <QRPay
+            paid={data.hasSuccessfulTransaction}
+            processing={isProcessing}
+            currency={data.checkout.currency}
+            amount={data.checkout.total}
+            merchantName={data.user.displayName}
+            qrCode={data.activeTransaction?.qrCode ?? ""}
+          />
 
           {/* Step by step guide for scanning QR code and paying with Bakong KHQR */}
-          <Flex className="mt-8 flex-col gap-3 text-gray-foreground">
+          <Flex className="mt-8 flex-col gap-3 px-1 text-gray-foreground">
             <div className="flex items-center gap-3">
               <div className="w-fit rounded-4 border bg-background p-1.5">
                 <PiggyBank size="20" />
@@ -72,7 +117,7 @@ function CheckoutPage() {
 
             <div className="flex items-center gap-3">
               <div className="w-fit rounded-4 border bg-background p-1.5">
-                <Scan size="20" />
+                <CornersOut size="20" />
               </div>
               <div>2. Scan the QR code with your banking app</div>
             </div>
@@ -85,7 +130,7 @@ function CheckoutPage() {
             </div>
           </Flex>
         </Flex>
-      </Grid>
+      </Flex>
     </main>
   );
 }

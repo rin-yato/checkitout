@@ -5,6 +5,7 @@ const COLORS = {
   gray: "gray",
   destructive: "red",
   success: "green",
+  warning: "amber",
 };
 
 const SCALE = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
