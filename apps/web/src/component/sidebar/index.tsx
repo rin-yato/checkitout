@@ -17,11 +17,12 @@ export function Sidebar() {
       <div className="flex items-center gap-x-2 px-2">
         <Avatar
           size="2"
-          fallback="MS"
+          fallback="JM"
           src="/logo.png"
-          alt="Miracle Store Logo"
-          className="rounded-4 shadow-lg"
+          alt="Checkitout Logo"
+          className="rounded-3 shadow-lg"
         />
+
         <Heading size="5" weight="medium">
           <Em>Checkitout</Em>
         </Heading>
@@ -53,9 +54,8 @@ export function Sidebar() {
         >
           <Avatar
             color="gray"
-            radius="full"
-            src={user.profile?.url ?? ""}
             className="border"
+            src={user.profile?.url ?? ""}
             fallback={getInitial(user.displayName)}
           />
           <Flex direction="column" overflowX="hidden">
