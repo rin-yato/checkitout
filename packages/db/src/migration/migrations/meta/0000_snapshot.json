@@ -1,5 +1,5 @@
 {
-  "id": "52989465-8119-40d3-9f03-036d3777531e",
+  "id": "dcfdc957-7588-4875-b4d6-498a34560665",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -246,13 +246,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'IDLE'"
         },
         "created_at": {
           "name": "created_at",

@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS "checkout" (
 	"client_address" text,
 	"additional_info" json,
 	"redirect_url" text NOT NULL,
-	"status" text DEFAULT 'IDLE',
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"deleted_at" timestamp with time zone
