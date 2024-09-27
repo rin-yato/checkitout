@@ -12,6 +12,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/portal/$checkoutId")({
   component: CheckoutPage,
+  pendingComponent: () => <div className="flex-1 bg-gray-2" />,
 });
 
 function CheckoutPage() {

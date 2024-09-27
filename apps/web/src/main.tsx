@@ -18,7 +18,7 @@ const router = createRouter({
   routeTree,
   defaultPendingMs: 200,
   defaultPreloadStaleTime: 0,
-  // defaultPendingComponent: () => <div>Loading...</div>,
+  defaultPendingComponent: () => <div>Loading...</div>,
   defaultErrorComponent: (props) => <DefaultCatchBoundary {...props} />,
 
   context: {

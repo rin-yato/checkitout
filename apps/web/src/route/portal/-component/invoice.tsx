@@ -1,8 +1,8 @@
 import { formatCurrency } from "@/lib/currency";
 import type { PublicUser, PublicCheckoutWithItems } from "@repo/schema";
-import { Box, DataList, Flex, Separator, Text, Theme } from "@radix-ui/themes";
+import { Avatar, Box, DataList, Flex, Separator, Text, Theme } from "@radix-ui/themes";
 import { useMemo } from "react";
-import { getDiscountAmount } from "@/lib/utils";
+import { getDiscountAmount, getInitial } from "@/lib/utils";
 
 export function Invoice({
   user,
@@ -39,13 +39,13 @@ export function Invoice({
       >
         <Flex direction="column" gapY="4" pb="5">
           <Flex align="center" justify="between">
-            <Box asChild className="h-10">
-              <img
-                alt="Merchant logo"
-                src={user.profile ?? ""}
-                className="rounded object-contain ring-1 ring-gray"
-              />
-            </Box>
+            <Avatar
+              size="4"
+              color="gray"
+              src={user.profile ?? ""}
+              className="ring-1 ring-gray"
+              fallback={getInitial(user.displayName)}
+            />
             {/* <Text trim="both" color="gray" className="text-right"> */}
             {/*   <span className="select-none text-gray-6">#</span> */}
             {/*   <span>C10249</span> */}
@@ -94,15 +94,21 @@ export function Invoice({
         <Flex direction="column" gap="5" pt="3" pb="4">
           <Text color="gray">Items</Text>
 
-          {checkout.items.map((product: any) => (
+          {/* For future implementation */}
+          {/* <div className="-mx-2.5 flex justify-between rounded bg-gray-a3 px-2.5 py-1"> */}
+          {/*   <Text color="gray">Items</Text> */}
+          {/*   <Text color="gray">Amount</Text> */}
+          {/* </div> */}
+
+          {checkout.items.map((product) => (
             <Flex gap="3" align="start" key={product.name}>
-              <Box asChild className="size-12 ring-2 ring-gray">
-                <img
-                  alt="Album cover"
-                  src={product.img}
-                  className="rounded border object-cover"
-                />
-              </Box>
+              <Avatar
+                size="4"
+                color="gray"
+                src={product.img}
+                className="ring-1 ring-gray"
+                fallback={getInitial(product.name)}
+              />
 
               <Box flexGrow="1" width="0">
                 <Text className="line-clamp-1 break-all">{product.name}</Text>

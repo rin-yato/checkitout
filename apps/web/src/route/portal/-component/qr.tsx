@@ -1,8 +1,8 @@
 import { formatCurrency } from "@/lib/currency";
-import { Box, Flex, Text } from "@radix-ui/themes";
+import { Avatar, Flex, Text } from "@radix-ui/themes";
 import { QRCodeSVG } from "qrcode.react";
 import { InvoiceSeparator } from "./invoice";
-import { Check, Clock, Hourglass, Receipt } from "@phosphor-icons/react";
+import { Check, Receipt } from "@phosphor-icons/react";
 import { IconBorderCorners } from "@tabler/icons-react";
 import { match } from "ts-pattern";
 
@@ -25,13 +25,7 @@ export function QRPay(props: QRPayProps) {
       className="z-10 w-full rounded-6 border-2 border-gray-3 bg-surface p-7 sm:w-[410px]"
     >
       <Flex align="center" gap="4">
-        <Box asChild className="h-10 bg-black">
-          <img
-            alt="Bankong KHQR logo"
-            src="https://cdn.brandfetch.io/idhpFC9J1n/w/2048/h/2048/theme/light/icon.png"
-            className="rounded-5 object-contain"
-          />
-        </Box>
+        <Avatar size="3" color="gray" src="/bakong-logo.png" fallback="B" />
         <Flex direction="column" className="gap-2">
           <Text color="gray" trim="both" size="2">
             Paying to
@@ -61,10 +55,12 @@ export function QRPay(props: QRPayProps) {
 
       <Flex className="items-center justify-center gap-2">
         <Text color="gray">Payment via</Text>
-        <img
-          alt="powered by khqr"
-          className="h-5 object-contain"
-          src="/KHQR available here - logo with bg.png"
+        <Avatar
+          size="4"
+          color="red"
+          src="/khqr.png"
+          className="h-5 w-fit rounded-1"
+          fallback={<span className="px-1.5">KHQR</span>}
         />
       </Flex>
     </Flex>
