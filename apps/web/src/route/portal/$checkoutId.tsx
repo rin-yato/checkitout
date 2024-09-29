@@ -66,6 +66,7 @@ function CheckoutPage() {
 
     // We dont show the toast, if we are already in the processing state
     if (
+      firstDataLoad.current.loaded &&
       !firstDataLoad.current.isProcessing &&
       data.hasSuccessfulTransaction &&
       !toastIdRef.current
@@ -82,16 +83,23 @@ function CheckoutPage() {
       }, 5000);
     }
 
-    if (data.hasSuccessfulWebhook && data.hasSuccessfulTransaction) {
+    if (
+      firstDataLoad.current.loaded && // first load we dont redirect
+      data.hasSuccessfulWebhook &&
+      data.hasSuccessfulTransaction
+    ) {
       const redirectUrl = data.checkout.redirectUrl;
       const validURL = URL.canParse(redirectUrl);
+      const delay = 1500;
 
       if (validURL) {
-        return window.location.assign(redirectUrl);
+        setTimeout(() => window.location.assign(redirectUrl), delay);
+        return;
       }
 
       if (window.history.length > 1) {
-        return window.history.back();
+        setTimeout(() => window.history.back(), delay);
+        return;
       }
 
       toast.success("Payment successful!", {
@@ -99,6 +107,8 @@ function CheckoutPage() {
         description: "Your payment has been successfully processed.",
       });
     }
+
+    firstDataLoad.current = { loaded: true, isProcessing: firstDataLoad.current.isProcessing };
   }, [data]);
 
   if (isPending) {
