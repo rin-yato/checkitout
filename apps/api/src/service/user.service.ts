@@ -3,6 +3,7 @@ import { type Result, err, ok } from "@justmiracle/result";
 import type { User, UserInsert, UserUpdate } from "@repo/db/schema";
 import { TB_user } from "@repo/db/table";
 import { eq } from "drizzle-orm";
+import { TB_checkoutSequence } from "node_modules/@repo/db/src/table/checkout-sequence.table";
 
 export class UserService {
   async findByGoogleId(googleId: string): Promise<Result<User | undefined>> {
@@ -29,10 +30,15 @@ export class UserService {
 
   async create(userInsert: UserInsert): Promise<Result<User>> {
     return db
-      .insert(TB_user)
-      .values(userInsert)
-      .returning()
-      .then(takeFirstOrThrow)
+      .transaction(async (tx) => {
+        const user = await tx
+          .insert(TB_user)
+          .values(userInsert)
+          .returning()
+          .then(takeFirstOrThrow);
+        await tx.insert(TB_checkoutSequence).values({ userId: user.id });
+        return user;
+      })
       .then(ok)
       .catch(err);
   }

@@ -1,6 +1,11 @@
 import { API_URL, WEB_URL } from "./constant";
-import type { CheckoutRequest, CreateCheckoutResponse, FindOneResponse } from "../type";
-import { type Api, createApiCall } from "./util";
+import type {
+  CheckoutCreateBody,
+  CheckoutRequest,
+  CreateCheckoutResponse,
+  FindOneResponse,
+} from "../type";
+import { type Api, type ApiResponseError, createApiCall } from "./util";
 
 export class Checkitout {
   protected api: Api;
@@ -26,13 +31,56 @@ export class Checkitout {
 
   async create(request: CheckoutRequest) {
     const url = new URL("/v1/checkout", this.apiUrl);
+
+    const subTotal = request.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const discount =
+      request.discount?.type === "AMOUNT"
+        ? request.discount.value
+        : (subTotal * (request.discount?.value || 0)) / 100;
+
+    const tax = ((subTotal - discount) * (request.tax || 0)) / 100;
+    const total = subTotal - discount + tax;
+
+    if (request.total && total !== request.total) {
+      return {
+        error: {
+          status: 400,
+          message: `Total amount does not match, assert: ${request.total}, calculated: ${total}`,
+        },
+        data: null,
+      } satisfies ApiResponseError;
+    }
+
+    const body = {
+      currency: request.currency,
+
+      items: request.items,
+
+      subTotal,
+
+      discountType: request.discount?.type,
+      discount: request.discount?.value,
+
+      tax: request.tax,
+
+      total,
+
+      clientName: request.client.name,
+      clientPhone: request.client.phone,
+      clientAddress: request.client.address,
+
+      redirectUrl: request.redirectUrl,
+
+      additionalInfo: request.additionalInfo,
+    } satisfies CheckoutCreateBody;
+
     return this.api<CreateCheckoutResponse>(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.token}`,
       },
-      body: JSON.stringify(request),
+      body: JSON.stringify(body),
     });
   }
 
@@ -54,7 +102,11 @@ export class Checkitout {
     });
   }
 
-  protected async track(checkoutId: string, onPaid: () => void) {
+  protected async _INTERNAL_DO_NOT_USE_OR_YOU_WILL_BE_FIRED_track(
+    checkoutId: string,
+    onPaid: () => void,
+    onWebhookCalled: () => void,
+  ) {
     const url = new URL(`/checkout/${checkoutId}/track`, this.apiUrl);
 
     const eventSource = new EventSource(url, {
@@ -63,8 +115,10 @@ export class Checkitout {
 
     eventSource.onmessage = (event) => {
       const data = event.data;
-      if (data === "COMPLETED") {
+      if (data === "PAID") {
         onPaid();
+      } else if (data === "WEBHOOK_CALLED") {
+        onWebhookCalled();
         eventSource.close();
       }
     };

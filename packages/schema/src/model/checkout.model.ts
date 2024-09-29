@@ -49,6 +49,29 @@ export const publicCheckoutWithItemsSchema = publicCheckoutSchema.extend({
   items: z.array(publicCheckoutItemSchema).min(1, "Checkout must have at least 1 product"),
 });
 
+export const checkoutInsertSchema = checkoutSchema
+  .pick({
+    tax: true,
+    total: true,
+    subTotal: true,
+    discount: true,
+    discountType: true,
+    currency: true,
+    clientName: true,
+    clientPhone: true,
+    clientAddress: true,
+    redirectUrl: true,
+    additionalInfo: true,
+  })
+  .extend({
+    tax: z.number().int().nullish(),
+    discount: z.number().int().nullish(),
+    discountType: DISCOUNT_TYPE.optional(),
+    clientAddress: z.string().nullish(),
+    additionalInfo: z.record(z.string(), z.any()).nullish(),
+  });
+
 export type Checkout = z.infer<typeof checkoutSchema>;
 export type PublicCheckout = z.infer<typeof publicCheckoutSchema>;
 export type PublicCheckoutWithItems = z.infer<typeof publicCheckoutWithItemsSchema>;
+export type CheckoutInsert = z.infer<typeof checkoutInsertSchema>;

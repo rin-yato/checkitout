@@ -330,14 +330,13 @@ importers:
         version: 1.1.10
 
   packages/sdk:
-    dependencies:
-      typescript:
-        specifier: ^5.0.0
-        version: 5.5.4
     devDependencies:
       '@changesets/cli':
         specifier: ^2.27.1
         version: 2.27.8
+      '@repo/schema':
+        specifier: workspace:*
+        version: link:../schema
       '@types/bun':
         specifier: latest
         version: 1.1.9

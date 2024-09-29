@@ -1,5 +1,5 @@
 import { db, takeFirstOrThrow, type DBTrx } from "@/lib/db";
-import { TB_checkout, TB_transaction, TB_transactionRef } from "@repo/db/table";
+import { TB_transaction, TB_transactionRef } from "@repo/db/table";
 import type { Currency } from "@/constant/bakong";
 
 import { err, ok } from "@justmiracle/result";

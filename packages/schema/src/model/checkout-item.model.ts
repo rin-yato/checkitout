@@ -30,5 +30,22 @@ export const publicCheckoutItemSchema = checkoutItemSchema.pick({
   discount: true,
 });
 
+export const checkoutItemInsertSchema = checkoutItemSchema
+  .pick({
+    discountType: true,
+    discount: true,
+    quantity: true,
+    price: true,
+    img: true,
+    name: true,
+    productId: true,
+  })
+  .extend({
+    productId: z.string().nullish(),
+    discountType: DISCOUNT_TYPE.optional(),
+    discount: z.number().int().nullish(),
+  });
+
 export type CheckoutItem = z.infer<typeof checkoutItemSchema>;
 export type PublicCheckoutItem = z.infer<typeof publicCheckoutItemSchema>;
+export type CheckoutItemInsert = z.infer<typeof checkoutItemInsertSchema>;

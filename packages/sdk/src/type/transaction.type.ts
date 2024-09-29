@@ -1,6 +1,9 @@
-import type { Currency } from "./shared.type";
+import type { PublicTransaction } from "@repo/schema";
+import type { Currency, Equal, Expect } from "./shared.type";
 
 export type TransactionStatus = "TIMEOUT" | "PENDING" | "SUCCESS" | "FAILED";
+
+type TransactionTest = Expect<Equal<Transaction, PublicTransaction>>;
 
 export type Transaction = {
   id: string;
@@ -13,7 +16,4 @@ export type Transaction = {
   currency: Currency;
 
   status: TransactionStatus;
-
-  createdAt: Date;
-  updatedAt: Date;
 };

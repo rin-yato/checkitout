@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import { column, table } from "../utils";
 import { genId } from "../utils/id";
 import { TB_checkout } from "./checkout.table";
+import { TB_checkoutSequence } from "./checkout-sequence.table";
 
 export type TB_user = typeof TB_user;
 
@@ -27,6 +28,10 @@ export const TB_user = table("user", {
   deletedAt: column.deletedAt,
 });
 
-export const userRelations = relations(TB_user, ({ many }) => ({
+export const userRelations = relations(TB_user, ({ many, one }) => ({
   checkouts: many(TB_checkout),
+  sequence: one(TB_checkoutSequence, {
+    fields: [TB_user.id],
+    references: [TB_checkoutSequence.userId],
+  }),
 }));

@@ -55,8 +55,8 @@ describe("createApiCall", () => {
 
   describe("Network Error", () => {
     it("should handle network errors", async () => {
-      // will console.error "CHECKITOUT_ERROR Network error"
-      mockFetch.mockRejectedValue("Network error");
+      // will console.error "CHECKITOUT_ERROR Network error (TEST, EXPECTED)"
+      mockFetch.mockRejectedValue("Network error (TEST, EXPECTED)");
 
       const result = await apiCall("/api/error", {});
 

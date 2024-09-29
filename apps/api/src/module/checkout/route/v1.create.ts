@@ -1,10 +1,11 @@
 import type { AppEnv } from "@/setup/context";
 import { endTime, startTime } from "hono/timing";
-import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { checkoutRequestSchema, checkoutService } from "@/service/checkout.service";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { checkoutService } from "@/service/checkout.service";
 import { validateToken } from "@/setup/token.middleware";
 import { userService } from "@/service/user.service";
 import { apiError } from "@/lib/error";
+import { checkoutCreateV1Body, checkoutCreateV1Response } from "@repo/schema";
 
 export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
   createRoute({
@@ -16,7 +17,7 @@ export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
       body: {
         content: {
           "application/json": {
-            schema: checkoutRequestSchema.openapi("Checkout Insert"),
+            schema: checkoutCreateV1Body.openapi("Checkout Create V1 Body"),
           },
         },
       },
@@ -26,7 +27,7 @@ export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
         description: "Checkout created",
         content: {
           "application/json": {
-            schema: z.any(),
+            schema: checkoutCreateV1Response.openapi("Checkout Create V1 Response"),
           },
         },
       },

@@ -15,16 +15,14 @@
     "check": "biome check ./",
     "check:ci": "biome ci ./",
     "check:fix": "biome check --write --unsafe ./",
-    "ci": "pnpm run check:ci && pnpm run type",
+    "ci": "pnpm run check:ci && pnpm run type && pnpm run test:run",
     "type": "tsc --noEmit --skipLibCheck"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
     "tsup": "^8.0.1",
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+    "@types/bun": "latest",
+    "@repo/schema": "workspace:*"
   },
   "publishConfig": {
     "access": "public"
