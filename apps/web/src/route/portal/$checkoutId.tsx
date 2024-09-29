@@ -3,7 +3,7 @@ import { env } from "@/lib/env";
 import { QRPay } from "./-component/qr";
 import { Flex } from "@radix-ui/themes";
 import { Invoice } from "./-component/invoice";
-import { useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, CornersOut, PiggyBank } from "@phosphor-icons/react";
 import type { CheckoutPortalV1Response } from "@repo/schema";
@@ -13,6 +13,21 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/portal/$checkoutId")({
   component: CheckoutPage,
   pendingComponent: () => <div className="flex-1 bg-gray-2" />,
+  beforeLoad: ({ context, params }) => {
+    const opts = queryOptions({
+      queryKey: ["checkout", params.checkoutId],
+      queryFn: async () => {
+        return ky
+          .get(`v1/checkout/portal/${params.checkoutId}`, {
+            retry: 0,
+            prefixUrl: env.VITE_API_URL,
+          })
+          .json<CheckoutPortalV1Response>();
+      },
+    });
+
+    context.queryClient.prefetchQuery(opts);
+  },
 });
 
 function CheckoutPage() {
@@ -20,7 +35,7 @@ function CheckoutPage() {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const firstDataLoad = useRef(true);
+  const firstDataLoad = useRef({ loaded: false, isProcessing: false });
   const toastIdRef = useRef<string | number>("");
 
   const { data, isPending, error } = useQuery({
@@ -40,12 +55,21 @@ function CheckoutPage() {
 
     // If it's the first data load, and the transaction is successful but
     // the webhook hasn't been received yet, we should show the processing state.
-    if (firstDataLoad.current && data.hasSuccessfulTransaction && !data.hasSuccessfulWebhook) {
+    if (
+      !firstDataLoad.current.loaded &&
+      data.hasSuccessfulTransaction &&
+      !data.hasSuccessfulWebhook
+    ) {
       setIsProcessing(true);
+      firstDataLoad.current = { loaded: true, isProcessing: true };
     }
 
     // We dont show the toast, if we are already in the processing state
-    if (!firstDataLoad.current && data.hasSuccessfulTransaction && !toastIdRef.current) {
+    if (
+      !firstDataLoad.current.isProcessing &&
+      data.hasSuccessfulTransaction &&
+      !toastIdRef.current
+    ) {
       toastIdRef.current = toast.loading("Hold on tight! We're processing your payment.");
 
       setTimeout(() => {
@@ -75,11 +99,6 @@ function CheckoutPage() {
         description: "Your payment has been successfully processed.",
       });
     }
-
-    // update the firstDataLoad ref
-    // this is needed to properly set processing state
-    // and show the toast only when needed
-    firstDataLoad.current = false;
   }, [data]);
 
   if (isPending) {

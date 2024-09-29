@@ -170,7 +170,7 @@ function CreateTokenDialog(props: PropsWithChildren) {
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger>{props.children}</Dialog.Trigger>
 
-      <Dialog.Content maxWidth="450px" onInteractOutside={(e) => e.preventDefault()}>
+      <Dialog.Content maxWidth="500px" onInteractOutside={(e) => e.preventDefault()}>
         <Dialog.Title trim="end">{wording.title}</Dialog.Title>
         <Dialog.Description my="3" wrap="pretty" color="gray">
           {wording.description}
@@ -181,7 +181,7 @@ function CreateTokenDialog(props: PropsWithChildren) {
           <Flex direction="column" gap="2" py="3">
             <Code size="4" color="gray" className="flex items-center px-2.5 py-1.5">
               {token}
-              <CopyButton content={token} className="ml-auto" />
+              <CopyButton content={token} className="ml-auto" autoFocus />
             </Code>
           </Flex>
         ) : (

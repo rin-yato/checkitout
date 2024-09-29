@@ -59,7 +59,7 @@ export function QRPay(props: QRPayProps) {
           size="4"
           color="red"
           src="/khqr.png"
-          className="h-5 w-fit rounded-1"
+          className="h-5 w-14 rounded-1"
           fallback={<span className="px-1.5">KHQR</span>}
         />
       </Flex>
@@ -72,7 +72,7 @@ function QRState(props: {
   qrCode: string;
 }) {
   return (
-    <Flex className="relative m-2 aspect-square px-4 pt-7 pb-4">
+    <Flex className="relative m-2 aspect-square w-full px-4 pt-7 pb-4">
       <IconBorderCorners
         className="absolute inset-0 size-full scale-[1.4] text-gray-3"
         strokeWidth={0.5}
@@ -95,11 +95,11 @@ function QRState(props: {
 
 function PaidState() {
   return (
-    <Flex className="relative m-2 aspect-square flex-col px-4 pt-7 pb-4">
+    <Flex className="relative m-2 aspect-square w-full flex-col px-4 pt-7 pb-4">
       <Text size="5" className="text-center font-semibold text-success">
         Paid
       </Text>
-      <div className="zoom-in-50 m-14 flex aspect-square flex-1 animate-in items-center justify-center rounded-full bg-success">
+      <div className="zoom-in-50 m-10 flex aspect-square flex-1 animate-in items-center justify-center rounded-full bg-success">
         <Check className="text-success-foreground" size={86} />
       </div>
     </Flex>
@@ -108,14 +108,14 @@ function PaidState() {
 
 function ProcessingState() {
   return (
-    <Flex className="relative m-2 aspect-square flex-col px-4 pt-7 pb-4">
+    <Flex className="relative m-2 aspect-square w-full flex-col px-4 pt-7 pb-4">
       <Text size="5" className="text-center font-semibold">
         Checkout Pending
       </Text>
       <Text color="gray" className="text-center" mt="2" wrap="balance">
         Please re-check again in a few moment or contact the merchant for support
       </Text>
-      <div className="zoom-in-50 m-14 flex aspect-square flex-1 animate-in items-center justify-center rounded-full bg-warning-3">
+      <div className="zoom-in-50 m-10 flex aspect-square flex-1 animate-in items-center justify-center rounded-full bg-warning-3">
         <Receipt className="text-warning-9" size={96} weight="duotone" />
       </div>
     </Flex>

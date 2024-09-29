@@ -3,7 +3,10 @@ import { Check, Copy } from "@phosphor-icons/react";
 import { IconButton, type IconButtonProps } from "@radix-ui/themes";
 import { useState } from "react";
 
-type IconButtonPickProps = Pick<IconButtonProps, "variant" | "size" | "color" | "className">;
+type IconButtonPickProps = Pick<
+  IconButtonProps,
+  "variant" | "size" | "color" | "className" | "autoFocus"
+>;
 
 interface CopyButtonProps extends IconButtonPickProps {
   iconSize?: number;

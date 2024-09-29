@@ -3,6 +3,7 @@ import type { PublicUser, PublicCheckoutWithItems } from "@repo/schema";
 import { Avatar, Box, DataList, Flex, Separator, Text, Theme } from "@radix-ui/themes";
 import { useMemo } from "react";
 import { getDiscountAmount, getInitial } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 export function Invoice({
   user,
@@ -65,6 +66,7 @@ export function Invoice({
           </Flex>
 
           <DataList.Root
+            size="3"
             orientation="vertical"
             className="-mx-7 flex flex-row items-center justify-between bg-gray-2 px-7 py-4"
           >
@@ -89,9 +91,9 @@ export function Invoice({
           </DataList.Root>
         </Flex>
 
-        <InvoiceSeparator />
+        {/* <InvoiceSeparator /> */}
 
-        <Flex direction="column" gap="5" pt="3" pb="4">
+        <Flex direction="column" gap="5" pt="1" pb="4">
           <Text color="gray">Items</Text>
 
           {/* For future implementation */}
@@ -113,7 +115,7 @@ export function Invoice({
               <Box flexGrow="1" width="0">
                 <Text className="line-clamp-1 break-all">{product.name}</Text>
                 <Text color="gray" size="2">
-                  Qty: {product.quantity}
+                  Qty: x{product.quantity}
                 </Text>
               </Box>
 
@@ -124,10 +126,10 @@ export function Invoice({
           ))}
         </Flex>
 
-        <InvoiceSeparator />
+        <InvoiceSeparator className="mt-4 mb-7" />
 
         <Flex direction="column" gapY="3">
-          <DataList.Root orientation="horizontal" className="flex-1">
+          <DataList.Root orientation="horizontal" className="flex-1" size="3">
             <DataList.Item>
               <DataList.Label>Subtotal</DataList.Label>
               <DataList.Value className="justify-end">
@@ -178,9 +180,10 @@ export function Invoice({
 
 export function InvoiceSeparator({
   color = "gray-2",
-}: { color?: "gray-2" | "gray-3" | "background" | "primary" }) {
+  className,
+}: { color?: "gray-2" | "gray-3" | "background" | "primary"; className?: string }) {
   return (
-    <div className="-mx-7 relative flex items-center justify-between">
+    <div className={cn("-mx-7 relative flex items-center justify-between", className)}>
       <div
         className="-translate-x-1/2 -scale-x-100 size-10 rounded-full border-2 border-gray-3 bg-gray-2"
         style={{
