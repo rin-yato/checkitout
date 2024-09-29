@@ -90,7 +90,12 @@ function CheckoutPage() {
     ) {
       const redirectUrl = data.checkout.redirectUrl;
       const validURL = URL.canParse(redirectUrl);
-      const delay = 1500;
+      const delay = 2600;
+
+      toast.success("Payment successful!", {
+        id: toastIdRef.current,
+        description: "Your payment has been successfully processed.",
+      });
 
       if (validURL) {
         setTimeout(() => window.location.assign(redirectUrl), delay);
@@ -101,11 +106,6 @@ function CheckoutPage() {
         setTimeout(() => window.history.back(), delay);
         return;
       }
-
-      toast.success("Payment successful!", {
-        id: toastIdRef.current,
-        description: "Your payment has been successfully processed.",
-      });
     }
 
     firstDataLoad.current = { loaded: true, isProcessing: firstDataLoad.current.isProcessing };
