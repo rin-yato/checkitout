@@ -1,5 +1,5 @@
 {
-  "id": "dcfdc957-7588-4875-b4d6-498a34560665",
+  "id": "983fbd68-6cd9-4379-b31c-393815b0ab45",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -281,7 +281,13 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "unique_ref_id_per_user": {
+          "name": "unique_ref_id_per_user",
+          "nullsNotDistinct": false,
+          "columns": ["user_id", "ref_id"]
+        }
+      }
     },
     "public.checkout_item": {
       "name": "checkout_item",
@@ -769,6 +775,65 @@
           "tableFrom": "webhook",
           "tableTo": "checkout",
           "columnsFrom": ["checkout_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.checkout_sequence": {
+      "name": "checkout_sequence",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1000
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "checkout_sequence_user_id_user_id_fk": {
+          "name": "checkout_sequence_user_id_user_id_fk",
+          "tableFrom": "checkout_sequence",
+          "tableTo": "user",
+          "columnsFrom": ["user_id"],
           "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
