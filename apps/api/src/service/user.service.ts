@@ -1,9 +1,8 @@
 import { db, takeFirstOrThrow } from "@/lib/db";
 import { type Result, err, ok } from "@justmiracle/result";
 import type { User, UserInsert, UserUpdate } from "@repo/db/schema";
-import { TB_user } from "@repo/db/table";
+import { TB_checkoutSequence, TB_user } from "@repo/db/table";
 import { eq } from "drizzle-orm";
-import { TB_checkoutSequence } from "node_modules/@repo/db/src/table/checkout-sequence.table";
 
 export class UserService {
   async findByGoogleId(googleId: string): Promise<Result<User | undefined>> {

@@ -1,6 +1,6 @@
 FROM oven/bun:alpine AS base
 
-FROM base as builder
+FROM base AS builder
 
 WORKDIR /app
 

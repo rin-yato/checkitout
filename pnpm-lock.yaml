@@ -312,15 +312,9 @@ importers:
       '@types/bun':
         specifier: latest
         version: 1.1.9
-      typescript:
-        specifier: ^5.4.3
-        version: 5.5.4
 
   packages/schema:
     dependencies:
-      typescript:
-        specifier: ^5.0.0
-        version: 5.5.4
       zod:
         specifier: ^3.23.8
         version: 3.23.8

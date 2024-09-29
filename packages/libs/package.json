@@ -16,8 +16,7 @@
     "type": "tsc --noEmit --skipLibCheck"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "typescript": "^5.4.3"
+    "@types/bun": "latest"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.564.0",
