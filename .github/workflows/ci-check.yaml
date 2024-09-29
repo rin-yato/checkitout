@@ -37,5 +37,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile 
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Run ci command
         run: pnpm run ci
