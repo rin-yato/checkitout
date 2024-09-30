@@ -1,0 +1,73 @@
+---
+title: Reference
+---
+
+Checkitout Javascript and TypeScript SDK Reference
+
+### Initializing Options
+
+By default when initializing a `Checkitout` instance, only an API token is required.
+
+```ts title="checkitout.ts"
+import { Checkitout } from "@justmiracle/checkitout";
+
+export const checkitout = new Checkitout({ token: "token_a4*****pp" })
+```
+
+But it's also possible to specify custom endpoints, this is useful for self hosted instances.
+See full option here [CheckitoutOptions](/docs/type#checkitoutoptions)
+
+
+```ts title="checkitout.ts"
+import { Checkitout } from "@justmiracle/checkitout";
+
+export const checkitout = new Checkitout({ 
+  token: "token_a4*****pp",
+  apiUrl: "https://your-custom-api.com",
+  webUrl: "https://your-custom-web.com"
+})
+```
+
+### Create a checkout
+
+To create a checkout is as simple as calling the `create` method on the instance.
+
+```ts
+import { checkitout } from "@/lib/checkitout";
+
+const checkout = await checkitout.create({
+  currency: "KHR",
+  client: { name: "Thean", phone: "012345678", address: "Sichuan" },
+  items: [{ name: "Hotpot", img: "https://example.com/hotpot.png", quantity: 1, price: 2000 }]
+})
+```
+
+In this example, we only provided the required field. See the full options here [CreateCheckoutOptions]()
+
+### Enforcing the `total`
+
+It is possible to pass in a `total` value, this will be used to enforce the validity of the auto-calculated one.
+In this case the SDK will check if the calculated total is equal to the value pass in or not. In the case
+that it doesn't match, an error will be returned
+
+```ts
+import { checkitout } from "@/lib/checkitout";
+
+const checkout = await checkitout.create({
+  total: 2000, // [!code highlight]
+  currency: "KHR",
+  client: { name: "Thean", phone: "012345678", address: "Sichuan" },
+  items: [{ name: "Hotpot", img: "https://example.com/hotpot.png", quantity: 1, price: 2000 }]
+})
+```
+
+### Get checkout by ID
+
+Querying checkout data using the `checkitout.findOne(){:ts}` method.
+
+```ts
+import { checkitout } from "@/lib/checkitout";
+
+const checkout = await checkitout.findOne(checkoutId);
+```
+

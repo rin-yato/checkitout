@@ -8,6 +8,8 @@ export const deleteTokenV1 = new OpenAPIHono<AppEnv>().openapi(
   createRoute({
     method: "delete",
     path: "/v1/token/{tokenName}",
+    operationId: "Delete Token",
+    description: "Delete a token",
     tags: ["Token"],
     request: {
       params: z.object({ tokenName: z.string() }),

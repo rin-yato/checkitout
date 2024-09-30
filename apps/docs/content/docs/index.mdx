@@ -1,0 +1,54 @@
+---
+title: Installation 
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs'
+ 
+<Steps>
+
+<Step>
+ 
+### Installation
+
+```package-install
+npm install @justmiracle/checkitout
+```
+ 
+</Step>
+ 
+<Step>
+ 
+### Create an instance
+
+```ts title="lib/checkitout.ts"
+import { Checkitout } from "@justmiracle/checkitout";
+
+export const checkitout = new Checkitout({
+  token: "token_af********8z"
+});
+```
+ 
+</Step>
+
+<Step>
+
+### Usage
+
+```ts title="checkout-action.ts"
+import { checkitout } from "@/lib/checkitout";
+
+// Create a checkout
+const checkout = await checkitout.create({ ... });
+
+// Get checkout URL
+const url = checkiout.getCheckoutUrl(checkout.data.id);
+
+// Find one checkout by ID
+const foundCheckout = await checkitout.findOne(checkout.data.id);
+```
+
+</Step>
+
+</Steps>
+

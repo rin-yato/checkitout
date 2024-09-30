@@ -9,6 +9,7 @@ export const googleAuth = new OpenAPIHono().openapi(
     method: "get",
     tags: ["Auth"],
     path: "/auth/google",
+    operationId: "Google Auth",
     responses: { 302: { description: "Redirect to google auth" } },
   }),
   async (c) => {

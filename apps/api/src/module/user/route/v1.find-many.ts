@@ -6,6 +6,7 @@ export const findManyUserV1 = new OpenAPIHono().openapi(
     method: "get",
     path: "/v1/user",
     description: "Find many users",
+    operationId: "Find Many Users",
     tags: ["User"],
     responses: {
       200: {

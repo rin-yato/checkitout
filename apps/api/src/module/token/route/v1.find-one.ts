@@ -9,6 +9,7 @@ export const findOneTokenV1 = new OpenAPIHono().openapi(
     path: "/v1/token/{token}",
     tags: ["Token"],
     description: "Find one token",
+    operationId: "Find One Token",
     request: {
       params: z.object({
         token: z.string({ required_error: "Missing token ID" }).min(16, "Invalid token ID"),

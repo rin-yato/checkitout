@@ -8,6 +8,8 @@ export const getTransactionByMd5V1 = new OpenAPIHono().openapi(
     method: "get",
     path: "/v1/transaction/md5/{md5}",
     tags: ["Transaction"],
+    description: "Get transaction by md5",
+    operationId: "Get Transaction by",
     request: { params: z.object({ md5: z.string() }) },
     responses: {
       200: response({

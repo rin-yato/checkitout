@@ -9,6 +9,7 @@ export const findOneCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
     path: "/v1/checkout/{id}",
     tags: ["Checkout"],
     description: "Find a checkout",
+    operationId: "Find One Checkout",
     request: {
       params: z.object({ id: z.string() }),
     },

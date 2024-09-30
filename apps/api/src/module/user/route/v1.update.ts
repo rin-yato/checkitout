@@ -9,6 +9,7 @@ export const updateUserV1 = new OpenAPIHono<AppEnv>().openapi(
     method: "patch",
     path: "/v1/user",
     description: "Update user information",
+    operationId: "Update User",
     tags: ["User"],
     request: {
       body: {

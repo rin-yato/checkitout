@@ -1,0 +1,21 @@
+{
+  "title": "Checkitout Docs",
+  "description": "Documentation for Checkitout",
+  "root": true,
+  "pages": [
+    "---SDK---",
+    "index",
+    "reference",
+    "type",
+    "(integrations)",
+    "---OpenAPI---",
+    "manual-installation",
+    "(integrations)",
+    "---Reference---",
+    "markdown",
+    "page-conventions",
+    "navigation",
+    "---Others---",
+    "[Checkitout](https://checkitout.rinyato.com)"
+  ]
+}

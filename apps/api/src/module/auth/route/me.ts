@@ -15,6 +15,7 @@ export const me = new OpenAPIHono<AppEnv>().openapi(
     path: "/auth/me",
     tags: ["Auth"],
     description: "Get the current user",
+    operationId: "Get Me",
     responses: {
       200: {
         description: "The current user",

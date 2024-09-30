@@ -65,22 +65,33 @@ export interface Discount {
 }
 
 export interface CheckoutRequest {
+  /**
+   * The currency of the checkout
+   *
+   * - `KHR` - Cambodian Riel
+   * - `USD` - United States Dollar
+   *
+   * Ref: [`Currency`]()
+   */
   currency: Currency;
 
   /**
    * Discount can be in percentage or amount, will be calculated before tax
    *
-   * - If the type is "AMOUNT", the value must be the discount amount
-   * - If the type is "PERCENTAGE", the value must be a percentage 1 - 100
+   * - If the type is `AMOUNT`, the `value` must be the discount amount
+   * - If the type is `PERCENTAGE`, the `value` must be a percentage 1 - 100
    *
-   * @optional default undefined
+   * Ref: [`Discount`]()
+   *
+   * @default undefined
    */
   discount?: Discount;
 
   /**
    * Tax in percentage (0 - 100), will be calculated after discount
    * If the provided value is out of range, the checkout will be rejected
-   * @optional default 0
+   *
+   * @default undefined
    */
   tax?: number;
 
@@ -91,26 +102,35 @@ export interface CheckoutRequest {
    *
    * If not provided, the total will be automatically calculated.
    *
-   * @Optional
+   * @default undefined
    */
   total?: number;
 
+  /**
+   * Ref: [`ClientInfo`]()
+   */
   client: ClientInfo;
 
   /**
    * Additional information that will be stored in the checkout
    * Must be a valid JSON object
    *
-   * @optional default undefined
+   * Signature `Record<string, any>`
+   *
+   * @default undefined
    **/
   additionalInfo?: AdditionalInfo;
 
   /**
    * The URL where the user will be redirected after the checkout is completed
-   * @required
    */
   redirectUrl: string;
 
+  /**
+   * - Minimum of 1 item
+   *
+   * Ref: [`CheckoutItemRequest`]()
+   */
   items: CheckoutItemRequest[];
 }
 

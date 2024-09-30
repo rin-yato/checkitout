@@ -9,6 +9,8 @@ export const trackTransactionV1 = new OpenAPIHono().openapi(
     method: "get",
     path: "/v1/transaction/track/{md5}",
     tags: ["Transaction"],
+    description: "Track transaction status",
+    operationId: "Track Transaction",
     request: { params: z.object({ md5: z.string() }) },
     responses: {
       200: {

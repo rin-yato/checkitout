@@ -8,6 +8,8 @@ export const uploadFileV1 = new OpenAPIHono<AppEnv>().openapi(
     method: "post",
     path: "/v1/upload",
     tags: ["File Upload"],
+    description: "Upload a file",
+    operationId: "Upload File",
     request: {
       body: {
         content: {

@@ -15,6 +15,7 @@ export const checkoutPortalV1 = new OpenAPIHono<AppEnv>().openapi(
   createRoute({
     method: "get",
     path: "/v1/checkout/portal/{checkoutId}",
+    operationId: "Checkout Portal",
     tags: ["Checkout"],
     request: {
       params: z.object({ checkoutId: z.string() }),

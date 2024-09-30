@@ -27,6 +27,7 @@ export const googleAuthCallback = new OpenAPIHono().openapi(
     method: "get",
     tags: ["Auth"],
     path: "/auth/google/callback",
+    operationId: "Google Auth Callback",
     request: {
       query: z.object({ code: z.string(), state: z.string() }),
       cookies: z.object({

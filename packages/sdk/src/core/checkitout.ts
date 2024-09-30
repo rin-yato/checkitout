@@ -7,6 +7,20 @@ import type {
 } from "../type";
 import { type Api, type ApiResponseError, createApiCall } from "./util";
 
+export interface CheckitoutOptions {
+  token: string;
+
+  /**
+   * @default "https://api-checkitout.rinyato.com"
+   */
+  apiUrl?: string;
+
+  /**
+   * @default "https://checkitout.rinyato.com"
+   */
+  webUrl?: string;
+}
+
 export class Checkitout {
   protected api: Api;
   protected apiUrl: string;

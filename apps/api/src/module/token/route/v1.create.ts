@@ -10,6 +10,7 @@ export const createTokenV1 = new OpenAPIHono<AppEnv>().openapi(
     method: "post",
     path: "/v1/token",
     description: "Create a token",
+    operationId: "Create Token",
     request: {
       body: {
         content: {

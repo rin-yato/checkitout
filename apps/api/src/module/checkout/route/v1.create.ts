@@ -13,6 +13,7 @@ export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
     path: "/v1/checkout",
     tags: ["Checkout"],
     description: "Create a checkout",
+    operationId: "Create Checkout",
     request: {
       body: {
         content: {

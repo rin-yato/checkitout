@@ -8,6 +8,8 @@ export const findManyTokenV1 = new OpenAPIHono<AppEnv>().openapi(
     method: "get",
     path: "/v1/token",
     tags: ["Token"],
+    description: "Find many tokens",
+    operationId: "Find Many Tokens",
     responses: {
       200: {
         description: "Find many tokens",
