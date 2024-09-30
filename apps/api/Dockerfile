@@ -7,6 +7,7 @@ WORKDIR /app
 RUN mkdir -p tmp/initial
 COPY . tmp/initial
 RUN rm -rf tmp/initial/apps/web
+RUN rm -rf tmp/initial/apps/docs
 
 RUN cd tmp/initial && bun install
 
