@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 import { Banner } from "fumadocs-ui/components/banner";
 import { Info } from "lucide-react";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -51,6 +52,13 @@ export default function Layout({ children }: { children: ReactNode }) {
           issues you find.
         </Banner>
         <RootProvider>{children}</RootProvider>
+
+        <Script
+          defer
+          strategy="afterInteractive"
+          data-website-id="e5771a84-b1d6-4c7a-80c5-7913f55176e1"
+          src="https://cloud.umami.is/script.js"
+        />
       </body>
     </html>
   );
