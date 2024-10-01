@@ -395,9 +395,6 @@ importers:
       '@changesets/cli':
         specifier: ^2.27.1
         version: 2.27.8
-      '@repo/schema':
-        specifier: workspace:*
-        version: link:../schema
       '@types/bun':
         specifier: latest
         version: 1.1.9

@@ -22,8 +22,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
     "tsup": "^8.0.1",
-    "@types/bun": "latest",
-    "@repo/schema": "workspace:*"
+    "@types/bun": "latest"
   },
   "publishConfig": {
     "access": "public"
