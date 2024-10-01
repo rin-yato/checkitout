@@ -1,5 +1,11 @@
 # @justmiracle/checkitout
 
+## 0.1.4
+
+### Patch Changes
+
+- Add more jsDoc for interfaces and types
+
 ## 0.1.3
 
 ### Patch Changes
