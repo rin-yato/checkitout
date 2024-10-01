@@ -1,1 +1,10 @@
-export type { CheckitoutOptions, CheckoutRequest } from "@justmiracle/checkitout";
+export type {
+  CheckitoutOptions,
+  CheckoutRequest,
+  Checkout,
+  Discount,
+  ClientInfo,
+  CheckoutItemRequest,
+  CheckoutItem,
+  Transaction,
+} from "@justmiracle/checkitout";

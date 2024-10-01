@@ -1,5 +1,6 @@
 ---
 title: Type
+icon: CodeXml
 ---
 
 import { AutoTypeTable } from 'fumadocs-typescript/ui';
@@ -14,6 +15,13 @@ The options for initializing the `Checkitout` instance
 <AutoTypeTable path="./type/checkitout.ts" name="CheckitoutOptions" />
 </div>
 
+### Checkout
+
+Type reference for `Checkout`, this is all the available properties in a checkout object
+
+<div className="type-table-wrapper">
+<AutoTypeTable path="./type/checkitout.ts" name="Checkout" />
+</div>
 
 ### CheckoutRequest
 
@@ -23,4 +31,59 @@ to `checkitout.create(...){:ts}`
 <div className="type-table-wrapper">
 <AutoTypeTable path="./type/checkitout.ts" name="CheckoutRequest" />
 </div>
+
+
+### CheckoutItem
+
+Type reference for `CheckoutItem`, this is all the properties in a checkoutItem object
+
+<div className="type-table-wrapper">
+<AutoTypeTable path="./type/checkitout.ts" name="CheckoutItem" />
+</div>
+
+
+### CheckoutItemRequest
+
+Type reference for `CheckoutItemRequest`, this is all the options that can be passed
+
+<div className="type-table-wrapper">
+<AutoTypeTable path="./type/checkitout.ts" name="CheckoutItemRequest" />
+</div>
+
+### Transaction
+
+Type reference for `Transaction`, this is all the properties in a transaction object
+
+<div className="type-table-wrapper">
+<AutoTypeTable path="./type/checkitout.ts" name="Transaction" />
+</div>
+
+### Discount
+
+<div className="type-table-wrapper">
+<AutoTypeTable path="./type/checkitout.ts" name="Discount" />
+</div>
+
+### ClientInfo
+
+<div className="type-table-wrapper">
+<AutoTypeTable path="./type/checkitout.ts" name="ClientInfo" />
+</div>
+
+### Currency
+
+- `KHR` Cambodian Riel
+- `USD` United States Dollar
+
+### TransactionStatus
+
+- `TIMEOUT`: The transaction has expired
+- `PENDING`: The transaction is still pending
+- `SUCCESS`: The transaction has been completed
+- `FAILED`: The transaction has failed
+
+
+
+
+
 

@@ -1,0 +1,164 @@
+---
+title: Webhook Basic
+description: Webhook is used to received notification about the status of the checkout, let's try a minimal example of a webhook endpoint
+icon: ArrowLeftRight
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+
+<Steps>
+
+<Step>
+</Step>
+
+<Step>
+
+### Creating a **POST** endpoint
+
+We will be using `Nextjs` in this example, but you can use any framework of your choice
+
+```ts title="api/webhook/route.ts"
+import { NextRequest, NextResponse } from "next/server";
+
+export const POST = async (req: NextRequest) => {
+  return NextResponse.json("Hello from /api/webhook!")
+}
+```
+</Step>
+
+<Step>
+
+### Get the checkout data
+
+The webhook will attach a `checkoutId` in the request body. We can use this ID to query
+the full checkout and transaction data for further processing
+
+```ts title="api/webhook/route.ts"
+import { NextRequest, NextResponse } from "next/server";
+import { checkitout } from "@/lib/checkitout";
+
+export const POST = async (req: NextRequest) => {
+  const { checkoutId } = await req.json();
+
+  // if there is no checkoutId
+  if (!checkoutId) {
+    return NextResponse.json(
+      { message: "Invalid checkoutId" },
+      { status: 400 },
+    );
+  }
+
+  const { error, data } = await checkitout.findOne(checkoutId);
+
+  if (error || !data) {
+    // unable to query checkout
+    return NextResponse.json({ message: "No checkout found" }, { status: 500 });
+  }
+
+  return NextResponse.json("Hello from /api/webhook!")
+}
+```
+
+</Step>
+
+<Step>
+
+### Verify the checkout status
+
+We will follow a security principle called `Zero Trust`, in simple term, do not trust the webhook.
+So with the checkout data that we queried, we will use it to verify that there is least one successful transaction.
+
+```ts title="api/webhook/route.ts"
+import { NextRequest, NextResponse } from "next/server";
+import { checkitout } from "@/lib/checkitout";
+
+export const POST = async (req: NextRequest) => {
+  const { checkoutId } = await req.json();
+
+  if (!checkoutId) {
+    return NextResponse.json(
+      { message: "Invalid checkoutId" },
+      { status: 400 },
+    );
+  }
+
+  const { error, data } = await checkitout.findOne(checkoutId);
+
+  if (error || !data) {
+    // unable to query checkout
+    return NextResponse.json({ message: "No checkout found" }, { status: 500 });
+  }
+
+  const isPaid = data.transactions.some((t) => t.status === "SUCCESS");
+
+  if (!isPaid) {
+    return NextResponse.json(
+      { message: "Invalid webhook, checkout has no successful transaction" },
+      { status: 400 },
+    );
+  }
+
+  return NextResponse.json("Hello from /api/webhook!")
+}
+```
+
+</Step>
+
+<Step>
+
+### Process your business logic
+
+In this step, you can process your business logic, such as updating subscription status. etc.
+
+```ts title="api/webhook/route.ts"
+import { NextRequest, NextResponse } from "next/server";
+import { checkitout } from "@/lib/checkitout";
+
+export const POST = async (req: NextRequest) => {
+  const { checkoutId } = await req.json();
+
+  if (!checkoutId) {
+    return NextResponse.json(
+      { message: "Invalid checkoutId" },
+      { status: 400 },
+    );
+  }
+
+  const { error, data } = await checkitout.findOne(checkoutId);
+
+  if (error || !data) {
+    // unable to query checkout
+    return NextResponse.json({ message: "No checkout found" }, { status: 500 });
+  }
+
+  const isPaid = data.transactions.some((t) => t.status === "SUCCESS");
+
+  if (!isPaid) {
+    return NextResponse.json(
+      { message: "Invalid webhook, checkout has no successful transaction" },
+      { status: 400 },
+    );
+  }
+
+  const someResult = await doBusinessLogic(...);
+
+  if (someResult.error) {
+    // return error status code to indicate failed webhook
+    return NextResponse.json({ message: "Something went really wrong :(" }, { status: 500 })
+  }
+
+  // return successful status code to indicate successful webhook
+  return NextResponse.json({ message: "OK" })
+}
+```
+
+- Webhook will be considered `SUCCESSFUL` if the returned status code is in range of `200`
+- Webhook will be considered `FAILED` if the returned status code is of error ones, e.g. `400`, `500`
+
+</Step>
+
+
+</Steps>
+
+

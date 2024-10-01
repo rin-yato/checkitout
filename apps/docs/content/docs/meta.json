@@ -8,14 +8,13 @@
     "reference",
     "type",
     "(integrations)",
+    "---Webhook---",
+    "webhook-basic",
     "---OpenAPI---",
-    "manual-installation",
-    "(integrations)",
-    "---Reference---",
-    "markdown",
-    "page-conventions",
-    "navigation",
+    "(openapi)",
     "---Others---",
-    "[Checkitout](https://checkitout.rinyato.com)"
+    "[Author](https://rinyato.com)",
+    "[API](https://api-checkitout.rinyato.com)",
+    "[Dashboard](https://checkitout.rinyato.com)"
   ]
 }

@@ -5,3 +5,7 @@
 .type-table-wrapper {
   @apply bg-gray-50 dark:bg-black px-4 rounded-xl
 }
+
+#nd-sidebar>div.flex.flex-col.gap-1.px-4.pt-2.md\:px-3.md\:pt-4.max-md\:hidden>div {
+  @apply border-b-0
+}

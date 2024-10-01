@@ -1,4 +1,5 @@
 import type { HomeLayoutProps } from "fumadocs-ui/home-layout";
+import { AppWindowMac, CodeXml, UserCircle } from "lucide-react";
 
 /**
  * Shared layout configurations
@@ -9,18 +10,22 @@ import type { HomeLayoutProps } from "fumadocs-ui/home-layout";
  */
 export const baseOptions: HomeLayoutProps = {
   nav: {
-    title: "Checkitout",
+    title: <span className="font-serif italic text-2xl font-medium">Checkitout</span>,
+    enabled: false,
   },
   links: [
     {
-      text: "Checkitout",
-      url: "https://checkitout.rinyato.com",
-    },
-    {
-      text: "Checkitout API",
+      icon: <CodeXml />,
+      text: "API",
       url: "https://api-checkitout.rinyato.com",
     },
     {
+      icon: <AppWindowMac />,
+      text: "Dashboard",
+      url: "https://checkitout.rinyato.com",
+    },
+    {
+      icon: <UserCircle />,
       text: "Author",
       url: "https://rinyato.com",
     },
