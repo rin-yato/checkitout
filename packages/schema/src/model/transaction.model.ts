@@ -19,8 +19,6 @@ export const transactionSchema = z.object({
 });
 
 export const publicTransactionSchema = transactionSchema.omit({
-  createdAt: true,
-  updatedAt: true,
   deletedAt: true,
 });
 

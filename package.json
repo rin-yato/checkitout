@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "turbo run build --env-mode=loose",
-    "dev": "turbo run dev --env-mode=loose",
+    "dev": "turbo run dev --filter web --filter api --env-mode=loose",
+    "dev:all": "turbo run dev --env-mode=loose",
     "start": "turbo run start",
     "start:api": "turbo run start:api",
     "check": "turbo run check",

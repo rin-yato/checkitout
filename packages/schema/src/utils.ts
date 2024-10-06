@@ -12,4 +12,5 @@ export const TRANSACTION_STATUS = z.union([
   z.literal("FAILED"),
   z.literal("TIMEOUT"),
 ]);
+
 export type TransactionStatus = z.infer<typeof TRANSACTION_STATUS>;

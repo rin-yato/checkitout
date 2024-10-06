@@ -2,7 +2,7 @@ import plugin from "tailwindcss/plugin";
 
 const COLORS = {
   primary: "accent",
-  gray: "gray",
+  gray: "slate",
   destructive: "red",
   success: "green",
   warning: "amber",

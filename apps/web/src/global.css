@@ -16,7 +16,7 @@
     --foreground: var(--gray-12);
 
     --overlay: var(--color-overlay);
-    --surface: var(--color-surface);
+    --surface: var(--gray-2);
 
     --panel-solid: var(--color-panel-solid);
     --panel-translucent: var(--color-panel-translucent);
@@ -66,6 +66,10 @@
     --primary-hover: var(--accent-10);
     --primary-active: var(--accent-11);
   }
+
+  .dark .radix-themes {
+    --surface: var(--gray-3);
+  }
 }
 
 @layer tw_base {
@@ -113,7 +117,15 @@
     --table-row-box-shadow: none;
   }
 
+  .rt-TableRow {
+    @apply hover:bg-gray-2 transition-all;
+  }
+
   .rt-TabNavLink {
+    @apply px-0 pb-1;
+  }
+
+  .rt-TabsTrigger {
     @apply px-0 pb-1;
   }
 
@@ -126,6 +138,32 @@
   }
 }
 
-.soft-table {
-  @apply *:bg-gray *:shadow-none [&>:first-child]:rounded-l [&>:last-child]:rounded-r
+.minimal-table {
+  .rt-TableHeader {
+    .rt-TableRow {
+      @apply bg-gray-2;
+    }
+
+    .rt-TableCell {
+      @apply py-1;
+    }
+
+    .rt-TableCell:first-child {
+      @apply rounded-l;
+    }
+
+    .rt-TableCell:last-child {
+      @apply rounded-r;
+    }
+  }
+
+  .rt-TableCell {
+    @apply py-5
+  }
+}
+
+.rt-ScrollAreaRoot {
+  .rt-ScrollAreaViewport>div {
+    @apply w-auto min-w-0;
+  }
 }

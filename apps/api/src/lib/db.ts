@@ -5,7 +5,7 @@ import { apiError } from "./error";
 // Auto run migration
 await migrate();
 
-const client = createDBClient({ url: env.DB_URL, max: 30 });
+const client = createDBClient({ url: env.DB_URL, max: 500 });
 export const db = createDB(client);
 
 export type DB = typeof db;
