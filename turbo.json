@@ -20,7 +20,7 @@
 
     "type": { "cache": true },
 
-    "ci": { "cache": true },
+    "ci": { "cache": false },
     "ci:local": { "cache": true, "dependsOn": ["check:ci", "type", "test"] }
   }
 }

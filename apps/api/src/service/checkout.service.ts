@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 import type { User } from "lucia";
 import { z } from "@hono/zod-openapi";
 import { err, ok, type Result } from "@justmiracle/result";
@@ -153,10 +153,44 @@ export class CheckoutService {
   findById(id: string) {
     return db.query.TB_checkout.findFirst({
       where: eq(TB_checkout.id, id),
-      with: { transactions: true, items: true },
+      with: { transactions: true, items: true, webhooks: true },
     })
       .then(ok)
       .catch(err);
+  }
+
+  async findMany(userId: string, opts: { page: number; perPage: number }) {
+    const condition = eq(TB_checkout.userId, userId);
+
+    const query = db.query.TB_checkout.findMany({
+      where: condition,
+      with: { transactions: true, items: true, webhooks: true },
+      orderBy: [desc(TB_checkout.refId)],
+      limit: opts.perPage,
+      offset: (opts.page - 1) * opts.perPage,
+    }).prepare("find-many-checkouts");
+
+    const countQuery = db
+      .select({ count: count() })
+      .from(TB_checkout)
+      .where(condition)
+      .prepare("count-checkouts");
+
+    const promises = await Promise.all([
+      query.execute(),
+      countQuery
+        .execute()
+        .then(takeFirstOrThrow)
+        .then((data) => data.count),
+    ])
+      .then(ok)
+      .catch(err);
+
+    if (promises.error) return promises;
+
+    const [checkouts, total] = promises.value;
+
+    return ok({ checkouts, total });
   }
 }
 

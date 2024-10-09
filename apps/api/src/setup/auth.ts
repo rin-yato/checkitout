@@ -27,9 +27,7 @@ export function registerAuthMiddleware(app: App) {
       return next();
     }
 
-    startTime(c, "validate-session");
     const session = await lucia.validateSession(sessionId).then(ok).catch(err);
-    endTime(c, "validate-session");
 
     if (session.error) {
       c.set("user", null);

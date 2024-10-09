@@ -17,13 +17,14 @@ import { Route as AppIndexImport } from './route/_app/index'
 import { Route as PortalCheckoutIdImport } from './route/portal/$checkoutId'
 import { Route as AppTransactionsImport } from './route/_app/transactions'
 import { Route as AppSupportImport } from './route/_app/support'
-import { Route as AppCheckoutsImport } from './route/_app/checkouts'
 import { Route as AppAppearanceImport } from './route/_app/appearance'
 import { Route as AppSettingsRouteImport } from './route/_app/settings/route'
+import { Route as AppCheckoutsRouteImport } from './route/_app/checkouts/route'
 import { Route as AppSettingsIndexImport } from './route/_app/settings/index'
 import { Route as AppSettingsWebhookImport } from './route/_app/settings/webhook'
 import { Route as AppSettingsApiImport } from './route/_app/settings/api'
 import { Route as AppSettingsAccountImport } from './route/_app/settings/account'
+import { Route as AppCheckoutsCheckoutIdImport } from './route/_app/checkouts/$checkoutId'
 
 // Create/Update Routes
 
@@ -57,11 +58,6 @@ const AppSupportRoute = AppSupportImport.update({
   getParentRoute: () => AppRouteRoute,
 } as any)
 
-const AppCheckoutsRoute = AppCheckoutsImport.update({
-  path: '/checkouts',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-
 const AppAppearanceRoute = AppAppearanceImport.update({
   path: '/appearance',
   getParentRoute: () => AppRouteRoute,
@@ -69,6 +65,11 @@ const AppAppearanceRoute = AppAppearanceImport.update({
 
 const AppSettingsRouteRoute = AppSettingsRouteImport.update({
   path: '/settings',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppCheckoutsRouteRoute = AppCheckoutsRouteImport.update({
+  path: '/checkouts',
   getParentRoute: () => AppRouteRoute,
 } as any)
 
@@ -92,6 +93,11 @@ const AppSettingsAccountRoute = AppSettingsAccountImport.update({
   getParentRoute: () => AppSettingsRouteRoute,
 } as any)
 
+const AppCheckoutsCheckoutIdRoute = AppCheckoutsCheckoutIdImport.update({
+  path: '/$checkoutId',
+  getParentRoute: () => AppCheckoutsRouteRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -110,6 +116,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/_app/checkouts': {
+      id: '/_app/checkouts'
+      path: '/checkouts'
+      fullPath: '/checkouts'
+      preLoaderRoute: typeof AppCheckoutsRouteImport
+      parentRoute: typeof AppRouteImport
+    }
     '/_app/settings': {
       id: '/_app/settings'
       path: '/settings'
@@ -122,13 +135,6 @@ declare module '@tanstack/react-router' {
       path: '/appearance'
       fullPath: '/appearance'
       preLoaderRoute: typeof AppAppearanceImport
-      parentRoute: typeof AppRouteImport
-    }
-    '/_app/checkouts': {
-      id: '/_app/checkouts'
-      path: '/checkouts'
-      fullPath: '/checkouts'
-      preLoaderRoute: typeof AppCheckoutsImport
       parentRoute: typeof AppRouteImport
     }
     '/_app/support': {
@@ -158,6 +164,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AppIndexImport
       parentRoute: typeof AppRouteImport
+    }
+    '/_app/checkouts/$checkoutId': {
+      id: '/_app/checkouts/$checkoutId'
+      path: '/$checkoutId'
+      fullPath: '/checkouts/$checkoutId'
+      preLoaderRoute: typeof AppCheckoutsCheckoutIdImport
+      parentRoute: typeof AppCheckoutsRouteImport
     }
     '/_app/settings/account': {
       id: '/_app/settings/account'
@@ -192,6 +205,17 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
+interface AppCheckoutsRouteRouteChildren {
+  AppCheckoutsCheckoutIdRoute: typeof AppCheckoutsCheckoutIdRoute
+}
+
+const AppCheckoutsRouteRouteChildren: AppCheckoutsRouteRouteChildren = {
+  AppCheckoutsCheckoutIdRoute: AppCheckoutsCheckoutIdRoute,
+}
+
+const AppCheckoutsRouteRouteWithChildren =
+  AppCheckoutsRouteRoute._addFileChildren(AppCheckoutsRouteRouteChildren)
+
 interface AppSettingsRouteRouteChildren {
   AppSettingsAccountRoute: typeof AppSettingsAccountRoute
   AppSettingsApiRoute: typeof AppSettingsApiRoute
@@ -210,18 +234,18 @@ const AppSettingsRouteRouteWithChildren =
   AppSettingsRouteRoute._addFileChildren(AppSettingsRouteRouteChildren)
 
 interface AppRouteRouteChildren {
+  AppCheckoutsRouteRoute: typeof AppCheckoutsRouteRouteWithChildren
   AppSettingsRouteRoute: typeof AppSettingsRouteRouteWithChildren
   AppAppearanceRoute: typeof AppAppearanceRoute
-  AppCheckoutsRoute: typeof AppCheckoutsRoute
   AppSupportRoute: typeof AppSupportRoute
   AppTransactionsRoute: typeof AppTransactionsRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppCheckoutsRouteRoute: AppCheckoutsRouteRouteWithChildren,
   AppSettingsRouteRoute: AppSettingsRouteRouteWithChildren,
   AppAppearanceRoute: AppAppearanceRoute,
-  AppCheckoutsRoute: AppCheckoutsRoute,
   AppSupportRoute: AppSupportRoute,
   AppTransactionsRoute: AppTransactionsRoute,
   AppIndexRoute: AppIndexRoute,
@@ -234,13 +258,14 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 interface FileRoutesByFullPath {
   '': typeof AppRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/checkouts': typeof AppCheckoutsRouteRouteWithChildren
   '/settings': typeof AppSettingsRouteRouteWithChildren
   '/appearance': typeof AppAppearanceRoute
-  '/checkouts': typeof AppCheckoutsRoute
   '/support': typeof AppSupportRoute
   '/transactions': typeof AppTransactionsRoute
   '/portal/$checkoutId': typeof PortalCheckoutIdRoute
   '/': typeof AppIndexRoute
+  '/checkouts/$checkoutId': typeof AppCheckoutsCheckoutIdRoute
   '/settings/account': typeof AppSettingsAccountRoute
   '/settings/api': typeof AppSettingsApiRoute
   '/settings/webhook': typeof AppSettingsWebhookRoute
@@ -249,12 +274,13 @@ interface FileRoutesByFullPath {
 
 interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/checkouts': typeof AppCheckoutsRouteRouteWithChildren
   '/appearance': typeof AppAppearanceRoute
-  '/checkouts': typeof AppCheckoutsRoute
   '/support': typeof AppSupportRoute
   '/transactions': typeof AppTransactionsRoute
   '/portal/$checkoutId': typeof PortalCheckoutIdRoute
   '/': typeof AppIndexRoute
+  '/checkouts/$checkoutId': typeof AppCheckoutsCheckoutIdRoute
   '/settings/account': typeof AppSettingsAccountRoute
   '/settings/api': typeof AppSettingsApiRoute
   '/settings/webhook': typeof AppSettingsWebhookRoute
@@ -264,13 +290,14 @@ interface FileRoutesByTo {
 interface FileRoutesById {
   '/_app': typeof AppRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/_app/checkouts': typeof AppCheckoutsRouteRouteWithChildren
   '/_app/settings': typeof AppSettingsRouteRouteWithChildren
   '/_app/appearance': typeof AppAppearanceRoute
-  '/_app/checkouts': typeof AppCheckoutsRoute
   '/_app/support': typeof AppSupportRoute
   '/_app/transactions': typeof AppTransactionsRoute
   '/portal/$checkoutId': typeof PortalCheckoutIdRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/checkouts/$checkoutId': typeof AppCheckoutsCheckoutIdRoute
   '/_app/settings/account': typeof AppSettingsAccountRoute
   '/_app/settings/api': typeof AppSettingsApiRoute
   '/_app/settings/webhook': typeof AppSettingsWebhookRoute
@@ -282,13 +309,14 @@ interface FileRouteTypes {
   fullPaths:
     | ''
     | '/login'
+    | '/checkouts'
     | '/settings'
     | '/appearance'
-    | '/checkouts'
     | '/support'
     | '/transactions'
     | '/portal/$checkoutId'
     | '/'
+    | '/checkouts/$checkoutId'
     | '/settings/account'
     | '/settings/api'
     | '/settings/webhook'
@@ -296,12 +324,13 @@ interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
-    | '/appearance'
     | '/checkouts'
+    | '/appearance'
     | '/support'
     | '/transactions'
     | '/portal/$checkoutId'
     | '/'
+    | '/checkouts/$checkoutId'
     | '/settings/account'
     | '/settings/api'
     | '/settings/webhook'
@@ -309,13 +338,14 @@ interface FileRouteTypes {
   id:
     | '/_app'
     | '/login'
+    | '/_app/checkouts'
     | '/_app/settings'
     | '/_app/appearance'
-    | '/_app/checkouts'
     | '/_app/support'
     | '/_app/transactions'
     | '/portal/$checkoutId'
     | '/_app/'
+    | '/_app/checkouts/$checkoutId'
     | '/_app/settings/account'
     | '/_app/settings/api'
     | '/_app/settings/webhook'
@@ -355,9 +385,9 @@ export const routeTree = rootRoute
     "/_app": {
       "filePath": "_app/route.tsx",
       "children": [
+        "/_app/checkouts",
         "/_app/settings",
         "/_app/appearance",
-        "/_app/checkouts",
         "/_app/support",
         "/_app/transactions",
         "/_app/"
@@ -365,6 +395,13 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/_app/checkouts": {
+      "filePath": "_app/checkouts/route.tsx",
+      "parent": "/_app",
+      "children": [
+        "/_app/checkouts/$checkoutId"
+      ]
     },
     "/_app/settings": {
       "filePath": "_app/settings/route.tsx",
@@ -378,10 +415,6 @@ export const routeTree = rootRoute
     },
     "/_app/appearance": {
       "filePath": "_app/appearance.tsx",
-      "parent": "/_app"
-    },
-    "/_app/checkouts": {
-      "filePath": "_app/checkouts.tsx",
       "parent": "/_app"
     },
     "/_app/support": {
@@ -398,6 +431,10 @@ export const routeTree = rootRoute
     "/_app/": {
       "filePath": "_app/index.tsx",
       "parent": "/_app"
+    },
+    "/_app/checkouts/$checkoutId": {
+      "filePath": "_app/checkouts/$checkoutId.tsx",
+      "parent": "/_app/checkouts"
     },
     "/_app/settings/account": {
       "filePath": "_app/settings/account.tsx",

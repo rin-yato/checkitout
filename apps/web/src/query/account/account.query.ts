@@ -16,5 +16,7 @@ export function useAccountQuery() {
     queryKey: [accountKey],
     queryFn: getAccount,
     retry: 1,
+    networkMode: "offlineFirst",
+    meta: { persist: true },
   });
 }

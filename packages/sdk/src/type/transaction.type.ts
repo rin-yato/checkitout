@@ -35,4 +35,7 @@ export type Transaction = {
    * \@link [`TransactionStatus`](/docs/type#transactionstatus)
    */
   status: TransactionStatus;
+
+  createdAt: Date;
+  updatedAt: Date;
 };

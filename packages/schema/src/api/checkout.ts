@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { checkoutItemInsertSchema, publicCheckoutItemSchema, publicUserSchema } from "../model";
+import {
+  checkoutItemInsertSchema,
+  publicCheckoutItemSchema,
+  publicUserSchema,
+  webhookSchema,
+} from "../model";
 import {
   checkoutInsertSchema,
   publicCheckoutSchema,
@@ -32,3 +37,23 @@ export const checkoutCreateV1Body = checkoutInsertSchema.extend({
 });
 
 export type CheckoutCreateV1Body = z.infer<typeof checkoutCreateV1Body>;
+
+export const findManyCheckoutV1Response = z.object({
+  total: z.number().int(),
+  checkouts: z.array(
+    publicCheckoutSchema.extend({
+      items: z.array(publicCheckoutItemSchema),
+      transactions: z.array(publicTransactionSchema),
+      webhooks: z.array(webhookSchema),
+    }),
+  ),
+});
+
+export type FindManyCheckoutV1Response = z.infer<typeof findManyCheckoutV1Response>;
+
+export const findOneCheckoutV1Response = publicCheckoutWithItemsSchema.extend({
+  transactions: z.array(publicTransactionSchema),
+  webhooks: z.array(webhookSchema),
+});
+
+export type FindOneCheckoutV1Response = z.infer<typeof findOneCheckoutV1Response>;

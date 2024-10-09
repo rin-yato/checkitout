@@ -1,6 +1,6 @@
 export const COLOR = {
   PRIMARY: "iris",
-  GRAY: "gray",
+  GRAY: "slate",
   DANGER: "red",
   SUCCESS: "green",
   WARNING: "amber",

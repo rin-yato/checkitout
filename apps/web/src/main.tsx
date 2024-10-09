@@ -18,8 +18,8 @@ const router = createRouter({
   routeTree,
   defaultPendingMs: 200,
   defaultPreloadStaleTime: 0,
-  defaultPendingComponent: () => <div>Loading...</div>,
   defaultErrorComponent: (props) => <DefaultCatchBoundary {...props} />,
+  defaultPreload: "intent",
 
   context: {
     queryClient,
