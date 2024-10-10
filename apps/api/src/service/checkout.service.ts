@@ -1,4 +1,4 @@
-import { count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, isNull } from "drizzle-orm";
 import type { User } from "lucia";
 import { z } from "@hono/zod-openapi";
 import { err, ok, type Result } from "@justmiracle/result";
@@ -160,7 +160,7 @@ export class CheckoutService {
   }
 
   async findMany(userId: string, opts: { page: number; perPage: number }) {
-    const condition = eq(TB_checkout.userId, userId);
+    const condition = and(eq(TB_checkout.userId, userId), isNull(TB_checkout.deletedAt));
 
     const query = db.query.TB_checkout.findMany({
       where: condition,
