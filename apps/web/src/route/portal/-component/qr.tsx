@@ -22,7 +22,7 @@ export function QRPay(props: QRPayProps) {
     <Flex
       gap="3"
       direction="column"
-      className="z-10 w-full rounded-6 border-2 border-gray-3 bg-surface p-7 sm:w-[410px]"
+      className="z-10 w-full rounded-6 border-2 border-gray-3 bg-background p-7 sm:w-[410px]"
     >
       <Flex align="center" gap="4">
         <Avatar size="3" color="gray" src="/bakong-logo.png" fallback="B" />
@@ -81,7 +81,7 @@ function QRState(props: {
       <QRCodeSVG
         level="L"
         value={props.qrCode}
-        className="m-8 size-fit flex-1 dark:opacity-9 dark:invert"
+        className="m-8 size-fit flex-1"
         imageSettings={{
           src: props.currencyImage,
           height: 30,

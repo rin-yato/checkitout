@@ -36,7 +36,7 @@ export function Invoice({
       <Flex
         gap="3"
         direction="column"
-        className="z-10 rounded-6 border-2 border-gray-3 bg-surface p-7 sm:w-[410px]"
+        className="z-10 rounded-6 border-2 border-gray-3 bg-background p-7 sm:w-[410px]"
       >
         <Flex direction="column" gapY="4" pb="5">
           <Flex align="center" justify="between">

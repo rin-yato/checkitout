@@ -1,7 +1,7 @@
 import ky from "ky";
 import { env } from "@/lib/env";
 import { QRPay } from "./-component/qr";
-import { Flex } from "@radix-ui/themes";
+import { Flex, Theme } from "@radix-ui/themes";
 import { Invoice } from "./-component/invoice";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -120,47 +120,49 @@ function CheckoutPage() {
   }
 
   return (
-    <main className="flex flex-1 overflow-x-hidden border bg-gray-2 p-5 sm:p-10">
-      <Flex className="mx-auto flex-1 flex-wrap-reverse justify-center gap-12 overflow-x-hidden">
-        <Flex className="fade-in-0 animate-in">
-          <Invoice user={data.user} checkout={data.checkout} />
-        </Flex>
+    <Theme asChild appearance="light">
+      <main className="flex flex-1 overflow-x-hidden border bg-gray-2 p-5 sm:p-10">
+        <Flex className="mx-auto flex-1 flex-wrap-reverse justify-center gap-12 overflow-x-hidden">
+          <Flex className="fade-in-0 animate-in">
+            <Invoice user={data.user} checkout={data.checkout} />
+          </Flex>
 
-        <Flex direction="column" className="fade-in-0 animate-in max-sm:flex-1">
-          <QRPay
-            paid={data.hasSuccessfulTransaction}
-            processing={isProcessing}
-            currency={data.checkout.currency}
-            amount={data.checkout.total}
-            merchantName={data.user.displayName}
-            qrCode={data.activeTransaction?.qrCode ?? ""}
-          />
+          <Flex direction="column" className="fade-in-0 animate-in max-sm:flex-1">
+            <QRPay
+              paid={data.hasSuccessfulTransaction}
+              processing={isProcessing}
+              currency={data.checkout.currency}
+              amount={data.checkout.total}
+              merchantName={data.user.displayName}
+              qrCode={data.activeTransaction?.qrCode ?? ""}
+            />
 
-          {/* Step by step guide for scanning QR code and paying with Bakong KHQR */}
-          <Flex className="mt-8 flex-col gap-3 px-1 text-gray-foreground">
-            <div className="flex items-center gap-3">
-              <div className="w-fit rounded-4 border bg-background p-1.5">
-                <PiggyBank size="20" />
+            {/* Step by step guide for scanning QR code and paying with Bakong KHQR */}
+            <Flex className="mt-8 flex-col gap-3 px-1 text-gray-foreground">
+              <div className="flex items-center gap-3">
+                <div className="w-fit rounded-4 border bg-background p-1.5">
+                  <PiggyBank size="20" />
+                </div>
+                <div>1. Open your banking app</div>
               </div>
-              <div>1. Open your banking app</div>
-            </div>
 
-            <div className="flex items-center gap-3">
-              <div className="w-fit rounded-4 border bg-background p-1.5">
-                <CornersOut size="20" />
+              <div className="flex items-center gap-3">
+                <div className="w-fit rounded-4 border bg-background p-1.5">
+                  <CornersOut size="20" />
+                </div>
+                <div>2. Scan the QR code with your banking app</div>
               </div>
-              <div>2. Scan the QR code with your banking app</div>
-            </div>
 
-            <div className="flex items-center gap-3">
-              <div className="w-fit rounded-4 border bg-background p-1.5">
-                <Check size="20" />
+              <div className="flex items-center gap-3">
+                <div className="w-fit rounded-4 border bg-background p-1.5">
+                  <Check size="20" />
+                </div>
+                <div>3. Confirm the payment and Tada! 🎉</div>
               </div>
-              <div>3. Confirm the payment and Tada! 🎉</div>
-            </div>
+            </Flex>
           </Flex>
         </Flex>
-      </Flex>
-    </main>
+      </main>
+    </Theme>
   );
 }
