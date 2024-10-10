@@ -1,8 +1,9 @@
 import { validateAuth } from "@/lib/auth";
 import { apiError } from "@/lib/error";
+import { paginationSchema } from "@/lib/pagination";
 import { checkoutService } from "@/service/checkout.service";
 import type { AppEnv } from "@/setup/context";
-import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { findManyCheckoutV1Response } from "@repo/schema";
 import { endTime, startTime } from "hono/timing";
 
@@ -13,10 +14,7 @@ export const findManyCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
     operationId: "Find Many Checkout",
     tags: ["Checkout"],
     request: {
-      query: z.object({
-        page: z.number({ coerce: true }).int().catch(1),
-        perPage: z.number({ coerce: true }).int().catch(10),
-      }),
+      query: paginationSchema,
     },
     responses: {
       200: {
