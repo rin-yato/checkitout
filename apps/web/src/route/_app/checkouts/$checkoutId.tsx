@@ -108,15 +108,21 @@ function CheckoutDetailPage() {
                   <DataList.Item>
                     <DataList.Label>Status</DataList.Label>
                     <DataList.Value className="justify-end">
-                      <Badge color={COLOR.SUCCESS} size="3" className="items-center">
+                      <Badge
+                        color={match(data.transactions.some((t) => t.status === "SUCCESS"))
+                          .with(true, () => COLOR.SUCCESS)
+                          .otherwise(() => COLOR.WARNING)}
+                        size="3"
+                        className="items-center"
+                      >
                         {data.transactions.some((t) => t.status === "SUCCESS") ? (
                           <Fragment>
-                            <span className="mt-px size-2 rounded-full bg-success" />
+                            <span className="mt-px size-2 rounded-full bg-primary-10" />
                             <span>Paid</span>
                           </Fragment>
                         ) : (
                           <Fragment>
-                            <span className="mt-px size-2 rounded-full bg-warning" />
+                            <span className="mt-px size-2 rounded-full bg-primary-10" />
                             <span>Pending</span>
                           </Fragment>
                         )}
@@ -266,7 +272,7 @@ function CheckoutDetailPage() {
                             size="2"
                             className="items-center text-2"
                           >
-                            <span className="mt-px size-2 rounded-full bg-primary" />
+                            <span className="mt-px size-2 rounded-full bg-primary-10" />
                             <span>{transaction.status}</span>
                           </Badge>
                           <Text className="ml-auto text-gray-foreground">
@@ -287,12 +293,12 @@ function CheckoutDetailPage() {
                           <CollapsibleTrigger className="group flex cursor-default items-center gap-x-4">
                             <Text className="text-gray-foreground">#{index + 1}</Text>
                             <Badge
+                              size="2"
                               color={webhook.status >= 400 ? COLOR.DANGER : COLOR.SUCCESS}
                               data-success={webhook.status >= 200 && webhook.status < 300}
-                              size="2"
                               className="group items-center text-2"
                             >
-                              <span className="mt-px size-1.5 rounded-full bg-danger group-data-[success=true]:bg-success" />
+                              <span className="mt-px size-1.5 rounded-full bg-primary-10" />
                               {webhook.status}
                             </Badge>
                             <Text className="ml-auto text-gray-foreground">

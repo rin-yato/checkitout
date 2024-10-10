@@ -6,17 +6,11 @@ import { formatCurrency } from "@/lib/currency";
 import { formatDate } from "@/lib/date";
 import { getInitial } from "@/lib/utils";
 import { checkoutListQuery } from "@/query/checkout/checkout.query";
-import {
-  Alarm,
-  DotsThreeVertical,
-  Faders,
-  MagnifyingGlass,
-  Plus,
-  Receipt,
-} from "@phosphor-icons/react";
+import { DotsThreeVertical, Faders, MagnifyingGlass, Plus, Trash } from "@phosphor-icons/react";
 import {
   Badge,
   Checkbox,
+  DropdownMenu,
   Flex,
   Heading,
   IconButton,
@@ -29,6 +23,9 @@ import { Fragment } from "react/jsx-runtime";
 import { z } from "zod";
 import { zodSearchValidator } from "@tanstack/router-zod-adapter";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useDeleteCheckoutMutation } from "@/query/checkout/checkout.mutation";
+import { toast } from "sonner";
+import { confirmation } from "@/lib/confirmation";
 
 const checkoutsSearchParams = z.object({
   page: z.number({ coerce: true }).int().catch(1),
@@ -49,6 +46,8 @@ function CheckoutPage() {
   const { page, perPage } = Route.useSearch();
   const navigate = Route.useNavigate();
 
+  const { mutate } = useDeleteCheckoutMutation();
+
   const {
     data: { total, checkouts },
   } = useSuspenseQuery({ ...checkoutListQuery({ page, perPage }) });
@@ -57,6 +56,23 @@ function CheckoutPage() {
 
   const handlePageChange = (page: number) => {
     navigate({ search: (prev) => ({ ...prev, page }) });
+  };
+
+  const handleDeleteCheckout = (id: string) => {
+    confirmation.create({
+      type: "danger",
+      title: "Delete Checkout",
+      description: "Are you sure you want to delete this checkout?",
+      onConfirm: () => {
+        const toastId = toast.loading("Deleting checkout...");
+        mutate(id, {
+          onSettled: (_, error) => {
+            if (error) return toast.error("Failed to delete checkout", { id: toastId });
+            toast.success("Checkout deleted", { id: toastId });
+          },
+        });
+      },
+    });
   };
 
   return (
@@ -157,21 +173,46 @@ function CheckoutPage() {
                 >
                   {checkout.transactions.some((t) => t.status === "SUCCESS") ? (
                     <Fragment>
-                      <span className="mt-px size-2 rounded-full bg-success" />
+                      <span className="mt-px size-2 rounded-full bg-primary-10" />
                       <span>Paid</span>
                     </Fragment>
                   ) : (
                     <Fragment>
-                      <span className="mt-px size-2 rounded-full bg-warning" />
+                      <span className="mt-px size-2 rounded-full bg-primary-10" />
                       <span>Pending</span>
                     </Fragment>
                   )}
                 </Badge>
               </Table.Cell>
               <Table.Cell>
-                <IconButton color="gray" variant="outline">
-                  <DotsThreeVertical size={22} weight="bold" />
-                </IconButton>
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger>
+                    <IconButton color="gray" variant="outline">
+                      <DotsThreeVertical size={22} weight="bold" />
+                    </IconButton>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content align="center">
+                    <DropdownMenu.Item shortcut="⌘ E" disabled>
+                      Edit
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item shortcut="⌘ D" disabled>
+                      Duplicate
+                    </DropdownMenu.Item>
+
+                    <DropdownMenu.Separator />
+
+                    <DropdownMenu.Item
+                      color="red"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteCheckout(checkout.id);
+                      }}
+                    >
+                      Delete
+                      <Trash size={16} className="my-auto ml-auto" />
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
               </Table.Cell>
             </Table.Row>
           ))}

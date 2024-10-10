@@ -192,6 +192,28 @@ export class CheckoutService {
 
     return ok({ checkouts, total });
   }
+
+  async delete(checkoutId: string, userId: string) {
+    const condition = and(eq(TB_checkout.id, checkoutId), eq(TB_checkout.userId, userId));
+
+    const checkout = await db.query.TB_checkout.findFirst({ where: condition })
+      .prepare("find-checkout-for-deletion")
+      .execute();
+
+    if (!checkout) {
+      throw apiError({
+        status: 404,
+        message: "Checkout not found",
+      });
+    }
+
+    return db
+      .update(TB_checkout)
+      .set({ deletedAt: new Date() })
+      .where(condition)
+      .then(ok)
+      .catch(err);
+  }
 }
 
 export const checkoutService = new CheckoutService();
