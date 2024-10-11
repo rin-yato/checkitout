@@ -38,8 +38,9 @@ export class WebhookTasker implements Tasker {
     const response = await ky
       .post(job.data.webhookUrl, {
         retry: 0,
-        redirect: "error",
+        redirect: "manual",
         json: { checkoutId: job.data.checkoutId },
+        throwHttpErrors: false,
       })
       .then(ok)
       .catch(err);

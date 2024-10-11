@@ -77,7 +77,7 @@ function CheckoutPage() {
         toast.info("Unable to process your payment.", {
           id: toastIdRef.current,
           richColors: true,
-          duration: 10_000, // 10s
+          duration: 34_000, // 34s
         });
         setIsProcessing(true);
       }, 5000);
@@ -90,7 +90,7 @@ function CheckoutPage() {
     ) {
       const redirectUrl = data.checkout.redirectUrl;
       const validURL = URL.canParse(redirectUrl);
-      const delay = 2600;
+      const delay = 3300;
 
       toast.success("Payment successful!", {
         id: toastIdRef.current,
