@@ -12,16 +12,18 @@ export function registerTasker(app: App, taskers: Tasker[]) {
   // start all taskers
   taskers.forEach((tasker) => tasker.start());
 
-  const serverAdapter = new HonoAdapter(serveStatic);
+  if (env.NODE_ENV !== "production") {
+    const serverAdapter = new HonoAdapter(serveStatic);
 
-  createBullBoard({
-    queues: taskers.map(createBullAdapter),
-    serverAdapter,
-  });
+    createBullBoard({
+      queues: taskers.map(createBullAdapter),
+      serverAdapter,
+    });
 
-  serverAdapter.setBasePath("/queue");
+    serverAdapter.setBasePath("/queue");
 
-  app.use("/queue", basicAuth(BASIC_AUTH)).route("/queue", serverAdapter.registerPlugin());
+    app.use("/queue", basicAuth(BASIC_AUTH)).route("/queue", serverAdapter.registerPlugin());
+  }
 }
 
 function createBullAdapter(tasker: Tasker) {

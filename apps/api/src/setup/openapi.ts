@@ -1,13 +1,8 @@
 import { apiReference } from "@scalar/hono-api-reference";
 import type { App } from "./context";
 import { env } from "@/lib/env";
-import { basicAuth } from "hono/basic-auth";
-import { BASIC_AUTH } from "@/constant/basic-auth";
 
 export function registerOpenAPI(app: App) {
-  app.use("/docs/*", basicAuth(BASIC_AUTH));
-  app.use("/openapi", basicAuth(BASIC_AUTH));
-
   app.doc31("/openapi", {
     openapi: "3.1.0",
     info: {
