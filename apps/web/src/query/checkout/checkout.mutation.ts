@@ -16,3 +16,18 @@ export function useDeleteCheckoutMutation() {
     },
   });
 }
+
+function retryCheckoutWebhook(checkoutId: string) {
+  return api.post(`v1/checkout/${checkoutId}/retry-webhook`).json<null>();
+}
+
+export function useRetryCheckoutWebhookMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: retryCheckoutWebhook,
+    onSettled: (_, __, checkoutId) => {
+      return queryClient.invalidateQueries({ queryKey: checkoutKey.detail(checkoutId) });
+    },
+  });
+}

@@ -28,6 +28,8 @@ import {
 } from "@/component/ui/collapsible";
 import { Button } from "@/component/ui/button";
 import { match } from "ts-pattern";
+import { RetryWebhookButton } from "./-components/retry-webhook-button";
+import { isOkStatus } from "@/lib/is";
 
 export const Route = createFileRoute("/_app/checkouts/$checkoutId")({
   component: CheckoutDetailPage,
@@ -66,6 +68,15 @@ function CheckoutDetailPage() {
     }
 
     return { percentage: null, amount: data.discount };
+  }, [data]);
+
+  const shouldAllowRetryWebhook = useMemo(() => {
+    if (!data) return false;
+    const hasSuccessTransaction = data.transactions.some((t) => t.status === "SUCCESS");
+    const hasSuccessWebhook = data.webhooks.some((w) => isOkStatus(w.status));
+
+    // only allow retry if it's already paid but no success webhook
+    return hasSuccessTransaction && !hasSuccessWebhook;
   }, [data]);
 
   const tax = useMemo(() => {
@@ -323,16 +334,10 @@ function CheckoutDetailPage() {
                         </Collapsible>
                       ))}
 
-                      <Tooltip content="coming soon">
-                        <Button
-                          variant="soft"
-                          color="gray"
-                          disabled
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Retry webhook <ArrowsCounterClockwise weight="bold" />
-                        </Button>
-                      </Tooltip>
+                      <RetryWebhookButton
+                        allowRetryWebhook={shouldAllowRetryWebhook}
+                        checkoutId={data.id}
+                      />
                     </div>
                   </Tabs.Content>
                 </Tabs.Root>

@@ -4,9 +4,18 @@ import { Button } from "@/component/ui/button";
 import { COLOR } from "@/constant/theme";
 import { formatCurrency } from "@/lib/currency";
 import { formatDate } from "@/lib/date";
-import { getInitial } from "@/lib/utils";
+import { copyToClipboard, getInitial } from "@/lib/utils";
 import { checkoutListQuery } from "@/query/checkout/checkout.query";
-import { DotsThreeVertical, Faders, MagnifyingGlass, Plus, Trash } from "@phosphor-icons/react";
+import {
+  Backspace,
+  Copy,
+  DotsThreeVertical,
+  Faders,
+  LinkSimple,
+  MagnifyingGlass,
+  Plus,
+  Trash,
+} from "@phosphor-icons/react";
 import {
   Badge,
   Checkbox,
@@ -81,18 +90,18 @@ function CheckoutPage() {
         <Heading trim="normal">Checkouts</Heading>
 
         <Flex className="items-center justify-between pt-3">
-          <TextField.Root placeholder="Search..." variant="soft" color="gray" size="3">
+          <TextField.Root placeholder="Search..." variant="soft" color="gray" size="3" disabled>
             <TextField.Slot>
               <MagnifyingGlass size={20} />
             </TextField.Slot>
           </TextField.Root>
           <Flex className="gap-x-3">
-            <Button variant="outline" color="gray">
+            <Button variant="outline" color="gray" disabled>
               <Faders size={20} />
               Filter
             </Button>
 
-            <Button>
+            <Button disabled>
               Create Checkout <Plus weight="bold" />
             </Button>
           </Flex>
@@ -191,12 +200,27 @@ function CheckoutPage() {
                       <DotsThreeVertical size={22} weight="bold" />
                     </IconButton>
                   </DropdownMenu.Trigger>
-                  <DropdownMenu.Content align="center">
-                    <DropdownMenu.Item shortcut="⌘ E" disabled>
-                      Edit
+                  <DropdownMenu.Content align="center" className="min-w-40" loop>
+                    <DropdownMenu.Item
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate({
+                          to: "/portal/$checkoutId",
+                          params: { checkoutId: checkout.id },
+                        });
+                      }}
+                    >
+                      Open Portal
+                      <LinkSimple size={16} className="my-auto ml-auto" />
                     </DropdownMenu.Item>
-                    <DropdownMenu.Item shortcut="⌘ D" disabled>
-                      Duplicate
+                    <DropdownMenu.Item
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        copyToClipboard(checkout.id);
+                      }}
+                    >
+                      Copy ID
+                      <Copy size={16} className="my-auto ml-auto" />
                     </DropdownMenu.Item>
 
                     <DropdownMenu.Separator />

@@ -17,3 +17,11 @@ export function getDiscountAmount(price: number, discount: number) {
 
   return price * (discount / 100);
 }
+
+export function copyToClipboard(text: string) {
+  try {
+    navigator.clipboard.writeText(text);
+  } catch (e) {
+    console.error("Failed to copy to clipboard", e);
+  }
+}

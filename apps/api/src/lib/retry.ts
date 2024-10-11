@@ -1,10 +1,14 @@
+import { err, ok, type Result } from "@justmiracle/result";
+
 // run a promise with retries
 export async function withRetry<T extends () => any>(
   promise: T,
   retries = 3,
-): Promise<Awaited<ReturnType<T>> | undefined> {
-  return promise().catch(() => {
-    if (retries === 0) return undefined;
-    return withRetry(promise, retries - 1);
-  });
+): Promise<Result<Awaited<ReturnType<T>>>> {
+  return promise()
+    .then(ok)
+    .catch((e: unknown) => {
+      if (retries === 0) return err(e);
+      return withRetry(promise, retries - 1);
+    });
 }

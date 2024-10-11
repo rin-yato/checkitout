@@ -15,7 +15,7 @@ export const Route = createFileRoute("/portal/$checkoutId")({
   pendingComponent: () => <div className="flex-1 bg-gray-2" />,
   beforeLoad: ({ context, params }) => {
     const opts = queryOptions({
-      queryKey: ["checkout", params.checkoutId],
+      queryKey: ["@checkout", params.checkoutId, "portal"],
       queryFn: async () => {
         return ky
           .get(`v1/checkout/portal/${params.checkoutId}`, {
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/portal/$checkoutId")({
       },
     });
 
-    context.queryClient.prefetchQuery(opts);
+    return context.queryClient.ensureQueryData(opts);
   },
 });
 
@@ -39,7 +39,7 @@ function CheckoutPage() {
   const toastIdRef = useRef<string | number>("");
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["checkout", checkoutId],
+    queryKey: ["@checkout", checkoutId, "portal"],
     queryFn: () => {
       return ky
         .get(`v1/checkout/portal/${checkoutId}`, { retry: 0, prefixUrl: env.VITE_API_URL })
@@ -71,27 +71,17 @@ function CheckoutPage() {
       data.hasSuccessfulTransaction &&
       !toastIdRef.current
     ) {
-      toastIdRef.current = toast.loading("Hold on tight! We're processing your payment.", {
-        duration: 35_000, // 35s
-        onAutoClose: (t) => {
-          toast.info("Unable to process your payment.", {
-            id: t.id,
-            richColors: true,
-            duration: 10_000, // 10s
-          });
-        },
-      });
+      toastIdRef.current = toast.loading("Hold on tight! We're processing your payment.");
 
       setTimeout(() => {
         if (data.hasSuccessfulWebhook && data.hasSuccessfulTransaction) return;
 
-        toast.info("Unable to process your payment.", {
+        toast.error("Unable to process your payment.", {
           id: toastIdRef.current,
-          richColors: true,
           duration: 10_000, // 10s
         });
         setIsProcessing(true);
-      }, 35_000); // 35s
+      }, 25_000); // 35s
     }
 
     if (
@@ -146,6 +136,7 @@ function CheckoutPage() {
               amount={data.checkout.total}
               merchantName={data.user.displayName}
               qrCode={data.activeTransaction?.qrCode ?? ""}
+              checkoutId={data.checkout.id}
             />
 
             {/* Step by step guide for scanning QR code and paying with Bakong KHQR */}

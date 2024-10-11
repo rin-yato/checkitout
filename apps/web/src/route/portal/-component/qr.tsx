@@ -1,10 +1,18 @@
 import { formatCurrency } from "@/lib/currency";
-import { Avatar, Flex, Text } from "@radix-ui/themes";
+import { Avatar, Flex, IconButton, Spinner, Text, Tooltip } from "@radix-ui/themes";
 import { QRCodeSVG } from "qrcode.react";
 import { InvoiceSeparator } from "./invoice";
-import { Check, Receipt } from "@phosphor-icons/react";
+import {
+  ArrowCounterClockwise,
+  ArrowsCounterClockwise,
+  Check,
+  Receipt,
+} from "@phosphor-icons/react";
 import { IconBorderCorners } from "@tabler/icons-react";
 import { match } from "ts-pattern";
+import { useRetryCheckoutWebhookMutation } from "@/query/checkout/checkout.mutation";
+import { Button } from "@/component/ui/button";
+import toast from "react-hot-toast";
 
 interface QRPayProps {
   qrCode: string;
@@ -13,6 +21,7 @@ interface QRPayProps {
   merchantName: string;
   paid: boolean;
   processing: boolean;
+  checkoutId: string;
 }
 
 export function QRPay(props: QRPayProps) {
@@ -22,7 +31,7 @@ export function QRPay(props: QRPayProps) {
     <Flex
       gap="3"
       direction="column"
-      className="z-10 w-full rounded-6 border-2 border-gray-3 bg-background p-7 sm:w-[410px]"
+      className="relative z-10 w-full rounded-6 border-2 border-gray-3 bg-background p-7 sm:w-[410px]"
     >
       <Flex align="center" gap="4">
         <Avatar size="3" color="gray" src="/bakong-logo.png" fallback="B" />
@@ -46,7 +55,9 @@ export function QRPay(props: QRPayProps) {
       <InvoiceSeparator color="gray-2" />
 
       {match({ paid: props.paid, processing: props.processing })
-        .with({ paid: true, processing: true }, () => <ProcessingState />)
+        .with({ paid: true, processing: true }, () => (
+          <ProcessingState checkoutId={props.checkoutId} />
+        ))
         .with({ paid: true, processing: false }, () => <PaidState />)
         .with({ paid: false }, () => (
           <QRState currencyImage={currencyImage} qrCode={props.qrCode} />
@@ -106,16 +117,43 @@ function PaidState() {
   );
 }
 
-function ProcessingState() {
+function ProcessingState({ checkoutId }: { checkoutId: string }) {
+  const { mutate, isPending } = useRetryCheckoutWebhookMutation();
+
+  const handleRetry = () => {
+    mutate(checkoutId, {
+      onError: () => {
+        toast.error("Failed to process the checkout, please try again later");
+      },
+      onSuccess: () => {
+        toast.success("Checkout is processed, redirecting...");
+      },
+    });
+  };
+
   return (
-    <Flex className="relative m-2 aspect-square w-full flex-col px-4 pt-7 pb-4">
+    <Flex className="relative m-2 aspect-square w-full flex-col px-4 pt-5 pb-4">
       <Text size="5" className="text-center font-semibold">
         Checkout Pending
       </Text>
       <Text color="gray" className="text-center" mt="2" wrap="balance">
         Please re-check again in a few moment or contact the merchant for support
       </Text>
-      <div className="zoom-in-50 m-10 flex aspect-square flex-1 animate-in items-center justify-center rounded-full bg-warning-3">
+
+      <Button
+        color="gray"
+        variant="soft"
+        className="mx-auto mt-5 w-fit"
+        disabled={isPending}
+        onClick={handleRetry}
+      >
+        Re-check status
+        <Spinner loading={isPending}>
+          <ArrowsCounterClockwise weight="bold" size={16} />
+        </Spinner>
+      </Button>
+
+      <div className="zoom-in-50 m-10 mb-4 flex aspect-square flex-1 animate-in items-center justify-center rounded-full bg-warning-3">
         <Receipt className="text-warning-9" size={96} weight="duotone" />
       </div>
     </Flex>

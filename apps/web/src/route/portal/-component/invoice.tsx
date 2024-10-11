@@ -47,10 +47,10 @@ export function Invoice({
               className="ring-1 ring-gray"
               fallback={getInitial(user.displayName)}
             />
-            {/* <Text trim="both" color="gray" className="text-right"> */}
-            {/*   <span className="select-none text-gray-6">#</span> */}
-            {/*   <span>C10249</span> */}
-            {/* </Text> */}
+            <Text trim="both" color="gray" className="text-right">
+              <span className="select-none text-gray-6">#</span>
+              <span className="font-mono">{checkout.refId}</span>
+            </Text>
           </Flex>
 
           <Flex direction="column" gap="2">
