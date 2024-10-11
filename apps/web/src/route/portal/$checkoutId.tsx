@@ -71,16 +71,27 @@ function CheckoutPage() {
       data.hasSuccessfulTransaction &&
       !toastIdRef.current
     ) {
-      toastIdRef.current = toast.loading("Hold on tight! We're processing your payment.");
+      toastIdRef.current = toast.loading("Hold on tight! We're processing your payment.", {
+        duration: 35_000, // 35s
+        onAutoClose: (t) => {
+          toast.info("Unable to process your payment.", {
+            id: t.id,
+            richColors: true,
+            duration: 10_000, // 10s
+          });
+        },
+      });
 
       setTimeout(() => {
+        if (data.hasSuccessfulWebhook && data.hasSuccessfulTransaction) return;
+
         toast.info("Unable to process your payment.", {
           id: toastIdRef.current,
           richColors: true,
-          duration: 34_000, // 34s
+          duration: 10_000, // 10s
         });
         setIsProcessing(true);
-      }, 5000);
+      }, 35_000); // 35s
     }
 
     if (
