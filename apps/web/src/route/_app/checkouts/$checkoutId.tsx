@@ -1,5 +1,5 @@
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle } from "@/component/ui/sheet";
-import { ArrowsCounterClockwise, CaretRight, ShoppingCart, X } from "@phosphor-icons/react";
+import { CaretRight, ShoppingCart, X } from "@phosphor-icons/react";
 import {
   Avatar,
   Badge,
@@ -10,7 +10,6 @@ import {
   Separator,
   Tabs,
   Text,
-  Tooltip,
 } from "@radix-ui/themes";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Fragment, useMemo, useState } from "react";
@@ -26,7 +25,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/component/ui/collapsible";
-import { Button } from "@/component/ui/button";
 import { match } from "ts-pattern";
 import { RetryWebhookButton } from "./-components/retry-webhook-button";
 import { isOkStatus } from "@/lib/is";
@@ -52,7 +50,7 @@ function CheckoutDetailPage() {
 
     if (!open) {
       setTimeout(() => {
-        navigate({ to: toCheckouts() });
+        navigate({ to: toCheckouts(), search: true });
       }, 300);
     }
   };

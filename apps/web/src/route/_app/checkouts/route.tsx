@@ -132,7 +132,7 @@ function CheckoutPage() {
             <Table.Row
               key={checkout.id}
               onClick={() => {
-                navigate({ to: `/checkouts/${checkout.id}` });
+                navigate({ to: `/checkouts/${checkout.id}`, search: true });
               }}
             >
               <Table.RowHeaderCell className="font-mono">
