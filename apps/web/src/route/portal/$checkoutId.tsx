@@ -87,7 +87,8 @@ function CheckoutPage() {
     if (
       firstDataLoad.current.loaded && // first load we dont redirect
       data.hasSuccessfulWebhook &&
-      data.hasSuccessfulTransaction
+      data.hasSuccessfulTransaction &&
+      data.checkout.redirectUrl
     ) {
       const redirectUrl = data.checkout.redirectUrl;
       const validURL = URL.canParse(redirectUrl);
