@@ -7,7 +7,7 @@ export interface ApiResponseSuccess<T> {
 }
 
 export interface ApiResponseError {
-  error: { status: number; message: string };
+  error: { status: number; message: string; details?: unknown };
   data: null;
   response?: Response;
 }
@@ -27,6 +27,14 @@ export function createApiCall() {
       })
       .catch((e) => {
         console.error("CHECKITOUT_ERROR", e);
+
+        if (e instanceof Error) {
+          return {
+            error: { status: 500, message: "Something went wrong.", details: e.message },
+            data: null,
+          };
+        }
+
         return {
           error: { status: 500, message: "Something went wrong." },
           data: null,
