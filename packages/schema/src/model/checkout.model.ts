@@ -9,10 +9,10 @@ export const checkoutSchema = z.object({
 
   currency: CURRENCY,
   discountType: DISCOUNT_TYPE,
-  discount: z.number().int().nullable(),
-  tax: z.number().int().nullable(),
-  subTotal: z.number().int(),
-  total: z.number().int(),
+  discount: z.number().positive().nullable(),
+  tax: z.number().positive().nullable(),
+  subTotal: z.number().positive(),
+  total: z.number().positive(),
 
   clientName: z.string(),
   clientPhone: z.string(),
@@ -64,8 +64,8 @@ export const checkoutInsertSchema = checkoutSchema
     additionalInfo: true,
   })
   .extend({
-    tax: z.number().int().nullish(),
-    discount: z.number().int().nullish(),
+    tax: z.number().positive().nullish(),
+    discount: z.number().positive().nullish(),
     discountType: DISCOUNT_TYPE.optional(),
     clientAddress: z.string().nullish(),
     additionalInfo: z.record(z.string(), z.any()).nullish(),

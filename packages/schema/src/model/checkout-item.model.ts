@@ -7,11 +7,11 @@ export const checkoutItemSchema = z.object({
   productId: z.string().nullable(),
   name: z.string(),
   img: z.string().url("Invalid product image URL"),
-  price: z.number().int(),
-  quantity: z.number().int(),
+  price: z.number().positive(),
+  quantity: z.number().positive(),
 
   discountType: DISCOUNT_TYPE,
-  discount: z.number().int().nullable(),
+  discount: z.number().positive().nullable(),
 
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -43,7 +43,7 @@ export const checkoutItemInsertSchema = checkoutItemSchema
   .extend({
     productId: z.string().nullish(),
     discountType: DISCOUNT_TYPE.optional(),
-    discount: z.number().int().nullish(),
+    discount: z.number().positive().nullish(),
   });
 
 export type CheckoutItem = z.infer<typeof checkoutItemSchema>;

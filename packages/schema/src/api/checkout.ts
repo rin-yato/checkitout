@@ -39,7 +39,7 @@ export const checkoutCreateV1Body = checkoutInsertSchema.extend({
 export type CheckoutCreateV1Body = z.infer<typeof checkoutCreateV1Body>;
 
 export const findManyCheckoutV1Response = z.object({
-  total: z.number().int(),
+  total: z.number().positive(),
   checkouts: z.array(
     publicCheckoutSchema.extend({
       items: z.array(publicCheckoutItemSchema),

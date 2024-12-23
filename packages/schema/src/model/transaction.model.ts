@@ -8,7 +8,7 @@ export const transactionSchema = z.object({
   md5: z.string(),
   qrCode: z.string(),
 
-  amount: z.number().int(),
+  amount: z.number().positive(),
   currency: CURRENCY,
 
   status: TRANSACTION_STATUS,

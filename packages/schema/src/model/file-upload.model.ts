@@ -8,7 +8,7 @@ export const fileUploadSchema = z.object({
   url: z.string(),
   hash: z.string(),
   type: z.string(),
-  size: z.number().int(),
+  size: z.number().positive(),
 
   createdAt: z.date(),
   updatedAt: z.date(),
