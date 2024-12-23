@@ -18,7 +18,7 @@ export const checkoutSchema = z.object({
   clientPhone: z.string(),
   clientAddress: z.string().nullable(),
 
-  redirectUrl: z.string().url(),
+  redirectUrl: z.string().url().nullish(),
 
   additionalInfo: z.record(z.string(), z.any()).nullable(),
 

@@ -37,7 +37,7 @@ export const TB_checkout = table(
 
     additionalInfo: column.json("additional_info"),
 
-    redirectUrl: column.text("redirect_url").notNull(),
+    redirectUrl: column.text("redirect_url"),
     // transaction: [...]
 
     createdAt: column.createdAt,

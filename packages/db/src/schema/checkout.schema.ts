@@ -7,7 +7,7 @@ export const checkoutSchema = createSelectSchema(TB_checkout, {
 });
 
 export const checkoutInsert = createInsertSchema(TB_checkout, {
-  redirectUrl: z.string().url("Invalid redirect URL"),
+  redirectUrl: z.string().url("Invalid redirect URL").nullable(),
   additionalInfo: z.record(z.string(), z.any()),
 });
 

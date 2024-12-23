@@ -1,0 +1,1 @@
+ALTER TABLE "checkout" ALTER COLUMN "redirect_url" DROP NOT NULL;
