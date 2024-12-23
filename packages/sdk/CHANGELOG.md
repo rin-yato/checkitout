@@ -1,5 +1,11 @@
 # @justmiracle/checkitout
 
+## 0.1.5
+
+### Patch Changes
+
+- Add `details` into error type
+
 ## 0.1.4
 
 ### Patch Changes
