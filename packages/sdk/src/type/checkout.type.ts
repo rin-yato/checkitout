@@ -32,7 +32,7 @@ export interface Checkout {
   /**
    * The URL where the user will be redirected after the checkout is completed
    */
-  redirectUrl: string;
+  redirectUrl?: string | null;
 
   /**
    * Additional information that will be stored in the checkout
