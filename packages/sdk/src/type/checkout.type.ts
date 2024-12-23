@@ -156,7 +156,7 @@ export interface CheckoutRequest {
   /**
    * The URL where the user will be redirected after the checkout is completed
    */
-  redirectUrl: string;
+  redirectUrl?: string | null;
 
   /**
    * - Minimum of 1 item
@@ -176,8 +176,7 @@ export type CheckoutCreateBody = {
   clientName: string;
   clientPhone: string;
   clientAddress?: string;
-  redirectUrl: string;
+  redirectUrl?: string | null;
   additionalInfo?: AdditionalInfo;
-
   items: CheckoutItemRequest[];
 };

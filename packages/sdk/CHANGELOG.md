@@ -1,5 +1,25 @@
 # @justmiracle/checkitout
 
+## 0.1.7
+
+### Patch Changes
+
+- Remove .turbo cache and wild index.ts file
+- Make `redirectUrl` optional
+- Ignore uneeded files
+- Add more jsDoc for interfaces and types
+- Add `details` into error type
+
+## 0.1.6
+
+### Patch Changes
+
+- Remove .turbo cache and wild index.ts file
+- Make `redirectUrl` optional
+- Ignore uneeded files
+- Add more jsDoc for interfaces and types
+- Add `details` into error type
+
 ## 0.1.5
 
 ### Patch Changes
