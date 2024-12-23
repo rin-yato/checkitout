@@ -19,7 +19,7 @@ export const userInsertSchema = createInsertSchema(TB_user, {
     .min(10, "Address must be at least 10 characters"),
   bakongId: z
     .string({ required_error: "Bakong ID is required" })
-    .regex(/^[a-z_]+@[a-z_]+$/, "Bakong ID must be in the format of `username@bankid`"),
+    .regex(/^[a-z_0-9]+@[a-z_]+$/, "Bakong ID must be in the format of `username@bankid`"),
 });
 
 export const userUpdateSchema = userInsertSchema
