@@ -1,11 +1,13 @@
 import type { AppEnv } from "@/setup/context";
 import { endTime, startTime } from "hono/timing";
-import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { checkoutService } from "@/service/checkout.service";
 import { validateToken } from "@/setup/token.middleware";
 import { userService } from "@/service/user.service";
 import { apiError } from "@/lib/error";
 import { checkoutCreateV1Body, checkoutCreateV1Response } from "@repo/schema";
+import { withRetry } from "@/lib/retry";
+import { transactionQueue } from "@/task/transaction";
 
 export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
   createRoute({
@@ -15,6 +17,7 @@ export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
     description: "Create a checkout",
     operationId: "Create Checkout",
     request: {
+      query: z.object({ startTracking: z.boolean({ coerce: true }).default(false) }),
       body: {
         content: {
           "application/json": {
@@ -36,6 +39,7 @@ export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
   }),
   async (c) => {
     const body = c.req.valid("json");
+    const { startTracking } = c.req.valid("query");
 
     startTime(c, "token validation");
     const token = await validateToken(c);
@@ -59,6 +63,24 @@ export const createCheckoutV1 = new OpenAPIHono<AppEnv>().openapi(
         message: "Failed to create checkout",
         details: checkout.error.message,
       });
+    }
+
+    if (startTracking) {
+      const userData = user.value;
+      const checkoutData = checkout.value;
+
+      // Add transaction to queue without waiting
+      withRetry(
+        () =>
+          transactionQueue.add({
+            userId: userData.id,
+            checkoutId: checkoutData.checkout.id,
+            webhookUrl: userData.webhookUrl,
+            transactionId: checkoutData.activeTransaction.id,
+            md5: checkoutData.activeTransaction.md5,
+          }),
+        5, // retry 5 times
+      );
     }
 
     return c.json(checkout.value);

@@ -5,7 +5,7 @@ import type {
   CreateCheckoutResponse,
   FindOneResponse,
 } from "../type";
-import { type Api, type ApiResponseError, createApiCall } from "./util";
+import { type Api, type ApiResponseError, createApiCall, roundCurrency } from "./util";
 
 export interface CheckitoutOptions {
   token: string;
@@ -43,8 +43,15 @@ export class Checkitout {
     return new URL(`/portal/${checkoutId}`, this.webUrl).toString();
   }
 
-  async create(request: CheckoutRequest) {
+  async create(
+    request: CheckoutRequest,
+    config: { startTracking: boolean } = { startTracking: false },
+  ) {
     const url = new URL("/v1/checkout", this.apiUrl);
+
+    if (config.startTracking) {
+      url.searchParams.append("startTracking", "true");
+    }
 
     const subTotal = request.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const discount =
@@ -53,13 +60,21 @@ export class Checkitout {
         : (subTotal * (request.discount?.value || 0)) / 100;
 
     const tax = ((subTotal - discount) * (request.tax || 0)) / 100;
-    const total = subTotal - discount + tax;
+    const total =
+      request.currency === "USD"
+        ? roundCurrency(subTotal - discount + tax)
+        : subTotal - discount + tax;
 
-    if (request.total && total !== request.total) {
+    const requestTotal =
+      request.currency === "USD" && request.total
+        ? roundCurrency(request.total)
+        : request.total;
+
+    if (request.total && total !== requestTotal) {
       return {
         error: {
           status: 400,
-          message: `Total amount does not match, assert: ${request.total}, calculated: ${total}`,
+          message: `Total amount does not match, assert: ${requestTotal}, calculated: ${total}`,
         },
         data: null,
       } satisfies ApiResponseError;

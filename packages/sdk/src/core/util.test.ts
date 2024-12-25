@@ -1,5 +1,5 @@
 import { describe, it, mock, expect, beforeEach, afterEach } from "bun:test";
-import { type Api, createApiCall } from "./util";
+import { type Api, createApiCall, roundCurrency } from "./util";
 
 const mockFetch = mock();
 global.fetch = mockFetch;
@@ -66,5 +66,17 @@ describe("createApiCall", () => {
       expect(result.data).toBeNull();
       expect(result.response).toBeUndefined();
     });
+  });
+});
+
+describe("roundCurrency", () => {
+  it("should round up", () => {
+    const result = roundCurrency(1.118);
+    expect(result).toEqual(1.12);
+  });
+
+  it("should round down", () => {
+    const result = roundCurrency(1.113);
+    expect(result).toEqual(1.11);
   });
 });

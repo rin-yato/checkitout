@@ -42,3 +42,7 @@ export function createApiCall() {
       });
   };
 }
+
+export function roundCurrency(amount: number): number {
+  return Number.parseFloat(amount.toFixed(2));
+}
