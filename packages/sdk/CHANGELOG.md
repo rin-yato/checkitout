@@ -1,5 +1,16 @@
 # @justmiracle/checkitout
 
+## 0.1.8
+
+### Patch Changes
+
+- Add option to start tracking transaction after creating checkout
+- Remove .turbo cache and wild index.ts file
+- Make `redirectUrl` optional
+- Ignore uneeded files
+- Add more jsDoc for interfaces and types
+- Add `details` into error type
+
 ## 0.1.7
 
 ### Patch Changes
