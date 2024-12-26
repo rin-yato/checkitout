@@ -1,36 +1,4 @@
 services:
-  watchtower:
-    image: containrrr/watchtower
-    environment:
-      - REPO_USER=${GHCR_USER}
-      - REPO_PASS=${GHCR_PASS}
-    command:
-      - "--label-enable"
-      - "--interval"
-      - "30"
-      - "--rolling-restart"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-
-  traefik:
-    image: "traefik:v3.1"
-    command:
-      - "--providers.docker"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entryPoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=chearithorn@gmail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - letsencrypt:/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock
-
   api:
     image: "ghcr.io/rin-yato/checkitout-api:prod"
     labels:
@@ -39,8 +7,11 @@ services:
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls.certresolver=myresolver"
       - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.docker.network=proxy"
     env_file:
       - .env
+    networks:
+      - proxy
     deploy:
       mode: replicated
       replicas: 2
@@ -70,6 +41,8 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    networks:
+      - proxy
 
   keydb:
     image: "eqalpha/keydb:alpine_x86_64_v6.3.3"
@@ -85,8 +58,14 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    networks:
+      - proxy
 
 volumes:
   postgres:
   keydb:
   letsencrypt:
+
+networks:
+  proxy:
+    external: true
