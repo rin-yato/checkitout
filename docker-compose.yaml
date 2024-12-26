@@ -45,7 +45,7 @@ services:
       - proxy
 
   keydb:
-    image: "eqalpha/keydb:alpine_x86_64_v6.3.3"
+    image: "eqalpha/keydb:arm64_v6.3.3"
     command: keydb-server /etc/keydb/keydb.conf
     ports:
       - 6379:6379
