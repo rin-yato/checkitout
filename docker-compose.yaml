@@ -1,5 +1,5 @@
 services:
-  api:
+  api-checkitout:
     image: "ghcr.io/rin-yato/checkitout-api:prod"
     labels:
       - "traefik.enable=true"

@@ -34,6 +34,7 @@ RUN bun add sharp --trusted --production
 
 ENV NODE_ENV=production
 
+EXPOSE 3050
+
 CMD ["bun", "./apps/api/src/index.ts"]
 
-EXPOSE 3050
